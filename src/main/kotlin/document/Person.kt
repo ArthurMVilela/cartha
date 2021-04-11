@@ -11,9 +11,9 @@ import kotlinx.serialization.Serializable
  * @property sex    sexo do indivíduo
  */
 @Serializable
-class Person (
-    val id: String,
-    val name: String,
-    val cpf: String,
-    val sex: Sex
+open class Person (
+    open val id: String,
+    open val name: String,
+    open val cpf: String,
+    open val sex: Sex
 )
