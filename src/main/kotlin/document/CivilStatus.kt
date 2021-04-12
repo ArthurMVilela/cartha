@@ -8,9 +8,9 @@ package document
  * @property Divorced       Divorciado(a)
  * @property Widowed        Viúvo(a)
  */
-enum class CivilStatus {
-    Married,
-    Single,
-    Divorced,
-    Widowed
+enum class CivilStatus(val value:String) {
+    Married("Casado(a)"),
+    Single("Solteiro(a)"),
+    Divorced("Divorciado(a)"),
+    Widowed("Viúvo(a)")
 }
