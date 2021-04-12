@@ -9,9 +9,9 @@ package document.civilRegistry
  * @property SeparatePropertyRuling         Separação de Bens
  * @property FinalPartitionOfAcquisitions   Participação Final nos aquetos
  */
-enum class MatrimonialRegime {
-    PartialPropertyRuling,
-    CommunityPropertyRuling,
-    SeparatePropertyRuling,
-    FinalPartitionOfAcquisitions
+enum class MatrimonialRegime(val value:String) {
+    PartialPropertyRuling("Comunhão Parcial"),
+    CommunityPropertyRuling("Comunhão de Bens"),
+    SeparatePropertyRuling("Separação de Bens"),
+    FinalPartitionOfAcquisitions("Participação Final nos aquetos")
 }
