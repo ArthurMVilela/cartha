@@ -6,7 +6,7 @@ package document
  * @property Male       sexo masculino
  * @property Female     sexo feminino
  */
-enum class Sex {
-    Male,
-    Female
+enum class Sex(val value: String) {
+    Male("Masculino"),
+    Female("Feminino")
 }
