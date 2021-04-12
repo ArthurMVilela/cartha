@@ -6,7 +6,7 @@ package document
  * @property Valid      Documento válido
  * @property Invalid    Documento inválido
  */
-enum class DocumentStatus {
-    Valid,
-    Invalid
+enum class DocumentStatus(val value:String) {
+    Valid("válido"),
+    Invalid("inválido")
 }
