@@ -4,6 +4,9 @@ import kotlinx.serialization.Serializable
 
 /**
  * Representa um oficial(tabelião/funcionário) que autentifica um documento
+ *
+ * @property cpf        cpf do oficial
+ * @property sex        sexo do oficial
  */
 @Serializable
 data class Official(
