@@ -8,7 +8,6 @@ import java.time.LocalDate
 /**
  * Representa uma certidão de casamento
  *
- * @property registration           Matrícula
  * @property firstSpouse            Primeiro cõnjuge
  * @property secondSpouse           Segundo cõnjuge
  * @property dateOfRegistry         Data do registro
@@ -21,8 +20,8 @@ class MarriageCertificate(
     override val status: DocumentStatus,
     override val officialId: String,
     override val notaryId: String,
+    override val registration: String,
 
-    val registration: String,
     val firstSpouse: Spouse,
     val secondSpouse: Spouse,
     @Serializable(with = LocalDateSerializer::class)

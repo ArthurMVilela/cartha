@@ -10,7 +10,6 @@ import java.time.LocalTime
 /**
  * Representa uma certidão de casamento
  *
- * @property registration               Matricula
  * @property timeOfBirth                Hora do nascimento
  * @property municipalityOfBirth        Município em que o nascimento ocorreu
  * @property UFOfBirth                  UF em que o nascimento ocorreu
@@ -36,7 +35,8 @@ class BirthCertificate(
     override val status: DocumentStatus,
     override val officialId: String,
     override val notaryId: String,
-    val registration: String,
+    override val registration: String,
+
     @Serializable(with= LocalTimeSerializer::class)
     val timeOfBirth: LocalTime,
     val municipalityOfBirth: String,

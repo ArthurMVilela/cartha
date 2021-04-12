@@ -13,6 +13,7 @@ class DivorceCertificate(
     override val id: String?,
     override val status: DocumentStatus,
     override val officialId: String,
-    override val notaryId: String
+    override val notaryId: String,
+    override val registration: String
 ):CivilRegistryDocument() {
 }

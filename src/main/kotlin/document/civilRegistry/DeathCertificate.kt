@@ -15,8 +15,8 @@ class DeathCertificate(
     override val officialId: String,
     override val notaryId: String,
     override val status: DocumentStatus,
+    override val registration:String,
 
-    val registration:String,
     val personId: String,
 
     val sex: Sex,
