@@ -8,10 +8,10 @@ package document
  * @property Yellow,        Amarelo(a)
  * @property Indigenous     Indígena
  */
-enum class Color {
-    White,
-    Black,
-    Pardo,
-    Yellow,
-    Indigenous
+enum class Color(val value:String) {
+    White("Branco(a)"),
+    Black("Preto(a)"),
+    Pardo("Pardo(a)"),
+    Yellow("Amarelo(a)"),
+    Indigenous("Indígena")
 }
