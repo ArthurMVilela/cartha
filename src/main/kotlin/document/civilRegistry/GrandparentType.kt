@@ -6,7 +6,7 @@ package document.civilRegistry
  * @property Paternal       Avó/avô paterno
  * @property Maternal       Avó/avô materno
  */
-enum class GrandparentType {
-    Paternal,
-    Maternal
+enum class GrandparentType(val value:String) {
+    Paternal("paterno"),
+    Maternal("materno")
 }
