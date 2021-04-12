@@ -12,7 +12,7 @@ import kotlinx.serialization.Serializable
 class MarriageCertificate(
     override val id: String?,
     override val status: DocumentStatus,
-    override val official: Official,
-    override val notary: Notary
+    override val officialId: String,
+    override val notaryId: String
 ):CivilRegistryDocument() {
 }

@@ -11,8 +11,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 class DeathCertificate(
     override val id: String?,
-    override val notary: Notary,
-    override val official: Official,
+    override val officialId: String,
+    override val notaryId: String,
     override val status: DocumentStatus
 ):CivilRegistryDocument() {
 }
