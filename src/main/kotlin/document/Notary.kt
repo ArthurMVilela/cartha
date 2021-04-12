@@ -11,7 +11,7 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 class Notary (
-    val id: String,
+    val id: String?,
     val name: String,
     val cnpj: String
 )
