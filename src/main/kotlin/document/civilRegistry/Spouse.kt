@@ -8,6 +8,7 @@ import java.time.LocalDate
  * Representa um cônjuge
  *
  * @property id             identificador único
+ * @property personId       id da pessoa que é o conjuge
  * @property singleName     nome de solteiro
  * @property marriedName    nome de casado
  * @property birthday       data de nascimento
@@ -17,7 +18,8 @@ import java.time.LocalDate
  */
 @Serializable
 class Spouse (
-    val id: String,
+    val id: String?,
+    val personId: String,
     val singleName: String,
     val marriedName: String,
     @Serializable(with = LocalDateSerializer::class)
