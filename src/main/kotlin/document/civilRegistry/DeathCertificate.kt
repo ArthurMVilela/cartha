@@ -16,6 +16,7 @@ class DeathCertificate(
     override val notaryId: String,
     override val status: DocumentStatus,
     override val registration:String,
+    override val observationsAndRegistering:List<String>,
 
     val personId: String,
 
@@ -35,6 +36,5 @@ class DeathCertificate(
     val causeOfDeath:String,
     val burialOrCremationLocation:String?,
     val documentDeclaringDeath: String,
-    val observations:String
 ):CivilRegistryDocument() {
 }

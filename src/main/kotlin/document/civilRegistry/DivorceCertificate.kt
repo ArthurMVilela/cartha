@@ -1,8 +1,6 @@
 package document.civilRegistry
 
 import document.DocumentStatus
-import document.Notary
-import document.Official
 import kotlinx.serialization.Serializable
 
 /**
@@ -14,6 +12,7 @@ class DivorceCertificate(
     override val status: DocumentStatus,
     override val officialId: String,
     override val notaryId: String,
-    override val registration: String
+    override val registration: String,
+    override val observationsAndRegistering: List<String>
 ):CivilRegistryDocument() {
 }

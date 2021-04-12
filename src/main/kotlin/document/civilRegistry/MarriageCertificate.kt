@@ -21,12 +21,12 @@ class MarriageCertificate(
     override val officialId: String,
     override val notaryId: String,
     override val registration: String,
+    override val observationsAndRegistering:List<String>,
 
     val firstSpouse: Spouse,
     val secondSpouse: Spouse,
     @Serializable(with = LocalDateSerializer::class)
     val dateOfRegistry: LocalDate,
     val matrimonialRegime:MatrimonialRegime,
-    val observations:String
 ):CivilRegistryDocument() {
 }

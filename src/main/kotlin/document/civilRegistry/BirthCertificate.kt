@@ -36,6 +36,7 @@ class BirthCertificate(
     override val officialId: String,
     override val notaryId: String,
     override val registration: String,
+    override val observationsAndRegistering:List<String>,
 
     @Serializable(with= LocalTimeSerializer::class)
     val timeOfBirth: LocalTime,
@@ -65,6 +66,7 @@ class BirthCertificate(
         officialId: String,
         notaryId: String,
         registration: String,
+        observationsAndRegistering:List<String>,
         timeOfBirth: LocalTime,
         municipalityOfBirth: String,
         UFOfBirth: UF,
@@ -80,8 +82,8 @@ class BirthCertificate(
 
         person: PhysicalPerson
     ):this(
-        id, status, officialId, notaryId, registration, timeOfBirth, municipalityOfBirth, UFOfBirth,
-        municipalityOfRegistry, UFOfRegistry, affiliations, grandParents, twin, twins,
+        id, status, officialId, notaryId, registration, observationsAndRegistering, timeOfBirth, municipalityOfBirth,
+        UFOfBirth, municipalityOfRegistry, UFOfRegistry, affiliations, grandParents, twin, twins,
         dateOfRegistry, DNNumber, observations, person.id!!, person.cpf, person.name, person.birthDay, person.sex
     )
 }
