@@ -13,5 +13,5 @@ import kotlinx.serialization.Serializable
 abstract class Document(
     val id: String,
     val status: DocumentStatus,
-    val official: String
+    val official: Official
 )

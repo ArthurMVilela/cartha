@@ -13,12 +13,7 @@ fun main() {
             json()
         }
         routing {
-            get("/persons/{id}") {
-                service.getPerson(call)
-            }
-            post("/persons") {
-                service.createPerson(call)
-            }
+
         }
     }.start(true)
 }
