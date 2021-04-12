@@ -1,4 +1,4 @@
-package document.civilRegistry
+package document
 
 /**
  * Representa a cor/raça de um indivíduo de acordo com o IBGE

@@ -1,5 +1,7 @@
 package document.civilRegistry
 
+import document.CivilStatus
+import document.Color
 import document.DocumentStatus
 import document.Sex
 import kotlinx.serialization.Serializable

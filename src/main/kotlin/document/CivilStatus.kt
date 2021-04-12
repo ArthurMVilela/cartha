@@ -1,4 +1,4 @@
-package document.civilRegistry
+package document
 
 /**
  * Classe enumarada que representa o estado cívil de um indivíduo
