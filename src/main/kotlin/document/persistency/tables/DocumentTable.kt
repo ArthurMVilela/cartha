@@ -1,15 +1,10 @@
 package document.persistency.tables
 
 import document.*
-import document.civilRegistry.Affiliation
 import document.civilRegistry.MatrimonialRegime
-import document.civilRegistry.Spouse
-import document.persistency.tables.BirthCertificateTable.references
-import document.persistency.tables.MarriageCertificateTable.references
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.`java-time`.date
 import org.jetbrains.exposed.sql.`java-time`.datetime
-import java.time.LocalDateTime
 
 object DocumentTable : Table("document") {
     val id = char("id", 44)
@@ -45,7 +40,7 @@ object BirthCertificateTable : Table("birth_certificate") {
     val dateOfRegistry = date("date_of_registry")
     val DNNumber = char("dn_number", 6)
 
-    val personId = char("person_id", 44).references(PhysicalPersonTable.id)
+    val personId = char("person_id", 44).references(physicalPersonTable.id)
     val cpf = char("cpf", 9)
     val name = varchar("name", 120)
     val dateOfBirth = date("birthday")
