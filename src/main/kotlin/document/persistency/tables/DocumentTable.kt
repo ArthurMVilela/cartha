@@ -3,6 +3,8 @@ package document.persistency.tables
 import document.DocumentStatus
 import document.Sex
 import document.UF
+import document.civilRegistry.MatrimonialRegime
+import document.civilRegistry.Spouse
 import document.persistency.tables.BirthCertificateTable.references
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.`java-time`.date
@@ -51,6 +53,25 @@ object BirthCertificateTable : Table("birth_certificate") {
     override val primaryKey = PrimaryKey(id, name = "pk_birth_certificate_id")
 }
 
+object MarriageCertificateTable : Table("marriage_certificate") {
+    val id = char("id", 44).references(CivilRegistryDocumentTable.id)
+    val firstSpouseId = char("first_spouse_id", 32)
+    val secondSpouseId = char("first_spouse_id", 32)
+    val dateOfRegistry = date("date_of_registry")
+    val matrimonialRegime = enumeration("matrimonial_regime", MatrimonialRegime::class)
+
+    override val primaryKey = PrimaryKey(id, name = "pk_marriage_certificate_id")
+}
+
+object SpouseTable : Table("spouse") {
+    val id = char("first_spouse_id", 32)
+    val singleName = varchar("name", 120)
+    val marriedName = varchar("name", 120)
+    val personId = char("id",32)
+    val birthday = date("birthday")
+    val nationality = varchar("nationality", 30)
+}
+
 object AffiliationTable : Table("affiliation") {
     val id = char("id", 32)
     val personId = char("person_id",32)
@@ -59,6 +80,14 @@ object AffiliationTable : Table("affiliation") {
     val Municipality = varchar("municipality", 80).nullable()
 
     override val primaryKey = PrimaryKey(id, name = "pk_affiliation_id")
+}
+
+object SpouseAffiliationTable : Table("spouse_affiliation") {
+    val id = integer("id").autoIncrement()
+    val spouseId = char("spouse_id", 44).references(SpouseTable.id)
+    val affiliationId = char("affiliation_id", 32).references(AffiliationTable.id)
+
+    override val primaryKey = PrimaryKey(id, name = "pk_spouse_affiliation_id")
 }
 
 object BirthCertificateAffiliationTable : Table("birth_certificate_affiliation") {
