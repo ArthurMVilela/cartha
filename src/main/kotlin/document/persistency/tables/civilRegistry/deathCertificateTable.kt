@@ -1,4 +1,4 @@
-package document.persistency.tables
+package document.persistency.tables.civilRegistry
 
 import document.CivilStatus
 import document.Color

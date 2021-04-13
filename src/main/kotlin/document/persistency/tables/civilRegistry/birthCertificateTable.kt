@@ -1,7 +1,8 @@
-package document.persistency.tables
+package document.persistency.tables.civilRegistry
 
 import document.Sex
 import document.UF
+import document.persistency.tables.physicalPersonTable
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.`java-time`.date
 import org.jetbrains.exposed.sql.`java-time`.datetime
