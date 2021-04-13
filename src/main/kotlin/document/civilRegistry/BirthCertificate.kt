@@ -51,7 +51,6 @@ class BirthCertificate(
     @Serializable(with = LocalDateSerializer::class)
     val dateOfRegistry: LocalDate,
     val DNNumber: String,
-    val observations: String,
 
     val personId: String,
     val cpf: String,
@@ -78,12 +77,11 @@ class BirthCertificate(
         twins: List<Twin>?,
         dateOfRegistry: LocalDate,
         DNNumber: String,
-        observations: String,
 
         person: PhysicalPerson
     ):this(
         id, status, officialId, notaryId, registration, observationsAndRegistering, timeOfBirth, municipalityOfBirth,
         UFOfBirth, municipalityOfRegistry, UFOfRegistry, affiliations, grandParents, twin, twins,
-        dateOfRegistry, DNNumber, observations, person.id!!, person.cpf, person.name, person.birthDay, person.sex
+        dateOfRegistry, DNNumber, person.id!!, person.cpf, person.name, person.birthDay, person.sex
     )
 }

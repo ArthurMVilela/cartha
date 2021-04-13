@@ -1,6 +1,7 @@
 package document.civilRegistry
 
 import document.PhysicalPerson
+import document.UF
 import kotlinx.serialization.Serializable
 
 /**
@@ -19,14 +20,14 @@ class Grandparent(
     val personId:String,
     val name:String,
     val type:GrandparentType,
-    val UF:String?,
+    val UF:UF?,
     val municipality:String?
 ) {
     constructor(
         id:String?,
         person: PhysicalPerson,
         type:GrandparentType,
-        UF:String?,
+        UF:UF?,
         municipality:String?
     ):this(id, person.id!!, person.name, type, UF, municipality)
 }

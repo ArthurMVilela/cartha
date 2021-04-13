@@ -1,6 +1,7 @@
 package document.civilRegistry
 
 import document.PhysicalPerson
+import document.UF
 import kotlinx.serialization.Serializable
 
 /**
@@ -17,13 +18,13 @@ class Affiliation(
     val id:String?,
     val personId: String,
     val name:String,
-    val UF:String?,
+    val UF:UF?,
     val Municipality:String?
 ) {
     constructor(
         id:String?,
         person:PhysicalPerson,
-        UF:String?,
+        UF:UF?,
         Municipality:String?
     ):this(id, person.id!!, person.name, UF, Municipality)
 }
