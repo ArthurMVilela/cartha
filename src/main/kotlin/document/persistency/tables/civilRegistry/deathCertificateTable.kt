@@ -15,7 +15,7 @@ object deathCertificateTable : Table("death_certificate") {
 
     val birthPlace = varchar("birth_place", 120)
     val documentOfIdentity = varchar("document_of_identity", 20)
-    val affiliationId = char("id", 32).references(affiliationTable.id)
+    val affiliationId = char("affiliation_id", 32).references(affiliationTable.id)
     val residency = varchar("residency", 120)
 
     val dateTimeOfDeath = datetime("datetime_of_death")

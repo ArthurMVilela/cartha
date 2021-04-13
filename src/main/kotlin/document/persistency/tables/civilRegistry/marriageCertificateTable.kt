@@ -7,7 +7,7 @@ import org.jetbrains.exposed.sql.`java-time`.date
 object marriageCertificateTable : Table("marriage_certificate") {
     val id = char("id", 44).references(civilRegistryDocumentTable.id)
     val firstSpouseId = char("first_spouse_id", 32)
-    val secondSpouseId = char("first_spouse_id", 32)
+    val secondSpouseId = char("second_spouse_id", 32)
     val dateOfRegistry = date("date_of_registry")
     val matrimonialRegime = enumeration("matrimonial_regime", MatrimonialRegime::class)
 
