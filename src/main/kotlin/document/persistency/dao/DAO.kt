@@ -14,7 +14,7 @@ interface DAO<T, ID> {
     fun select(id:ID):T?
     fun selectMany(condition: Op<Boolean>):List<T>
     fun selectAll():List<T>
-    fun update(oldId:ID, new:T):T
+    fun update(oldId:ID, new:T)
     fun delete(id:ID)
     fun deleteWhere(condition: Op<Boolean>)
 }
