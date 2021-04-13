@@ -7,8 +7,6 @@ import kotlinx.serialization.Serializable
  *
  * @property id     identificador único
  * @property name   nome do indivíduo
- * @property cpf    cpf do indivíduo
- * @property sex    sexo do indivíduo
  */
 @Serializable
 abstract class Person (
