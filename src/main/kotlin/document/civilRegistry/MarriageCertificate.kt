@@ -12,7 +12,6 @@ import java.time.LocalDate
  * @property secondSpouse           Segundo cõnjuge
  * @property dateOfRegistry         Data do registro
  * @property matrimonialRegime      Regime de bens
- * @property observations           Observações
  */
 @Serializable
 class MarriageCertificate(

@@ -8,10 +8,12 @@ import kotlinx.serialization.Serializable
  * @property id     identificador único
  * @property name   nome (razão social) do cartório
  * @property cnpj   CNPJ do cartório
+ * @property cns    Cadastro Nacional de Servidão do cartório
  */
 @Serializable
 class Notary (
     val id: String?,
     val name: String,
-    val cnpj: String
+    val cnpj: String,
+    val cns: String
 )
