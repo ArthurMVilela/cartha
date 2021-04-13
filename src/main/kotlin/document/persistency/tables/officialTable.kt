@@ -8,5 +8,5 @@ object officialTable : Table("official") {
     val cpf = char("cpf", 11)
     val sex = enumeration("sex", Sex::class)
 
-    override val primaryKey = PrimaryKey(physicalPersonTable.id, name = "pk_official_id")
+    override val primaryKey = PrimaryKey(id, name = "pk_official_id")
 }

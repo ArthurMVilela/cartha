@@ -3,6 +3,7 @@ package document.persistency.tables
 import document.CivilStatus
 import document.Color
 import document.Sex
+import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.`java-time`.date
 
