@@ -1,5 +1,6 @@
 package document.civilRegistry
 
+import document.PhysicalPerson
 import kotlinx.serialization.Serializable
 import util.serializer.LocalDateSerializer
 import java.time.LocalDate
@@ -14,18 +15,23 @@ import java.time.LocalDate
  * @property birthday       data de nascimento
  * @property nationality    nacionalidade
  * @property affiliations   filiações do cônjuge
-
  */
 @Serializable
 class Spouse (
     val id: String?,
-    val personId: String,
     val singleName: String,
     val marriedName: String,
+    val affiliations: List<Affiliation>,
+    val personId: String,
     @Serializable(with = LocalDateSerializer::class)
     val birthday: LocalDate,
-    val nationality: String,
-    val affiliations: List<Affiliation>
-
+    val nationality: String
 ) {
+    constructor(
+        id: String?,
+        singleName: String,
+        marriedName: String,
+        affiliations: List<Affiliation>,
+        person: PhysicalPerson
+    ):this(id, singleName, marriedName, affiliations, person.id!!, person.birthDay, person.nationality)
 }

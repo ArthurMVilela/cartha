@@ -22,6 +22,7 @@ class PhysicalPerson(
     val birthDay: LocalDate,
     val sex: Sex,
     val color: Color,
-    val civilStatus: CivilStatus
+    val civilStatus: CivilStatus,
+    val nationality: String
 ):Person() {
 }
