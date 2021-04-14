@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class Official(
-    override val id: String?,
+    override var id: String?,
     override val name: String,
     val cpf: String,
     val sex: Sex

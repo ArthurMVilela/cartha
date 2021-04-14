@@ -41,7 +41,7 @@ class PersonDAO : DAO<Person, String> {
                     condition
                 }.map {
                     object : Person() {
-                        override val id = it[personTable.id]
+                        override var id:String? = it[personTable.id]
                         override val name = it[personTable.name]
                     }
                 }

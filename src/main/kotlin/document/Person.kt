@@ -11,6 +11,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 abstract class Person (
 ) {
-    abstract val id: String?
+    abstract var id: String?
     abstract val name: String
 }

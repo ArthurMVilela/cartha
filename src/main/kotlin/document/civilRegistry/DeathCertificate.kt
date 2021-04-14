@@ -77,7 +77,7 @@ class DeathCertificate(
         documentDeclaringDeath: String,
     ):this(
         id, status, officialId, notaryId, registration, observationsAndRegistering, person.id!!, person.sex,
-        person.color, person.civilStatus, Period.between(person.birthDay, LocalDate.now()).years, birthPlace,
+        person.color, person.civilStatus, Period.between(person.birthday, LocalDate.now()).years, birthPlace,
         documentOfIdentity, affiliation, residency, dateTimeOfDeath, placeOfDeath, causeOfDeath,
         burialOrCremationLocation, documentDeclaringDeath
     )

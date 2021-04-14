@@ -33,5 +33,5 @@ class Spouse (
         marriedName: String,
         affiliations: List<Affiliation>,
         person: PhysicalPerson
-    ):this(id, singleName, marriedName, affiliations, person.id!!, person.birthDay, person.nationality)
+    ):this(id, singleName, marriedName, affiliations, person.id!!, person.birthday, person.nationality)
 }
