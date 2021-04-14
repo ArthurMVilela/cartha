@@ -3,8 +3,10 @@ package document.persistency.dao
 import document.Official
 import document.persistency.tables.officialTable
 import document.persistency.tables.personTable
+import document.persistency.tables.physicalPersonTable
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class OfficialDAO:DAO<Official, String> {
@@ -92,7 +94,11 @@ class OfficialDAO:DAO<Official, String> {
     }
 
     override fun delete(id: String) {
-        TODO("Not yet implemented")
+        try {
+            deleteWhere(Op.build { officialTable.id eq id })
+        } catch (ex: ExposedSQLException) {
+            throw ex
+        }
     }
 
     override fun deleteWhere(condition: Op<Boolean>) {

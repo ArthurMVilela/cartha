@@ -90,4 +90,45 @@ class DocumentService {
         controller.deleteLegalPerson(id)
         call.respond(HttpStatusCode.OK, "Deletado com sucesso")
     }
+
+    suspend fun createOfficial(call: ApplicationCall) {
+        val person = call.receive<Official>()
+        val registeredPerson = controller.createOfficial(person)
+        call.respond(HttpStatusCode.Created, registeredPerson)
+    }
+
+    suspend fun getOfficial(call: ApplicationCall) {
+        val id = call.parameters["id"]
+        if (id != null) {
+            val found = controller.getOfficial(id)
+            if (found != null) {
+                call.respond(HttpStatusCode.OK, found)
+                return
+            }
+            call.respond(HttpStatusCode.NotFound, "Não encontrado")
+            return
+        }
+        call.respond(HttpStatusCode.BadRequest, "Id não pode ser nula")
+    }
+
+    suspend fun updateOfficial(call: ApplicationCall) {
+        val id = call.parameters["id"]
+        if (id === null) {
+            call.respond(HttpStatusCode.BadRequest, "Id não pode ser nula")
+            return
+        }
+        val new = call.receive<Official>()
+        controller.updateOfficial(id, new)
+        call.respond(HttpStatusCode.OK, "Pessoa física atualizada")
+    }
+
+    suspend fun deleteOfficial(call: ApplicationCall) {
+        val id = call.parameters["id"]
+        if (id === null) {
+            call.respond(HttpStatusCode.BadRequest, "Id não pode ser nula")
+            return
+        }
+        controller.deleteOfficial(id)
+        call.respond(HttpStatusCode.OK, "Deletado com sucesso")
+    }
 }

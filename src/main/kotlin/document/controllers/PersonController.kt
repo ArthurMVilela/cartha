@@ -1,10 +1,12 @@
 package document.controllers
 
 import document.LegalPerson
+import document.Official
 import document.Person
 import document.PhysicalPerson
 import document.exceptions.RecordNotFoundException
 import document.persistency.dao.LegalPersonDAO
+import document.persistency.dao.OfficialDAO
 import document.persistency.dao.PhysicalPersonDAO
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import java.security.MessageDigest
@@ -18,6 +20,7 @@ import java.util.*
 class PersonController {
     val physicalPersonDAO = PhysicalPersonDAO()
     val legalPersonDAO = LegalPersonDAO()
+    val officialDAO = OfficialDAO()
 
     /**
      * Cria nos registros uma pessoa física (PhysicalPerson)
@@ -35,7 +38,7 @@ class PersonController {
             throw ex
         }
 
-        val registered: Person?
+        val registered: PhysicalPerson?
 
         try {
             registered = physicalPersonDAO.select(person.id!!)
@@ -44,7 +47,7 @@ class PersonController {
         }
 
         if (registered != null) {
-            return person
+            return registered
         }
 
         throw RecordNotFoundException("Não é possivel pegar registro recém criado.")
@@ -106,7 +109,7 @@ class PersonController {
             throw ex
         }
 
-        val registered: Person?
+        val registered: LegalPerson?
 
         try {
             registered = legalPersonDAO.select(person.id!!)
@@ -115,7 +118,7 @@ class PersonController {
         }
 
         if (registered != null) {
-            return person
+            return registered
         }
 
         throw RecordNotFoundException("Não é possivel pegar registro recém criado.")
@@ -156,6 +159,77 @@ class PersonController {
     fun deleteLegalPerson(id: String) {
         try {
             legalPersonDAO.delete(id)
+        } catch (ex:ExposedSQLException) {
+            throw ex
+        }
+    }
+
+    /**
+     * Cria nos registros uma pessoa juridica (PhysicalPerson)
+     *
+     * @param person        Pessoa juridica a ser registrada
+     *
+     * @return Pessoa física cadastrada
+     */
+    fun createOfficial(person: Official): Official {
+        person.id = createPersonId()
+
+        try {
+            officialDAO.insert(person)
+        } catch (ex:ExposedSQLException) {
+            throw ex
+        }
+
+        val registered: Official?
+
+        try {
+            registered = officialDAO.select(person.id!!)
+        } catch (ex:ExposedSQLException) {
+            throw ex
+        }
+
+        if (registered != null) {
+            return registered
+        }
+
+        throw RecordNotFoundException("Não é possivel pegar registro recém criado.")
+    }
+
+    /**
+     * Pega nos registros uma pessoa física (PhysicalPerson)
+     * @param id        id da pessoa física
+     * @return Pessoa física encontrada
+     */
+    fun getOfficial(id:String): Official? {
+        val found:Official?
+        try {
+            val found = officialDAO.select(id)
+            return found
+        } catch (ex:ExposedSQLException) {
+            throw ex
+        }
+    }
+
+    /**
+     * Atualiza nos registros uma pessoa física (PhysicalPerson)
+     * @param id        id da pessoa física
+     * @param new       dados novos
+     */
+    fun updateOfficial(id: String, new: Official) {
+        try {
+            officialDAO.update(id, new)
+        } catch (ex:ExposedSQLException) {
+            throw ex
+        }
+    }
+
+    /**
+     * Deleta nos registros uma pessoa física (PhysicalPerson)
+     * @param id        id da pessoa física
+     */
+    fun deleteOfficial(id: String) {
+        try {
+            officialDAO.delete(id)
         } catch (ex:ExposedSQLException) {
             throw ex
         }
