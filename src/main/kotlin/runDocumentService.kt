@@ -26,6 +26,9 @@ fun main() {
             get("/person/physical_person/{id}") {
                 service.getPhysicalPerson(call)
             }
+            patch("/person/physical_person/{id}") {
+                service.updatePhysicalPerson(call)
+            }
             post("/person/physical_person") {
                 service.createPhysicalPerson(call)
             }

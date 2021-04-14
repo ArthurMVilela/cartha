@@ -54,6 +54,14 @@ class PersonController {
         }
     }
 
+    fun updatePhysicalPerson(id: String, new: PhysicalPerson) {
+        try {
+            physicalPersonDAO.update(id, new)
+        } catch (ex:ExposedSQLException) {
+            throw ex
+        }
+    }
+
     private fun createPersonId():String {
         val md = MessageDigest.getInstance("SHA")
         val now = LocalDateTime.now(ZoneOffset.UTC)

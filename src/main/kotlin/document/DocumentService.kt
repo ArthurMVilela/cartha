@@ -24,7 +24,22 @@ class DocumentService {
                 return
             }
             call.respond(HttpStatusCode.NotFound, "Não encontrado")
+            return
         }
         call.respond(HttpStatusCode.BadRequest, "Id não pode ser nula")
+    }
+
+    suspend fun updatePhysicalPerson(call: ApplicationCall) {
+        val id = call.parameters["id"]
+        if (id === null) {
+            return
+        }
+        val new = call.receive<PhysicalPerson>()
+        controller.personController.updatePhysicalPerson(id, new)
+        call.respond(HttpStatusCode.OK, "Pessoa física atualizada")
+    }
+
+    suspend fun deletePhysicalPerson(call: ApplicationCall) {
+
     }
 }
