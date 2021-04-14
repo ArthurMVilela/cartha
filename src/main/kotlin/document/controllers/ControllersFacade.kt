@@ -1,5 +1,6 @@
 package document.controllers
 
+import document.PhysicalPerson
 import document.persistency.tables.*
 import document.persistency.tables.civilRegistry.*
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -10,6 +11,19 @@ import org.jetbrains.exposed.sql.transactions.transaction
  */
 class ControllersFacade {
     val personController = PersonController()
+
+    fun createPhysicalPerson(person: PhysicalPerson): PhysicalPerson {
+        return personController.createPhysicalPerson(person)
+    }
+    fun getPhysicalPerson(id:String): PhysicalPerson? {
+        return personController.getPhysicalPerson(id)
+    }
+    fun updatePhysicalPerson(id: String, new: PhysicalPerson) {
+        personController.updatePhysicalPerson(id, new)
+    }
+    fun deletePhysicalPerson(id: String) {
+        personController.deletePhysicalPerson(id)
+    }
 
     init {
         setupTables()

@@ -11,14 +11,14 @@ class DocumentService {
 
     suspend fun createPhysicalPerson(call: ApplicationCall) {
         val person = call.receive<PhysicalPerson>()
-        val registeredPerson = controller.personController.createPhysicalPerson(person)
+        val registeredPerson = controller.createPhysicalPerson(person)
         call.respond(HttpStatusCode.Created, registeredPerson)
     }
 
     suspend fun getPhysicalPerson(call: ApplicationCall) {
         val id = call.parameters["id"]
         if (id != null) {
-            val found = controller.personController.getPhysicalPerson(id)
+            val found = controller.getPhysicalPerson(id)
             if (found != null) {
                 call.respond(HttpStatusCode.OK, found)
                 return
@@ -36,7 +36,7 @@ class DocumentService {
             return
         }
         val new = call.receive<PhysicalPerson>()
-        controller.personController.updatePhysicalPerson(id, new)
+        controller.updatePhysicalPerson(id, new)
         call.respond(HttpStatusCode.OK, "Pessoa física atualizada")
     }
 
@@ -46,7 +46,7 @@ class DocumentService {
             call.respond(HttpStatusCode.BadRequest, "Id não pode ser nula")
             return
         }
-        controller.personController.deletePhysicalPerson(id)
+        controller.deletePhysicalPerson(id)
         call.respond(HttpStatusCode.OK, "Deletado com sucesso")
     }
 }
