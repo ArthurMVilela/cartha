@@ -23,7 +23,9 @@ fun main() {
             json()
         }
         routing {
-
+            post("/person/physical_person") {
+                service.createPhysicalPerson(call)
+            }
         }
     }.start(true)
 }

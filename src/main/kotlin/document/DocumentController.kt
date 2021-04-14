@@ -9,6 +9,8 @@ import org.jetbrains.exposed.sql.transactions.transaction
  * Classe controller para o pacode de documentos
  */
 class DocumentController {
+    val personController = PersonController()
+
     init {
         setupTables()
     }

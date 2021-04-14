@@ -82,6 +82,6 @@ class BirthCertificate(
     ):this(
         id, status, officialId, notaryId, registration, observationsAndRegistering, timeOfBirth, municipalityOfBirth,
         UFOfBirth, municipalityOfRegistry, UFOfRegistry, affiliations, grandParents, twin, twins,
-        dateOfRegistry, DNNumber, person.id!!, person.cpf, person.name, person.birthDay, person.sex
+        dateOfRegistry, DNNumber, person.id!!, person.cpf, person.name, person.birthday, person.sex
     )
 }

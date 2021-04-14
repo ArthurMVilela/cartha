@@ -18,7 +18,7 @@ class PhysicalPersonDAO:DAO<PhysicalPerson, String> {
                 physicalPersonTable.insert {
                     it[id] = obj.id!!
                     it[cpf] = obj.cpf
-                    it[birthday] = obj.birthDay
+                    it[birthday] = obj.birthday
                     it[sex] = obj.sex
                     it[color] = obj.color
                     it[civilStatus] = obj.civilStatus
@@ -91,7 +91,7 @@ class PhysicalPersonDAO:DAO<PhysicalPerson, String> {
             transaction {
                 physicalPersonTable.update({ physicalPersonTable.id eq oldId }) {
                     it[cpf] = new.cpf
-                    it[birthday] = new.birthDay
+                    it[birthday] = new.birthday
                     it[sex] = new.sex
                     it[color] = new.color
                     it[civilStatus] = new.civilStatus
