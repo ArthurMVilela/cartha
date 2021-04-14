@@ -1,6 +1,7 @@
 package document.controllers
 
 import document.LegalPerson
+import document.Notary
 import document.Official
 import document.PhysicalPerson
 import document.persistency.tables.*
@@ -13,6 +14,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
  */
 class ControllersFacade {
     val personController = PersonController()
+    val notaryController = NotaryController()
 
     fun createPhysicalPerson(person: PhysicalPerson): PhysicalPerson {
         return personController.createPhysicalPerson(person)
@@ -51,6 +53,19 @@ class ControllersFacade {
     }
     fun deleteOfficial(id: String) {
         personController.deleteOfficial(id)
+    }
+
+    fun createNotary(notary: Notary): Notary {
+        return notaryController.createNotary(notary)
+    }
+    fun getNotary(id:String): Notary? {
+        return notaryController.getNotary(id)
+    }
+    fun updateNotary(id: String, new: Notary) {
+        return notaryController.updateNotary(id, new)
+    }
+    fun deleteNotary(id: String) {
+        return notaryController.deleteNotary(id)
     }
 
     init {

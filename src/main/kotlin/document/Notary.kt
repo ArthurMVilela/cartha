@@ -12,7 +12,7 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 class Notary (
-    val id: String?,
+    var id: String?,
     val name: String,
     val cnpj: String,
     val cns: String

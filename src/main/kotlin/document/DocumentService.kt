@@ -131,4 +131,45 @@ class DocumentService {
         controller.deleteOfficial(id)
         call.respond(HttpStatusCode.OK, "Deletado com sucesso")
     }
+
+    suspend fun createNotary(call: ApplicationCall) {
+        val notary = call.receive<Notary>()
+        val registeredNotary = controller.createNotary(notary)
+        call.respond(HttpStatusCode.Created, registeredNotary)
+    }
+
+    suspend fun getNotary(call: ApplicationCall) {
+        val id = call.parameters["id"]
+        if (id != null) {
+            val found = controller.getNotary(id)
+            if (found != null) {
+                call.respond(HttpStatusCode.OK, found)
+                return
+            }
+            call.respond(HttpStatusCode.NotFound, "Não encontrado")
+            return
+        }
+        call.respond(HttpStatusCode.BadRequest, "Id não pode ser nula")
+    }
+
+    suspend fun updateNotary(call: ApplicationCall) {
+        val id = call.parameters["id"]
+        if (id === null) {
+            call.respond(HttpStatusCode.BadRequest, "Id não pode ser nula")
+            return
+        }
+        val new = call.receive<Notary>()
+        controller.updateNotary(id, new)
+        call.respond(HttpStatusCode.OK, "Pessoa física atualizada")
+    }
+
+    suspend fun deleteNotary(call: ApplicationCall) {
+        val id = call.parameters["id"]
+        if (id === null) {
+            call.respond(HttpStatusCode.BadRequest, "Id não pode ser nula")
+            return
+        }
+        controller.deleteNotary(id)
+        call.respond(HttpStatusCode.OK, "Deletado com sucesso")
+    }
 }
