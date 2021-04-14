@@ -49,4 +49,45 @@ class DocumentService {
         controller.deletePhysicalPerson(id)
         call.respond(HttpStatusCode.OK, "Deletado com sucesso")
     }
+
+    suspend fun createLegalPerson(call: ApplicationCall) {
+        val person = call.receive<LegalPerson>()
+        val registeredPerson = controller.createLegalPerson(person)
+        call.respond(HttpStatusCode.Created, registeredPerson)
+    }
+
+    suspend fun getLegalPerson(call: ApplicationCall) {
+        val id = call.parameters["id"]
+        if (id != null) {
+            val found = controller.getLegalPerson(id)
+            if (found != null) {
+                call.respond(HttpStatusCode.OK, found)
+                return
+            }
+            call.respond(HttpStatusCode.NotFound, "Não encontrado")
+            return
+        }
+        call.respond(HttpStatusCode.BadRequest, "Id não pode ser nula")
+    }
+
+    suspend fun updateLegalPerson(call: ApplicationCall) {
+        val id = call.parameters["id"]
+        if (id === null) {
+            call.respond(HttpStatusCode.BadRequest, "Id não pode ser nula")
+            return
+        }
+        val new = call.receive<LegalPerson>()
+        controller.updateLegalPerson(id, new)
+        call.respond(HttpStatusCode.OK, "Pessoa física atualizada")
+    }
+
+    suspend fun deleteLegalPerson(call: ApplicationCall) {
+        val id = call.parameters["id"]
+        if (id === null) {
+            call.respond(HttpStatusCode.BadRequest, "Id não pode ser nula")
+            return
+        }
+        controller.deleteLegalPerson(id)
+        call.respond(HttpStatusCode.OK, "Deletado com sucesso")
+    }
 }

@@ -1,8 +1,10 @@
 package document.controllers
 
+import document.LegalPerson
 import document.Person
 import document.PhysicalPerson
 import document.exceptions.RecordNotFoundException
+import document.persistency.dao.LegalPersonDAO
 import document.persistency.dao.PhysicalPersonDAO
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import java.security.MessageDigest
@@ -15,6 +17,7 @@ import java.util.*
  */
 class PersonController {
     val physicalPersonDAO = PhysicalPersonDAO()
+    val legalPersonDAO = LegalPersonDAO()
 
     /**
      * Cria nos registros uma pessoa física (PhysicalPerson)
@@ -82,6 +85,77 @@ class PersonController {
     fun deletePhysicalPerson(id: String) {
         try {
             physicalPersonDAO.delete(id)
+        } catch (ex:ExposedSQLException) {
+            throw ex
+        }
+    }
+
+    /**
+     * Cria nos registros uma pessoa juridica (PhysicalPerson)
+     *
+     * @param person        Pessoa juridica a ser registrada
+     *
+     * @return Pessoa física cadastrada
+     */
+    fun createLegalPerson(person: LegalPerson): LegalPerson {
+        person.id = createPersonId()
+
+        try {
+            legalPersonDAO.insert(person)
+        } catch (ex:ExposedSQLException) {
+            throw ex
+        }
+
+        val registered: Person?
+
+        try {
+            registered = legalPersonDAO.select(person.id!!)
+        } catch (ex:ExposedSQLException) {
+            throw ex
+        }
+
+        if (registered != null) {
+            return person
+        }
+
+        throw RecordNotFoundException("Não é possivel pegar registro recém criado.")
+    }
+
+    /**
+     * Pega nos registros uma pessoa física (PhysicalPerson)
+     * @param id        id da pessoa física
+     * @return Pessoa física encontrada
+     */
+    fun getLegalPerson(id:String): LegalPerson? {
+        val found:PhysicalPerson?
+        try {
+            val found = legalPersonDAO.select(id)
+            return found
+        } catch (ex:ExposedSQLException) {
+            throw ex
+        }
+    }
+
+    /**
+     * Atualiza nos registros uma pessoa física (PhysicalPerson)
+     * @param id        id da pessoa física
+     * @param new       dados novos
+     */
+    fun updateLegalPerson(id: String, new: LegalPerson) {
+        try {
+            legalPersonDAO.update(id, new)
+        } catch (ex:ExposedSQLException) {
+            throw ex
+        }
+    }
+
+    /**
+     * Deleta nos registros uma pessoa física (PhysicalPerson)
+     * @param id        id da pessoa física
+     */
+    fun deleteLegalPerson(id: String) {
+        try {
+            legalPersonDAO.delete(id)
         } catch (ex:ExposedSQLException) {
             throw ex
         }

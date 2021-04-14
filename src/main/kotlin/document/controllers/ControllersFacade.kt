@@ -1,5 +1,6 @@
 package document.controllers
 
+import document.LegalPerson
 import document.PhysicalPerson
 import document.persistency.tables.*
 import document.persistency.tables.civilRegistry.*
@@ -23,6 +24,19 @@ class ControllersFacade {
     }
     fun deletePhysicalPerson(id: String) {
         personController.deletePhysicalPerson(id)
+    }
+
+    fun createLegalPerson(person: LegalPerson): LegalPerson {
+        return personController.createLegalPerson(person)
+    }
+    fun getLegalPerson(id:String): LegalPerson? {
+        return personController.getLegalPerson(id)
+    }
+    fun updateLegalPerson(id: String, new: LegalPerson) {
+        personController.updateLegalPerson(id, new)
+    }
+    fun deleteLegalPerson(id: String) {
+        personController.deleteLegalPerson(id)
     }
 
     init {

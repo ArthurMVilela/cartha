@@ -35,6 +35,19 @@ fun main() {
             delete("/person/physical_person/{id}"){
                 service.deletePhysicalPerson(call)
             }
+
+            get("/person/legal_person/{id}") {
+                service.getLegalPerson(call)
+            }
+            patch("/person/legal_person/{id}") {
+                service.updateLegalPerson(call)
+            }
+            post("/person/legal_person") {
+                service.createLegalPerson(call)
+            }
+            delete("/person/legal_person/{id}"){
+                service.deleteLegalPerson(call)
+            }
         }
     }.start(true)
 }
