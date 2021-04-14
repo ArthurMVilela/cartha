@@ -32,6 +32,7 @@ class DocumentService {
     suspend fun updatePhysicalPerson(call: ApplicationCall) {
         val id = call.parameters["id"]
         if (id === null) {
+            call.respond(HttpStatusCode.BadRequest, "Id não pode ser nula")
             return
         }
         val new = call.receive<PhysicalPerson>()
@@ -40,6 +41,12 @@ class DocumentService {
     }
 
     suspend fun deletePhysicalPerson(call: ApplicationCall) {
-
+        val id = call.parameters["id"]
+        if (id === null) {
+            call.respond(HttpStatusCode.BadRequest, "Id não pode ser nula")
+            return
+        }
+        controller.personController.deletePhysicalPerson(id)
+        call.respond(HttpStatusCode.OK, "Deletado com sucesso")
     }
 }

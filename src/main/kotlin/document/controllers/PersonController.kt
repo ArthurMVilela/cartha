@@ -62,6 +62,14 @@ class PersonController {
         }
     }
 
+    fun deletePhysicalPerson(id: String) {
+        try {
+            physicalPersonDAO.delete(id)
+        } catch (ex:ExposedSQLException) {
+            throw ex
+        }
+    }
+
     private fun createPersonId():String {
         val md = MessageDigest.getInstance("SHA")
         val now = LocalDateTime.now(ZoneOffset.UTC)

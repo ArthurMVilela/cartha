@@ -32,6 +32,9 @@ fun main() {
             post("/person/physical_person") {
                 service.createPhysicalPerson(call)
             }
+            delete("/person/physical_person/{id}"){
+                service.deletePhysicalPerson(call)
+            }
         }
     }.start(true)
 }
