@@ -1,5 +1,7 @@
-package document
+package document.controllers
 
+import document.Person
+import document.PhysicalPerson
 import document.exceptions.RecordNotFoundException
 import document.persistency.dao.PhysicalPersonDAO
 import org.jetbrains.exposed.exceptions.ExposedSQLException
@@ -18,7 +20,7 @@ class PersonController {
      *
      * @return Pessoa física cadastrada
      */
-    fun createPhysicalPerson(person: PhysicalPerson):PhysicalPerson {
+    fun createPhysicalPerson(person: PhysicalPerson): PhysicalPerson {
         person.id = createPersonId()
 
         try {
@@ -40,6 +42,16 @@ class PersonController {
         }
 
         throw RecordNotFoundException("Não é possivel pegar registro recém criado.")
+    }
+
+    fun getPhysicalPerson(id:String): PhysicalPerson? {
+        val found:PhysicalPerson?
+        try {
+            val found = physicalPersonDAO.select(id)
+            return found
+        } catch (ex:ExposedSQLException) {
+            throw ex
+        }
     }
 
     private fun createPersonId():String {

@@ -1,4 +1,4 @@
-package document
+package document.controllers
 
 import document.persistency.tables.*
 import document.persistency.tables.civilRegistry.*
@@ -6,9 +6,9 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 
 /**
- * Classe controller para o pacode de documentos
+ * Classe façade para todos os controllers do pacode de documentos
  */
-class DocumentController {
+class ControllersFacade {
     val personController = PersonController()
 
     init {

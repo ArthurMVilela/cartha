@@ -23,6 +23,9 @@ fun main() {
             json()
         }
         routing {
+            get("/person/physical_person/{id}") {
+                service.getPhysicalPerson(call)
+            }
             post("/person/physical_person") {
                 service.createPhysicalPerson(call)
             }
