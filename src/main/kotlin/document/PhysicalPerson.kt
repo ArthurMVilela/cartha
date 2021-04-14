@@ -1,5 +1,6 @@
 package document
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import util.serializer.LocalDateSerializer
 import java.time.LocalDate
@@ -22,6 +23,7 @@ class PhysicalPerson(
     val birthday: LocalDate,
     val sex: Sex,
     val color: Color,
+    @SerialName("civil_status")
     val civilStatus: CivilStatus,
     val nationality: String
 ):Person() {
