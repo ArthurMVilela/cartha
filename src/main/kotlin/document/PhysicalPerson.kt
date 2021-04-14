@@ -15,7 +15,7 @@ import java.time.LocalDate
  */
 @Serializable
 class PhysicalPerson(
-    override val id: String?,
+    override var id: String?,
     override val name: String,
     val cpf: String,
     @Serializable(with = LocalDateSerializer::class)

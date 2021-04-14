@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 class LegalPerson(
-    override val id: String?,
+    override var id: String?,
     override val name: String,
     val cnpj: String
 ):Person() {
