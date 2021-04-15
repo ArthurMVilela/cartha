@@ -23,57 +23,6 @@ fun main() {
             json()
         }
         routing {
-            get("/person/physical_person/{id}") {
-                service.getPhysicalPerson(call)
-            }
-            patch("/person/physical_person/{id}") {
-                service.updatePhysicalPerson(call)
-            }
-            post("/person/physical_person") {
-                service.createPhysicalPerson(call)
-            }
-            delete("/person/physical_person/{id}"){
-                service.deletePhysicalPerson(call)
-            }
-
-            get("/person/legal_person/{id}") {
-                service.getLegalPerson(call)
-            }
-            patch("/person/legal_person/{id}") {
-                service.updateLegalPerson(call)
-            }
-            post("/person/legal_person") {
-                service.createLegalPerson(call)
-            }
-            delete("/person/legal_person/{id}"){
-                service.deleteLegalPerson(call)
-            }
-
-            get("/person/official/{id}") {
-                service.getOfficial(call)
-            }
-            patch("/person/official/{id}") {
-                service.updateOfficial(call)
-            }
-            post("/person/official") {
-                service.createOfficial(call)
-            }
-            delete("/person/official/{id}"){
-                service.deleteOfficial(call)
-            }
-
-            get("/notary/{id}") {
-                service.getNotary(call)
-            }
-            patch("/notary/{id}") {
-                service.updateNotary(call)
-            }
-            post("/notary") {
-                service.createNotary(call)
-            }
-            delete("/notary/{id}"){
-                service.deleteNotary(call)
-            }
         }
     }.start(true)
 }
