@@ -18,14 +18,14 @@ class ControllersFacade {
     }
     private fun setupTables() {
         transaction {
-            SchemaUtils.create(
-                personTable, physicalPersonTable, legalPersonTable, officialTable,
-                notaryTable,
-                documentTable, civilRegistryDocumentTable,
-                affiliationTable, spouseTable, grandparentTable,
-                birthCertificateTable, twinTable,
-                deathCertificateTable, marriageCertificateTable
-            )
+//            SchemaUtils.create(
+//                personTable, physicalPersonTable, legalPersonTable, officialTable,
+//                notaryTable,
+//                documentTable, civilRegistryDocumentTable,
+//                affiliationTable, spouseTable, grandparentTable,
+//                birthCertificateTable, twinTable,
+//                deathCertificateTable, marriageCertificateTable
+//            )
         }
     }
 }
