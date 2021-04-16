@@ -3,7 +3,11 @@ package document.civilRegistry
 import document.PhysicalPerson
 import kotlinx.serialization.Serializable
 import util.serializer.LocalDateSerializer
+import java.security.MessageDigest
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.util.*
 
 /**
  * Representa um cônjuge
@@ -34,4 +38,10 @@ class Spouse (
         affiliations: List<Affiliation>,
         person: PhysicalPerson
     ):this(id, singleName, marriedName, affiliations, person.id!!, person.birthday, person.nationality)
+
+    fun createId(): String {
+        val md = MessageDigest.getInstance("SHA")
+        val now = LocalDateTime.now(ZoneOffset.UTC)
+        return Base64.getUrlEncoder().encodeToString(md.digest(now.toString().toByteArray()))
+    }
 }
