@@ -29,7 +29,7 @@ import java.time.Period
  */
 @Serializable
 class DeathCertificate(
-    override val id: String?,
+    override var id: String?,
     override val status: DocumentStatus,
     override val officialId: String,
     override val notaryId: String,
