@@ -36,7 +36,7 @@ class BirthCertificate(
     override val officialId: String,
     override val notaryId: String,
     override val registration: String,
-    override val observationsAndRegistering:List<String>,
+    override val registering:List<Registering>,
 
     @Serializable(with= LocalTimeSerializer::class)
     val timeOfBirth: LocalTime,
@@ -65,7 +65,7 @@ class BirthCertificate(
         officialId: String,
         notaryId: String,
         registration: String,
-        observationsAndRegistering:List<String>,
+        observationsAndRegistering:List<Registering>,
         timeOfBirth: LocalTime,
         municipalityOfBirth: String,
         UFOfBirth: UF,

@@ -35,7 +35,7 @@ class DeathCertificate(
     override val notaryId: String,
 
     override val registration:String,
-    override val observationsAndRegistering:List<String>,
+    override val registering:List<Registering>,
 
     val personId: String,
     val sex: Sex,
@@ -61,7 +61,7 @@ class DeathCertificate(
         officialId: String,
         notaryId: String,
         registration: String,
-        observationsAndRegistering:List<String>,
+        observationsAndRegistering:List<Registering>,
 
         person: PhysicalPerson,
 

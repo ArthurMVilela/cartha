@@ -20,7 +20,7 @@ class MarriageCertificate(
     override val officialId: String,
     override val notaryId: String,
     override val registration: String,
-    override val observationsAndRegistering:List<String>,
+    override val registering:List<Registering>,
 
     val firstSpouse: Spouse,
     val secondSpouse: Spouse,
