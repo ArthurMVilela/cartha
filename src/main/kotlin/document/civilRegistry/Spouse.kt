@@ -22,7 +22,7 @@ import java.util.*
  */
 @Serializable
 class Spouse (
-    val id: String?,
+    var id: String?,
     val singleName: String,
     val marriedName: String,
     val affiliations: List<Affiliation>,

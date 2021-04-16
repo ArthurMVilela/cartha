@@ -4,15 +4,14 @@ import document.civilRegistry.Affiliation
 import document.civilRegistry.Spouse
 import document.persistency.dao.CompanionDAO
 import document.persistency.dao.DAO
+import document.persistency.dao.DocumentDAO
 import document.persistency.dao.PhysicalPersonDAO
 import document.persistency.tables.civilRegistry.SpouseAffiliationTable
 import document.persistency.tables.civilRegistry.SpouseTable
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IdTable
-import org.jetbrains.exposed.sql.Op
-import org.jetbrains.exposed.sql.SizedIterable
-import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.lang.Exception
 
@@ -66,15 +65,60 @@ class SpouseDAO(id:EntityID<String>):Entity<String>(id), DAO<Spouse>{
         }
 
         override fun update(obj: Spouse) {
-            TODO("Not yet implemented")
+            transaction {
+                try {
+                    val found = findById(obj.id!!)!!
+                    found.singleName = obj.singleName
+                    found.marriedName = obj.marriedName
+                    found.personId = PhysicalPersonDAO.select(obj.personId)!!.id
+                    found.birthday = obj.birthday
+                    found.nationality = obj.nationality
+
+                    val foundAffiliations = found.affiliations.toList().map { it }
+                    SpouseAffiliationTable.deleteWhere { SpouseAffiliationTable.spouseId eq obj.id!! }
+                    foundAffiliations.forEach {
+                        it.delete()
+                    }
+                    obj.affiliations.forEach {
+                        AffiliationDAO.insert(it)
+                    }
+
+
+                } catch (e: Exception) {
+                    rollback()
+                    throw e
+                }
+            }
         }
 
         override fun remove(id: String) {
-            TODO("Not yet implemented")
+            transaction {
+                try {
+                    val found = findById(id)
+                    SpouseAffiliationTable.deleteWhere { SpouseAffiliationTable.spouseId eq found!!.id }
+                    found?.delete()
+                    found?.affiliations!!.forEach {
+                        it.delete()
+                    }
+
+                } catch (e: Exception) {
+                    rollback()
+                    throw e
+                }
+            }
         }
 
         override fun removeWhere(condition: Op<Boolean>) {
-            TODO("Not yet implemented")
+            transaction {
+                try {
+                    find(condition).forEach {
+                        remove(it.id.value)
+                    }
+                } catch (e: Exception) {
+                    rollback()
+                    throw e
+                }
+            }
         }
     }
 

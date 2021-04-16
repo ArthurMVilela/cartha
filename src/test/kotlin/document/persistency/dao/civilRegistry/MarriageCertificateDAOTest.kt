@@ -77,26 +77,26 @@ internal class MarriageCertificateDAOTest {
             TransactionManager.defaultDatabase = db
 
             transaction {
-                SchemaUtils.drop(
-                    PersonTable, PhysicalPersonTable, OfficialTable, NotaryTable, AffiliationTable, SpouseTable,
-                    DocumentTable, RegisteringTable, CivilRegistryDocumentTable, MarriageCertificateTable
-                )
-                SchemaUtils.create(
-                    PersonTable, PhysicalPersonTable, OfficialTable, NotaryTable, AffiliationTable, SpouseTable,
-                    DocumentTable, RegisteringTable, CivilRegistryDocumentTable, MarriageCertificateTable
-                )
+//                SchemaUtils.drop(
+//                    PersonTable, PhysicalPersonTable, OfficialTable, NotaryTable, AffiliationTable, SpouseTable,
+//                    DocumentTable, RegisteringTable, CivilRegistryDocumentTable, MarriageCertificateTable
+//                )
+//                SchemaUtils.create(
+//                    PersonTable, PhysicalPersonTable, OfficialTable, NotaryTable, AffiliationTable, SpouseTable,
+//                    DocumentTable, RegisteringTable, CivilRegistryDocumentTable, MarriageCertificateTable
+//                )
             }
         }
 
         @AfterAll
         @JvmStatic
         internal fun afterAll() {
-            transaction {
-                SchemaUtils.drop(
-                    PersonTable, PhysicalPersonTable, OfficialTable, NotaryTable, AffiliationTable, SpouseTable,
-                    DocumentTable, RegisteringTable, CivilRegistryDocumentTable, MarriageCertificateTable
-                )
-            }
+//            transaction {
+//                SchemaUtils.drop(
+//                    PersonTable, PhysicalPersonTable, OfficialTable, NotaryTable, AffiliationTable, SpouseTable,
+//                    DocumentTable, RegisteringTable, CivilRegistryDocumentTable, MarriageCertificateTable
+//                )
+//            }
         }
     }
 
