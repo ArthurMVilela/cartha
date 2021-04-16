@@ -5,7 +5,6 @@ import document.Notary
 import document.Official
 import document.PhysicalPerson
 import document.persistency.tables.*
-import document.persistency.tables.civilRegistry.*
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 
