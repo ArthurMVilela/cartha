@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
  * @property id             Identificador único
  * @property personId       ID da pessoa relacionada a esta filiação
  * @property name           Nome da pessoa a que se refere essa filiação
- * @property UF             Unidade federativa que a pessoa é natural
+ * @property uf             Unidade federativa que a pessoa é natural
  * @property municipality   Município que a pessoa é natural
  */
 @Serializable
@@ -18,7 +18,7 @@ class Affiliation(
     val id:String?,
     val personId: String,
     val name:String,
-    val UF:UF?,
+    val uf:UF?,
     val municipality:String?
 ) {
     constructor(
