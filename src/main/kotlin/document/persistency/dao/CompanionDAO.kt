@@ -10,8 +10,8 @@ abstract class CompanionDAO<Type, DAOType: Entity<ID>, ID:Comparable<ID>, T: IdT
     : EntityClass<ID, DAOType>(table) {
     abstract fun insert(obj: Type): DAOType
     abstract fun select(id: ID): DAOType?
-    abstract fun selectMany(id: ID): SizedIterable<DAOType>
-    abstract fun selectAll(id: ID): SizedIterable<DAOType>
+    abstract fun selectMany(condition: Op<Boolean>): SizedIterable<DAOType>
+    abstract fun selectAll(): SizedIterable<DAOType>
     abstract fun update(obj: Type)
     abstract fun remove(id: ID)
     abstract fun removeWhere(condition: Op<Boolean>)
