@@ -1,5 +1,5 @@
-import document.BadRequestException
-import document.DocumentService
+import document.service.BadRequestException
+import document.service.DocumentService
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.http.*

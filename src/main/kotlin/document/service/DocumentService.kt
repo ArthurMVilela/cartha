@@ -1,5 +1,8 @@
-package document
+package document.service
 
+import document.Notary
+import document.Official
+import document.PhysicalPerson
 import document.controllers.ControllersFacade
 import io.ktor.application.*
 import io.ktor.http.*
@@ -10,7 +13,7 @@ class DocumentService {
     val controller = ControllersFacade()
 
     suspend fun createPhysicalPerson(call: ApplicationCall) {
-        val person:PhysicalPerson
+        val person: PhysicalPerson
         try {
              person = call.receive<PhysicalPerson>()
         } catch (e:ContentTransformationException) {
@@ -39,7 +42,7 @@ class DocumentService {
         if (id.isNullOrBlank()) {
             throw BadRequestException("id não pode ser nula ou vázia")
         }
-        val person:PhysicalPerson
+        val person: PhysicalPerson
         try {
             person = call.receive<PhysicalPerson>()
         } catch (e:ContentTransformationException) {
@@ -59,7 +62,7 @@ class DocumentService {
     }
 
     suspend fun createOfficial(call: ApplicationCall) {
-        val person:Official
+        val person: Official
         try {
             person = call.receive<Official>()
         } catch (e:ContentTransformationException) {
@@ -88,7 +91,7 @@ class DocumentService {
         if (id.isNullOrBlank()) {
             throw BadRequestException("id não pode ser nula ou vázia")
         }
-        val person:Official
+        val person: Official
         try {
             person = call.receive<Official>()
         } catch (e:ContentTransformationException) {
@@ -108,7 +111,7 @@ class DocumentService {
     }
 
     suspend fun createNotary(call: ApplicationCall) {
-        val notary:Notary
+        val notary: Notary
         try {
             notary = call.receive<Notary>()
         } catch (e:ContentTransformationException) {
@@ -137,7 +140,7 @@ class DocumentService {
         if (id.isNullOrBlank()) {
             throw BadRequestException("id não pode ser nula ou vázia")
         }
-        val notary:Notary
+        val notary: Notary
         try {
             notary = call.receive<Notary>()
         } catch (e:ContentTransformationException) {
