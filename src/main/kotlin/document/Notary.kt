@@ -5,6 +5,7 @@ import java.security.MessageDigest
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.*
+import kotlin.random.Random
 
 /**
  * Representa um cartório
@@ -24,6 +25,8 @@ class Notary (
     fun createId():String {
         val md = MessageDigest.getInstance("SHA")
         val now = LocalDateTime.now(ZoneOffset.UTC)
-        return Base64.getUrlEncoder().encodeToString(md.digest(now.toString().toByteArray()))
+        var content = now.toString().toByteArray()
+        content = content.plus(Random(now.toEpochSecond(ZoneOffset.UTC)).nextBytes(10))
+        return Base64.getUrlEncoder().encodeToString(md.digest(content))
     }
 }
