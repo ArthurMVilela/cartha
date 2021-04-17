@@ -1,5 +1,6 @@
 package document.controllers
 
+import document.Official
 import document.PhysicalPerson
 import document.persistence.tables.LegalPersonTable
 import document.persistence.tables.OfficialTable
@@ -13,6 +14,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
  */
 class ControllersFacade {
     private val physicalPersonController = PhysicalPersonController()
+    private val officialController = OfficialController()
 
     init {
         setupTables()
@@ -22,6 +24,11 @@ class ControllersFacade {
     fun getPhysicalPerson(id: String): PhysicalPerson? = physicalPersonController.get(id)
     fun updatePhysicalPerson(id: String, new: PhysicalPerson):PhysicalPerson = physicalPersonController.update(id, new)
     fun deletePhysicalPerson(id: String) = physicalPersonController.delete(id)
+
+    fun createOfficial(person: Official): Official = officialController.create(person)
+    fun getOfficial(id: String): Official? = officialController.get(id)
+    fun updateOfficial(id: String, new: Official):Official = officialController.update(id, new)
+    fun deleteOfficial(id: String) = officialController.delete(id)
 
     private fun setupTables() {
         setupPersonTables()

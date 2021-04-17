@@ -60,4 +60,53 @@ class DocumentService {
         controller.deletePhysicalPerson(id)
         call.respond(HttpStatusCode.OK, "Deletado com sucesso")
     }
+
+    suspend fun createOfficial(call: ApplicationCall) {
+        val person:Official
+        try {
+            person = call.receive<Official>()
+        } catch (e:ContentTransformationException) {
+            throw BadRequestException("conteudo da requisição é inválido")
+        }
+
+        val inserted = controller.createOfficial(person)
+        call.respond(HttpStatusCode.Created, inserted)
+    }
+
+    suspend fun getOfficial(call: ApplicationCall) {
+        val id = call.parameters["id"]
+        if (id.isNullOrBlank()) {
+            throw BadRequestException("id não pode ser nula ou vázia")
+        }
+        val found = controller.getOfficial(id)
+        if (found == null) {
+            call.respond(HttpStatusCode.NotFound, "não encontrado")
+            return
+        }
+        call.respond(HttpStatusCode.OK, found)
+    }
+
+    suspend fun updateOfficial(call: ApplicationCall){
+        val id = call.parameters["id"]
+        if (id.isNullOrBlank()) {
+            throw BadRequestException("id não pode ser nula ou vázia")
+        }
+        val person:Official
+        try {
+            person = call.receive<Official>()
+        } catch (e:ContentTransformationException) {
+            throw BadRequestException("conteudo da requisição é inválido")
+        }
+        val updated = controller.updateOfficial(id, person)
+        call.respond(HttpStatusCode.OK, updated)
+    }
+
+    suspend fun deleteOfficial(call: ApplicationCall) {
+        val id = call.parameters["id"]
+        if (id.isNullOrBlank()) {
+            throw BadRequestException("id não pode ser nula ou vázia")
+        }
+        controller.deleteOfficial(id)
+        call.respond(HttpStatusCode.OK, "Deletado com sucesso")
+    }
 }
