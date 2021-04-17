@@ -56,6 +56,19 @@ fun main() {
             delete("/person/official/{id}") {
                 service.deleteOfficial(call)
             }
+
+            get("/notary/{id}") {
+                service.getNotary(call)
+            }
+            post("/notary") {
+                service.createNotary(call)
+            }
+            patch("/notary/{id}") {
+                service.updateNotary(call)
+            }
+            delete("/notary/{id}") {
+                service.deleteNotary(call)
+            }
         }
     }.start(true)
 }

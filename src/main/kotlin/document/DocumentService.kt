@@ -1,13 +1,10 @@
 package document
 
 import document.controllers.ControllersFacade
-import document.controllers.PhysicalPersonController
-import document.persistence.dao.PhysicalPersonDAO
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
-import io.ktor.routing.*
 
 class DocumentService {
     val controller = ControllersFacade()
@@ -107,6 +104,55 @@ class DocumentService {
             throw BadRequestException("id não pode ser nula ou vázia")
         }
         controller.deleteOfficial(id)
+        call.respond(HttpStatusCode.OK, "Deletado com sucesso")
+    }
+
+    suspend fun createNotary(call: ApplicationCall) {
+        val notary:Notary
+        try {
+            notary = call.receive<Notary>()
+        } catch (e:ContentTransformationException) {
+            throw BadRequestException("conteudo da requisição é inválido")
+        }
+
+        val inserted = controller.createNotary(notary)
+        call.respond(HttpStatusCode.Created, inserted)
+    }
+
+    suspend fun getNotary(call: ApplicationCall) {
+        val id = call.parameters["id"]
+        if (id.isNullOrBlank()) {
+            throw BadRequestException("id não pode ser nula ou vázia")
+        }
+        val found = controller.getNotary(id)
+        if (found == null) {
+            call.respond(HttpStatusCode.NotFound, "não encontrado")
+            return
+        }
+        call.respond(HttpStatusCode.OK, found)
+    }
+
+    suspend fun updateNotary(call: ApplicationCall){
+        val id = call.parameters["id"]
+        if (id.isNullOrBlank()) {
+            throw BadRequestException("id não pode ser nula ou vázia")
+        }
+        val notary:Notary
+        try {
+            notary = call.receive<Notary>()
+        } catch (e:ContentTransformationException) {
+            throw BadRequestException("conteudo da requisição é inválido")
+        }
+        val updated = controller.updateNotary(id, notary)
+        call.respond(HttpStatusCode.OK, updated)
+    }
+
+    suspend fun deleteNotary(call: ApplicationCall) {
+        val id = call.parameters["id"]
+        if (id.isNullOrBlank()) {
+            throw BadRequestException("id não pode ser nula ou vázia")
+        }
+        controller.deleteNotary(id)
         call.respond(HttpStatusCode.OK, "Deletado com sucesso")
     }
 }
