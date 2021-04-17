@@ -3,7 +3,12 @@ package document.controllers
 import document.Notary
 import document.Official
 import document.PhysicalPerson
+import document.civilRegistry.CivilRegistryDocument
+import document.civilRegistry.DeathCertificate
 import document.persistence.tables.*
+import document.persistence.tables.civilRegistry.AffiliationTable
+import document.persistence.tables.civilRegistry.CivilRegistryDocumentTable
+import document.persistence.tables.civilRegistry.DeathCertificateTable
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -14,6 +19,7 @@ class ControllersFacade {
     private val physicalPersonController = PhysicalPersonController()
     private val officialController = OfficialController()
     private val notaryController = NotaryController()
+    private val deathCertificateController = DeathCertificateController()
 
     init {
         setupTables()
@@ -34,16 +40,19 @@ class ControllersFacade {
     fun updateNotary(id: String, new: Notary):Notary = notaryController.update(id, new)
     fun deleteNotary(id: String) = notaryController.delete(id)
 
+    fun createDeathCertificate(new: DeathCertificate): DeathCertificate = deathCertificateController.create(new)
+    fun getDeathCertificate(id: String): DeathCertificate? = deathCertificateController.get(id)
+    fun updateDeathCertificate(id: String, new: DeathCertificate):DeathCertificate = deathCertificateController.update(id, new)
+    fun deleteDeathCertificate(id: String) = deathCertificateController.delete(id)
+
     private fun setupTables() {
         setupPersonTables()
         setupNotaryTable()
+        setupDocumentTables()
     }
 
     private fun setupPersonTables(){
         transaction {
-            SchemaUtils.drop(
-                PhysicalPersonTable, LegalPersonTable, OfficialTable, PersonTable
-            )
             SchemaUtils.create(
                 PersonTable, PhysicalPersonTable, LegalPersonTable, OfficialTable
             )
@@ -52,11 +61,17 @@ class ControllersFacade {
 
     private fun setupNotaryTable(){
         transaction {
-            SchemaUtils.drop(
-                NotaryTable
-            )
             SchemaUtils.create(
                 NotaryTable
+            )
+        }
+    }
+
+    private fun setupDocumentTables() {
+        transaction {
+            SchemaUtils.create(
+                AffiliationTable,
+                DocumentTable, CivilRegistryDocumentTable, DeathCertificateTable
             )
         }
     }

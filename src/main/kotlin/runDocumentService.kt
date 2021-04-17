@@ -69,6 +69,19 @@ fun main() {
             delete("/notary/{id}") {
                 service.deleteNotary(call)
             }
+
+            get("/civil_registry/death_certificate/{id}") {
+                service.getDeathCertificate(call)
+            }
+            post("/civil_registry/death_certificate") {
+                service.createDeathCertificate(call)
+            }
+            patch("/civil_registry/death_certificate/{id}") {
+                service.updateDeathCertificate(call)
+            }
+            delete("/civil_registry/death_certificate/{id}") {
+                service.deleteDeathCertificate(call)
+            }
         }
     }.start(true)
 }

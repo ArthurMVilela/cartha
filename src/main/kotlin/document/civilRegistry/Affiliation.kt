@@ -2,6 +2,7 @@ package document.civilRegistry
 
 import document.PhysicalPerson
 import document.UF
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.security.MessageDigest
 import java.time.LocalDateTime
@@ -20,6 +21,7 @@ import java.util.*
 @Serializable
 class Affiliation(
     var id:String?,
+    @SerialName("person_id")
     val personId: String,
     val name:String,
     val uf:UF?,

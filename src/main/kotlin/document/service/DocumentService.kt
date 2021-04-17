@@ -3,6 +3,7 @@ package document.service
 import document.Notary
 import document.Official
 import document.PhysicalPerson
+import document.civilRegistry.DeathCertificate
 import document.controllers.ControllersFacade
 import io.ktor.application.*
 import io.ktor.http.*
@@ -156,6 +157,55 @@ class DocumentService {
             throw BadRequestException("id não pode ser nula ou vázia")
         }
         controller.deleteNotary(id)
+        call.respond(HttpStatusCode.OK, "Deletado com sucesso")
+    }
+
+    suspend fun createDeathCertificate(call: ApplicationCall) {
+        val deathCertificate: DeathCertificate
+        try {
+            deathCertificate = call.receive<DeathCertificate>()
+        } catch (e:ContentTransformationException) {
+            throw BadRequestException("conteudo da requisição é inválido")
+        }
+
+        val inserted = controller.createDeathCertificate(deathCertificate)
+        call.respond(HttpStatusCode.Created, inserted)
+    }
+
+    suspend fun getDeathCertificate(call: ApplicationCall) {
+        val id = call.parameters["id"]
+        if (id.isNullOrBlank()) {
+            throw BadRequestException("id não pode ser nula ou vázia")
+        }
+        val found = controller.getDeathCertificate(id)
+        if (found == null) {
+            call.respond(HttpStatusCode.NotFound, "não encontrado")
+            return
+        }
+        call.respond(HttpStatusCode.OK, found)
+    }
+
+    suspend fun updateDeathCertificate(call: ApplicationCall){
+        val id = call.parameters["id"]
+        if (id.isNullOrBlank()) {
+            throw BadRequestException("id não pode ser nula ou vázia")
+        }
+        val deathCertificate: DeathCertificate
+        try {
+            deathCertificate = call.receive<DeathCertificate>()
+        } catch (e:ContentTransformationException) {
+            throw BadRequestException("conteudo da requisição é inválido")
+        }
+        val updated = controller.updateDeathCertificate(id, deathCertificate)
+        call.respond(HttpStatusCode.OK, updated)
+    }
+
+    suspend fun deleteDeathCertificate(call: ApplicationCall) {
+        val id = call.parameters["id"]
+        if (id.isNullOrBlank()) {
+            throw BadRequestException("id não pode ser nula ou vázia")
+        }
+        controller.deleteDeathCertificate(id)
         call.respond(HttpStatusCode.OK, "Deletado com sucesso")
     }
 }
