@@ -3,6 +3,10 @@ package document.civilRegistry
 import document.PhysicalPerson
 import document.UF
 import kotlinx.serialization.Serializable
+import java.security.MessageDigest
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.util.*
 
 /**
  * Representa uma filiação
@@ -10,15 +14,15 @@ import kotlinx.serialization.Serializable
  * @property id             Identificador único
  * @property personId       ID da pessoa relacionada a esta filiação
  * @property name           Nome da pessoa a que se refere essa filiação
- * @property UF             Unidade federativa que a pessoa é natural
+ * @property uf             Unidade federativa que a pessoa é natural
  * @property municipality   Município que a pessoa é natural
  */
 @Serializable
 class Affiliation(
-    val id:String?,
+    var id:String?,
     val personId: String,
     val name:String,
-    val UF:UF?,
+    val uf:UF?,
     val municipality:String?
 ) {
     constructor(
@@ -27,4 +31,10 @@ class Affiliation(
         UF:UF?,
         Municipality:String?
     ):this(id, person.id!!, person.name, UF, Municipality)
+
+    fun createId(): String {
+        val md = MessageDigest.getInstance("SHA")
+        val now = LocalDateTime.now(ZoneOffset.UTC)
+        return Base64.getUrlEncoder().encodeToString(md.digest(now.toString().toByteArray()))
+    }
 }

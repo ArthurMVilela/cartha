@@ -15,12 +15,12 @@ import java.time.LocalDate
  */
 @Serializable
 class MarriageCertificate(
-    override val id: String?,
+    override var id: String?,
     override val status: DocumentStatus,
     override val officialId: String,
     override val notaryId: String,
     override val registration: String,
-    override val observationsAndRegistering:List<String>,
+    override val registering:List<Registering>,
 
     val firstSpouse: Spouse,
     val secondSpouse: Spouse,
