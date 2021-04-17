@@ -12,9 +12,9 @@ import java.time.LocalTime
  *
  * @property timeOfBirth                Hora do nascimento
  * @property municipalityOfBirth        Município em que o nascimento ocorreu
- * @property UFOfBirth                  UF em que o nascimento ocorreu
+ * @property ufOfBirth                  UF em que o nascimento ocorreu
  * @property municipalityOfRegistry     Município em que o registro ocorreu
- * @property UFOfRegistry               UF em que o registro ocorreu
+ * @property ufOfRegistry               UF em que o registro ocorreu
  * @property affiliations               Filiações
  * @property grandParents               Avós
  * @property twin                       Se a matricula é de um gêmeo
@@ -41,9 +41,9 @@ class BirthCertificate(
     @Serializable(with= LocalTimeSerializer::class)
     val timeOfBirth: LocalTime,
     val municipalityOfBirth: String,
-    val UFOfBirth: UF,
+    val ufOfBirth: UF,
     val municipalityOfRegistry: String,
-    val UFOfRegistry: UF,
+    val ufOfRegistry: UF,
     val affiliations: List<Affiliation>,
     val grandParents: List<Grandparent>,
     val twin: Boolean,

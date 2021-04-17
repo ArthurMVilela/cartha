@@ -13,12 +13,12 @@ import org.jetbrains.exposed.sql.`java-time`.date
 import org.jetbrains.exposed.sql.`java-time`.datetime
 
 object BirthCertificateTable:IdTable<String>("birth_certificate") {
-    override val id: Column<EntityID<String>> = DeathCertificateTable.char("id", 44).entityId().references(CivilRegistryDocumentTable.id)
+    override val id: Column<EntityID<String>> = char("id", 44).entityId().references(CivilRegistryDocumentTable.id)
     val dateTimeOfBirth = datetime("datetime_of_birth")
-    val municipalityOfBirth = varchar("municipality_of_birth", 80).nullable()
-    val UFOfBirth = enumeration("uf_of_birth", UF::class)
-    val municipalityOfRegistry = varchar("municipality_of_registry", 80).nullable()
-    val UFOfRegistry = enumeration("uf_of_registry", UF::class)
+    val municipalityOfBirth = varchar("municipality_of_birth", 80)
+    val ufOfBirth = enumeration("uf_of_birth", UF::class)
+    val municipalityOfRegistry = varchar("municipality_of_registry", 80)
+    val ufOfRegistry = enumeration("uf_of_registry", UF::class)
     val twin = bool("twin")
     val dateOfRegistry = date("date_of_registry")
     val DNNumber = char("dn_number", 6)
