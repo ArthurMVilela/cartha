@@ -29,7 +29,7 @@ class DeathCertificateDAO(id: EntityID<String>):Entity<String>(id), DAO<DeathCer
                         civilStatus = obj.civilStatus
                         age = obj.age
 
-                        birthPlace = obj.birthPlace
+                        birthPlace = obj.birthplace
                         documentOfIdentity = obj.documentOfIdentity
                         affiliationId = affiliation.id
                         residency = obj.residency
@@ -99,7 +99,7 @@ class DeathCertificateDAO(id: EntityID<String>):Entity<String>(id), DAO<DeathCer
                     found.civilStatus = obj.civilStatus
                     found.age = obj.age
 
-                    found.birthPlace = obj.birthPlace
+                    found.birthPlace = obj.birthplace
                     found.documentOfIdentity = obj.documentOfIdentity
                     found.residency = obj.residency
 

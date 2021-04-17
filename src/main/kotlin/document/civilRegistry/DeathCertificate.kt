@@ -1,6 +1,7 @@
 package document.civilRegistry
 
 import document.*
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import util.serializer.LocalDateTimeSerializer
 import java.time.LocalDate
@@ -16,7 +17,7 @@ import java.time.Period
  * @property civilStatus                Estado cívil do indivíduo
  * @property age                        Idade do indivíduo
  *
- * @property birthPlace                 Local de nascimento do indivíduo
+ * @property birthplace                 Local de nascimento do indivíduo
  * @property documentOfIdentity         Documento de identidade do indvíduo
  * @property affiliation                Filiação do indivíduo
  * @property residency                  Endereço de residencia do indivído
@@ -37,22 +38,30 @@ class DeathCertificate(
     override val registration:String,
     override val registering:List<Registering>,
 
+    @SerialName("person_id")
     val personId: String,
     val sex: Sex,
     val color: Color,
+    @SerialName("civil_status")
     val civilStatus: CivilStatus,
     val age: Int,
 
-    val birthPlace: String,
+    val birthplace: String,
+    @SerialName("document_of_identity")
     val documentOfIdentity: String,
     val affiliation: Affiliation,
     val residency:String,
 
     @Serializable(with = LocalDateTimeSerializer::class)
+    @SerialName("datetime_of_death")
     val dateTimeOfDeath:LocalDateTime,
+    @SerialName("place_of_death")
     val placeOfDeath:String,
+    @SerialName("cause_of_death")
     val causeOfDeath:String,
+    @SerialName("burial_or_cremation_location")
     val burialOrCremationLocation:String?,
+    @SerialName("document_declaring_death")
     val documentDeclaringDeath: String,
 ):CivilRegistryDocument() {
     constructor(
