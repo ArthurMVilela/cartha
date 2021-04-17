@@ -12,13 +12,15 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 class Twin(
-    val id:String?,
+    var id:String?,
     val birthCertificateId:String,
+    val twinBirthCertificateId:String,
     val registration:String,
     val name:String
 ) {
     constructor(
         id:String?,
-        birthCertificate: BirthCertificate
-    ):this(id, birthCertificate.id!!, birthCertificate.registration, birthCertificate.name)
+        birthCertificate: BirthCertificate,
+        twinBirthCertificate: BirthCertificate
+    ):this(id, birthCertificate.id!!, twinBirthCertificate.id!!, birthCertificate.registration, birthCertificate.name)
 }

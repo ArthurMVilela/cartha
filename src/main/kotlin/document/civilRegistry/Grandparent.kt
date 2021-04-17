@@ -11,23 +11,25 @@ import kotlinx.serialization.Serializable
  * @property personId       ID da pessoa que se relaciona essa classe
  * @property type           Tipo de avó/avo (Materno/Paterno)
  * @property name           Nome da pessoa a que se refere essa filiação
- * @property UF             Unidade federativa que a pessoa é natural
+ * @property uf             Unidade federativa que a pessoa é natural
  * @property municipality   Município que a pessoa é natural
  */
 @Serializable
 class Grandparent(
-    val id:String?,
+    var id:String?,
+    val documentId:String,
     val personId:String,
     val name:String,
     val type:GrandparentType,
-    val UF:UF?,
+    val uf:UF?,
     val municipality:String?
 ) {
     constructor(
         id:String?,
+        documentId:String,
         person: PhysicalPerson,
         type:GrandparentType,
         UF:UF?,
         municipality:String?
-    ):this(id, person.id!!, person.name, type, UF, municipality)
+    ):this(id, person.id!!, documentId, person.name, type, UF, municipality)
 }

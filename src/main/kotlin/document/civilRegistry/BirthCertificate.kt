@@ -31,7 +31,7 @@ import java.time.LocalTime
  */
 @Serializable
 class BirthCertificate(
-    override val id: String?,
+    override var id: String?,
     override val status: DocumentStatus,
     override val officialId: String,
     override val notaryId: String,
