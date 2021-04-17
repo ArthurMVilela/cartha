@@ -1,6 +1,7 @@
 package document.persistency.dao.civilRegistry
 
 import document.civilRegistry.MarriageCertificate
+import document.civilRegistry.Spouse
 import document.persistency.dao.CompanionDAO
 import document.persistency.dao.DAO
 import document.persistency.dao.PhysicalPersonDAO
@@ -10,9 +11,9 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IdTable
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.SizedIterable
+import org.jetbrains.exposed.sql.emptySized
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.lang.Exception
-
 class MarriageCertificateDAO(id:EntityID<String>):Entity<String>(id), DAO<MarriageCertificate> {
     companion object : CompanionDAO<MarriageCertificate, MarriageCertificateDAO, String, IdTable<String>>(MarriageCertificateTable){
         override fun insert(obj: MarriageCertificate): MarriageCertificateDAO {
@@ -38,27 +39,85 @@ class MarriageCertificateDAO(id:EntityID<String>):Entity<String>(id), DAO<Marria
         }
 
         override fun select(id: String): MarriageCertificateDAO? {
-            TODO("Not yet implemented")
+            var r: MarriageCertificateDAO? = null
+            transaction {
+                try {
+                    r = findById(id)
+                } catch (e: Exception){
+                    rollback()
+                    throw e
+                }
+            }
+            return r
         }
 
         override fun selectMany(condition: Op<Boolean>): SizedIterable<MarriageCertificateDAO> {
-            TODO("Not yet implemented")
+            var r:SizedIterable<MarriageCertificateDAO> = emptySized()
+            transaction {
+                try {
+                    r = find(condition)
+                } catch (e:Exception){
+                    rollback()
+                    throw e
+                }
+            }
+            return r
         }
 
         override fun selectAll(): SizedIterable<MarriageCertificateDAO> {
-            TODO("Not yet implemented")
+            var r:SizedIterable<MarriageCertificateDAO> = emptySized()
+            transaction {
+                try {
+                    r = all()
+                } catch (e:Exception){
+                    rollback()
+                    throw e
+                }
+            }
+            return r
         }
 
         override fun update(obj: MarriageCertificate) {
-            TODO("Not yet implemented")
+            transaction {
+                try {
+                    CivilRegistryDocumentDAO.update(obj)
+                    val found = MarriageCertificateDAO.findById(obj.id!!)!!
+                    found.firstSpouseId = SpouseDAO.select(obj.firstSpouse.id!!)!!.id
+                    found.secondSpouseId = SpouseDAO.select(obj.secondSpouse.id!!)!!.id
+                    found.dateOfRegistry = obj.dateOfRegistry
+                    found.matrimonialRegime = obj.matrimonialRegime
+
+                    SpouseDAO.update(obj.firstSpouse)
+                    SpouseDAO.update(obj.secondSpouse)
+                } catch (e: Exception) {
+                    rollback()
+                    throw e
+                }
+            }
         }
 
         override fun remove(id: String) {
-            TODO("Not yet implemented")
+            transaction {
+                try {
+                    findById(id)?.delete()
+                } catch (e: Exception) {
+                    rollback()
+                    throw e
+                }
+            }
         }
 
         override fun removeWhere(condition: Op<Boolean>) {
-            TODO("Not yet implemented")
+            transaction {
+                try {
+                    find(condition).forEach {
+                        it.delete()
+                    }
+                } catch (e: Exception) {
+                    rollback()
+                    throw e
+                }
+            }
         }
     }
     val firstSpouse by SpouseDAO referencedOn MarriageCertificateTable.firstSpouseId
@@ -70,13 +129,18 @@ class MarriageCertificateDAO(id:EntityID<String>):Entity<String>(id), DAO<Marria
 
     override fun toType(): MarriageCertificate? {
         val parent = CivilRegistryDocumentDAO.select(id.value)!!.toType()!!
-        var first = firstSpouse.toType()!!
-        var second = secondSpouse.toType()!!
+        var first:Spouse? = null
+        var second:Spouse? = null
+        transaction {
+            first = firstSpouse.toType()!!
+            second = secondSpouse.toType()!!
+        }
         return MarriageCertificate(
             parent.id, parent.status, parent.officialId, parent.notaryId,
             parent.registration, parent.registering,
-            first, second,
+            first!!, second!!,
             dateOfRegistry, matrimonialRegime
         )
     }
 }
+
