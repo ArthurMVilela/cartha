@@ -1,11 +1,5 @@
 package document.controllers
 
-import document.LegalPerson
-import document.Notary
-import document.Official
-import document.PhysicalPerson
-import document.persistency.tables.*
-import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 
 /**
