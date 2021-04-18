@@ -37,8 +37,14 @@ dependencies {
 }
 
 ext.mainClassName = System.getenv("MAIN_CLASS_NAME")
+if(ext.mainClassName == null) {
+    ext.mainClassName = "DocumentService"
+}
 
 shadowJar {
+    archiveBaseName.set(mainClassName)
+    archiveClassifier.set('')
+    archiveVersion.set('')
     manifest {
         attributes 'Main-Class': mainClassName
     }
