@@ -1,3 +1,5 @@
+@file:JvmName("DocumentService")
+
 import document.service.BadRequestException
 import document.service.DocumentService
 import io.ktor.application.*
