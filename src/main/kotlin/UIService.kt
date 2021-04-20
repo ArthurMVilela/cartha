@@ -39,6 +39,9 @@ fun main() {
 
                 call.respond(FreeMarkerContent("physical-person.ftl", data))
             }
+            get("/notary") {
+                call.respond(FreeMarkerContent("notary.ftl", null))
+            }
         }
     }.start(true)
 }

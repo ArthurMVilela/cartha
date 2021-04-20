@@ -1,4 +1,4 @@
-<#assign title="Pessoa física">
+<#assign title="Cartório">
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,7 +8,7 @@
     <div class="container">
         <div class="row justify-content-center">
             <form class="col-8">
-                <#include "./partials/physical-person-form.ftl">
+                <#include "./partials/notary-form.ftl">
             </form>
         </div>
     </div>
