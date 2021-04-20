@@ -12,8 +12,8 @@ object GrandparentTable:IdTable<String>("grandparent") {
     override val id: Column<EntityID<String>> = char("id", 32).entityId()
     val documentId = reference("document_id", CivilRegistryDocumentTable.id)
     val personId = reference("person_id", PhysicalPersonTable.id)
-    val name = PersonTable.varchar("name", 120)
-    val type = enumeration("uf", GrandparentType::class)
+    val name = varchar("name", 120)
+    val type = enumeration("type", GrandparentType::class)
     val uf = enumeration("uf", UF::class).nullable()
     val municipality = varchar("municipality", 80).nullable()
 

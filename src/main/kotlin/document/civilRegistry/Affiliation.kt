@@ -21,6 +21,8 @@ import java.util.*
 @Serializable
 class Affiliation(
     var id:String?,
+    @SerialName("document_id")
+    var documentId:String?,
     @SerialName("person_id")
     val personId: String,
     val name:String,
@@ -29,10 +31,11 @@ class Affiliation(
 ) {
     constructor(
         id:String?,
+        documentId:String?,
         person:PhysicalPerson,
         UF:UF?,
         Municipality:String?
-    ):this(id, person.id!!, person.name, UF, Municipality)
+    ):this(id, documentId, person.id!!, person.name, UF, Municipality)
 
     fun createId(): String {
         val md = MessageDigest.getInstance("SHA")

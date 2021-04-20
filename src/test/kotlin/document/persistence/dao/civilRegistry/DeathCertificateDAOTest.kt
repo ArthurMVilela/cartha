@@ -54,7 +54,7 @@ internal class DeathCertificateDAOTest {
         affiliationPerson.id = affiliationPerson.createId()
         person.id = person.createId()
 
-        affiliation = Affiliation(null, affiliationPerson, UF.SP, "Mauá")
+        affiliation = Affiliation(null, null, affiliationPerson, UF.SP, "Mauá")
         affiliation.id = affiliation.createId()
 
         p = DeathCertificate(
@@ -194,7 +194,7 @@ internal class DeathCertificateDAOTest {
 
             "Ribeirão Pires SP",
             "11.222.555-x",
-            affiliation,
+            inserted.affiliation,
             "Rua sei lá 188, Ribeirão Pires SP",
 
             LocalDateTime.of(2020, Month.JANUARY, 1, 0, 0),

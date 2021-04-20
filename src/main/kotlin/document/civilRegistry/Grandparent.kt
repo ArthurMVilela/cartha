@@ -3,6 +3,10 @@ package document.civilRegistry
 import document.PhysicalPerson
 import document.UF
 import kotlinx.serialization.Serializable
+import java.security.MessageDigest
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.util.*
 
 /**
  * Representa o registro de um avó/avô numa certidão de nascimento.
@@ -17,7 +21,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 class Grandparent(
     var id:String?,
-    val documentId:String,
+    var documentId:String?,
     val personId:String,
     val name:String,
     val type:GrandparentType,
@@ -26,10 +30,16 @@ class Grandparent(
 ) {
     constructor(
         id:String?,
-        documentId:String,
+        documentId:String?,
         person: PhysicalPerson,
         type:GrandparentType,
         UF:UF?,
         municipality:String?
-    ):this(id, person.id!!, documentId, person.name, type, UF, municipality)
+    ):this(id, documentId, person.id!!, person.name, type, UF, municipality)
+
+    fun createId(): String {
+        val md = MessageDigest.getInstance("SHA")
+        val now = LocalDateTime.now(ZoneOffset.UTC)
+        return Base64.getUrlEncoder().encodeToString(md.digest(now.toString().toByteArray()))
+    }
 }

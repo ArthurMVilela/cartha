@@ -1,7 +1,10 @@
 package document.persistence.dao.civilRegistry
 
 import document.*
+import document.civilRegistry.Affiliation
 import document.civilRegistry.BirthCertificate
+import document.civilRegistry.Grandparent
+import document.civilRegistry.GrandparentType
 import document.persistence.dao.*
 import document.persistence.tables.*
 import document.persistence.tables.civilRegistry.*
@@ -24,6 +27,16 @@ internal class BirthCertificateDAOTest {
         "Cicrana",
         "11122233344",
         LocalDate.of(2000, Month.JANUARY, 1),
+        Sex.Female,
+        Color.White,
+        CivilStatus.Single,
+        "brasileiro"
+    )
+    val father = PhysicalPerson(
+        null,
+        "Cicrano pai",
+        "11122233344",
+        LocalDate.of(1980, Month.JANUARY, 1),
         Sex.Male,
         Color.White,
         CivilStatus.Single,
@@ -35,12 +48,14 @@ internal class BirthCertificateDAOTest {
         notary.id = notary.createId()
         official.id = official.createId()
         person.id = person.createId()
+        father.id = father.createId()
 
         p = BirthCertificate(
             null, DocumentStatus.Valid, official.id!!, notary.id!!,
             "11111111112222", listOf(),
             LocalTime.of(10,0), "Ribeirão Pires", UF.SP,"Ribeirão Pires", UF.SP,
-            listOf(), listOf(),
+            listOf(Affiliation(null, null, father, UF.SP, "Ribeirão Pires")),
+            listOf(Grandparent(null, null, father, GrandparentType.Paternal, UF.SP, "Ribeirão Pires")),
             false, listOf(),
             LocalDate.of(2000, Month.JANUARY,1),
             "1111",
@@ -63,6 +78,7 @@ internal class BirthCertificateDAOTest {
 
             transaction {
                 SchemaUtils.drop(
+                    AffiliationTable, GrandparentTable,
                     TwinTable, BirthCertificateTable,
                     RegisteringTable,
                     CivilRegistryDocumentTable, DocumentTable,
@@ -74,6 +90,7 @@ internal class BirthCertificateDAOTest {
                     NotaryTable, OfficialTable,
                     DocumentTable, CivilRegistryDocumentTable,
                     RegisteringTable,
+                    AffiliationTable, GrandparentTable,
                     BirthCertificateTable, TwinTable
                 )
             }
@@ -86,6 +103,7 @@ internal class BirthCertificateDAOTest {
                 SchemaUtils.drop(
                     TwinTable, BirthCertificateTable,
                     RegisteringTable,
+                    AffiliationTable, GrandparentTable,
                     CivilRegistryDocumentTable, DocumentTable,
                     NotaryTable, OfficialTable,
                     PhysicalPersonTable, PersonTable
@@ -99,12 +117,15 @@ internal class BirthCertificateDAOTest {
         NotaryDAO.insert(notary)
         OfficialDAO.insert(official)
         PhysicalPersonDAO.insert(person)
+        PhysicalPersonDAO.insert(father)
     }
 
     @AfterEach
     internal fun afterEach() {
         transaction {
             BirthCertificateDAO.removeWhere(Op.build { BirthCertificateTable.id neq null })
+            AffiliationDAO.removeWhere(Op.build { AffiliationTable.id neq null })
+            GrandparentDAO.removeWhere(Op.build { GrandparentTable.id neq null })
             CivilRegistryDocumentDAO.removeWhere(Op.build { CivilRegistryDocumentTable.id neq null })
             DocumentDAO.removeWhere(Op.build { DocumentTable.id neq null })
 

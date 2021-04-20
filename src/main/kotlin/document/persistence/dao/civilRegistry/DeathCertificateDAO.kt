@@ -1,9 +1,11 @@
 package document.persistence.dao.civilRegistry
 
+import document.civilRegistry.Affiliation
 import document.civilRegistry.DeathCertificate
 import persistence.CompanionDAO
 import persistence.DAO
 import document.persistence.dao.PhysicalPersonDAO
+import document.persistence.tables.civilRegistry.AffiliationTable
 import document.persistence.tables.civilRegistry.DeathCertificateTable
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.id.EntityID
@@ -21,7 +23,8 @@ class DeathCertificateDAO(id: EntityID<String>):Entity<String>(id), DAO<DeathCer
             transaction {
                 try {
                     CivilRegistryDocumentDAO.insert(obj)
-                    val affiliation = AffiliationDAO.insert(obj.affiliation)
+                    obj.affiliation.documentId = obj.id
+                    AffiliationDAO.insert(obj.affiliation)
                     r = new(obj.id!!) {
                         personId = PhysicalPersonDAO.select(obj.personId)!!.id
                         sex = obj.sex
@@ -31,7 +34,6 @@ class DeathCertificateDAO(id: EntityID<String>):Entity<String>(id), DAO<DeathCer
 
                         birthPlace = obj.birthplace
                         documentOfIdentity = obj.documentOfIdentity
-                        affiliationId = affiliation.id
                         residency = obj.residency
 
                         dateTimeOfDeath = obj.dateTimeOfDeath
@@ -92,6 +94,7 @@ class DeathCertificateDAO(id: EntityID<String>):Entity<String>(id), DAO<DeathCer
             transaction {
                 try {
                     CivilRegistryDocumentDAO.update(obj)
+                    AffiliationDAO.update(obj.affiliation)
                     val found = findById(obj.id!!)!!
                     found.personId = PhysicalPersonDAO.select(obj.personId)!!.id
                     found.sex = obj.sex
@@ -109,8 +112,8 @@ class DeathCertificateDAO(id: EntityID<String>):Entity<String>(id), DAO<DeathCer
                     found.burialOrCremationLocation = obj.burialOrCremationLocation
                     found.documentDeclaringDeath = obj.documentDeclaringDeath
 
-                    val foundAffiliation = found.affiliation.toType()!!
-                    AffiliationDAO.update(foundAffiliation)
+                    val foundAffiliation = AffiliationDAO.selectMany(Op.build { AffiliationTable.documentId eq found.id }).first().toType()
+                    AffiliationDAO.update(foundAffiliation!!)
                 } catch (e: Exception) {
                     rollback()
                     throw e
@@ -123,7 +126,7 @@ class DeathCertificateDAO(id: EntityID<String>):Entity<String>(id), DAO<DeathCer
                 try {
                     val found = findById(id)
                     found!!.delete()
-                    AffiliationDAO.remove(found!!.affiliation.id.value)
+                    AffiliationDAO.removeWhere(Op.build { AffiliationTable.documentId eq found.id })
                     CivilRegistryDocumentDAO.remove(id)
                 } catch (e: Exception) {
                     rollback()
@@ -137,7 +140,7 @@ class DeathCertificateDAO(id: EntityID<String>):Entity<String>(id), DAO<DeathCer
                 try {
                     find(condition).forEach {
                         it.delete()
-                        AffiliationDAO.remove(it.affiliation.id.value)
+                        AffiliationDAO.removeWhere(Op.build { AffiliationTable.documentId eq it.id })
                         CivilRegistryDocumentDAO.remove(it.id.value)
                     }
 
@@ -157,8 +160,8 @@ class DeathCertificateDAO(id: EntityID<String>):Entity<String>(id), DAO<DeathCer
 
     var birthPlace by DeathCertificateTable.birthPlace
     var documentOfIdentity by DeathCertificateTable.documentOfIdentity
-    var affiliationId by DeathCertificateTable.affiliationId
-    val affiliation by AffiliationDAO referencedOn DeathCertificateTable.affiliationId
+//    var affiliationId by DeathCertificateTable.affiliationId
+//    val affiliation by AffiliationDAO referencedOn AffiliationTable.documentId
     var residency by DeathCertificateTable.residency
 
     var dateTimeOfDeath by DeathCertificateTable.dateTimeOfDeath
@@ -169,12 +172,16 @@ class DeathCertificateDAO(id: EntityID<String>):Entity<String>(id), DAO<DeathCer
 
     override fun toType(): DeathCertificate? {
         val parent = CivilRegistryDocumentDAO.select(id.value)!!.toType()!!
-        val affiliation = AffiliationDAO.select(affiliationId.value)!!.toType()!!
+        var documentAffiliation:Affiliation? = null
+        transaction {
+            documentAffiliation = AffiliationDAO.selectMany(Op.build { AffiliationTable.documentId eq this@DeathCertificateDAO.id }).first().toType()!!
+        }
+
         return DeathCertificate(
             parent.id, parent.status, parent.officialId, parent.notaryId,
             parent.registration, parent.registering,
             personId.value, sex, color, civilStatus, age,
-            birthPlace, documentOfIdentity, affiliation, residency,
+            birthPlace, documentOfIdentity, documentAffiliation!!, residency,
             dateTimeOfDeath, placeOfDeath, causeOfDeath, burialOrCremationLocation, documentDeclaringDeath
         )
     }

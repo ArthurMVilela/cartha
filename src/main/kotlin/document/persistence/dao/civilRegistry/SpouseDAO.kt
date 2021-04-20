@@ -27,13 +27,13 @@ class SpouseDAO(id:EntityID<String>):Entity<String>(id), DAO<Spouse> {
                         birthday = obj.birthday
                         nationality = obj.nationality
                     }
-                    obj.affiliations.forEach {
-                        val inserted = AffiliationDAO.insert(it)
-                        SpouseAffiliationTable.insert {
-                            it[spouseId] = obj.id!!
-                            it[affiliationId] = inserted.id
-                        }
-                    }
+//                    obj.affiliations.forEach {
+//                        val inserted = AffiliationDAO.insert(it)
+//                        SpouseAffiliationTable.insert {
+//                            it[spouseId] = obj.id!!
+//                            it[affiliationId] = inserted.id
+//                        }
+//                    }
                 } catch (e: Exception) {
                     rollback()
                     throw e
