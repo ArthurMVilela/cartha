@@ -20,6 +20,14 @@ class MarriageCertificateDAO(id:EntityID<String>):Entity<String>(id), DAO<Marria
             transaction {
                 try {
                     CivilRegistryDocumentDAO.insert(obj)
+                    obj.firstSpouse.affiliations.forEach {
+                        it.documentId = obj.id!!
+                        AffiliationDAO.insert(it)
+                    }
+                    obj.secondSpouse.affiliations.forEach {
+                        it.documentId = obj.id!!
+                        AffiliationDAO.insert(it)
+                    }
                     val first = SpouseDAO.insert(obj.firstSpouse)
                     val second = SpouseDAO.insert(obj.secondSpouse)
                     r = MarriageCertificateDAO.new(obj.id!!) {
