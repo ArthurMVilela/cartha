@@ -6,8 +6,6 @@ services:
     restart: always
     ports:
       - "3000:3306"
-    expose:
-      - "3000"
     environment:
       MYSQL_USER: "document"
       MYSQL_PASSWORD: "document"
@@ -30,13 +28,23 @@ services:
     links:
       - document-db
     ports:
-      - "8080:8080"
+      - "4000:8080"
     environment:
       DATABASE_HOST: "document-db"
       DATABASE_PORT: "3306"
       DATABASE_NAME: "cartha_document_db"
       DATABASE_USER: "document"
       DATABASE_PASSWORD: "document"
+    networks:
+      - net
+
+  ui:
+    container_name: "ui"
+    build:
+      context: .
+      dockerfile: ui.Dockerfile
+    ports:
+      - "8080:8080"
     networks:
       - net
 
