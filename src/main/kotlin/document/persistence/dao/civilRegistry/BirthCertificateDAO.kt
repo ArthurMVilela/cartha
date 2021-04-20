@@ -1,15 +1,22 @@
 package document.persistence.dao.civilRegistry
 
+import document.civilRegistry.Affiliation
 import document.civilRegistry.BirthCertificate
+import document.civilRegistry.Grandparent
 import persistence.CompanionDAO
 import persistence.DAO
 import document.persistence.dao.PhysicalPersonDAO
+import document.persistence.tables.civilRegistry.AffiliationTable
 import document.persistence.tables.civilRegistry.BirthCertificateTable
+import document.persistence.tables.civilRegistry.GrandparentTable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IdTable
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.SizedIterable
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.emptySized
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.lang.Exception
@@ -24,6 +31,17 @@ class BirthCertificateDAO(id: EntityID<String>):Entity<String>(id), DAO<BirthCer
             transaction {
                 try {
                     CivilRegistryDocumentDAO.insert(obj)
+                    obj.affiliations.forEach {
+                        it.id = it.createId()
+                        it.documentId = obj.id!!
+                        AffiliationDAO.insert(it)
+                    }
+                    obj.grandParents.forEach {
+                        it.id = it.createId()
+                        it.documentId = obj.id!!
+                        println(Json.encodeToString(it))
+                        GrandparentDAO.insert(it)
+                    }
                     r = new(obj.id!!) {
                         dateTimeOfBirth = LocalDateTime.of(obj.dateOfBirth, obj.timeOfBirth)
                         municipalityOfBirth = obj.municipalityOfBirth
@@ -102,6 +120,19 @@ class BirthCertificateDAO(id: EntityID<String>):Entity<String>(id), DAO<BirthCer
                     found.cpf = obj.cpf
                     found.name = obj.name
                     found.sex = obj.sex
+
+                    AffiliationDAO.removeWhere(Op.build { AffiliationTable.documentId eq found.id })
+                    obj.affiliations.forEach {
+                        it.id = it.createId()
+                        it.documentId = obj.id
+                        AffiliationDAO.insert(it)
+                    }
+                    GrandparentDAO.removeWhere(Op.build { GrandparentTable.documentId eq found.id })
+                    obj.grandParents.forEach {
+                        it.id = it.createId()
+                        it.documentId = obj.id
+                        GrandparentDAO.insert(it)
+                    }
                 } catch (e: Exception) {
                     rollback()
                     throw e
@@ -114,6 +145,8 @@ class BirthCertificateDAO(id: EntityID<String>):Entity<String>(id), DAO<BirthCer
                 try {
                     val found = findById(id)
                     found!!.delete()
+                    AffiliationDAO.removeWhere(Op.build { AffiliationTable.documentId eq id })
+                    GrandparentDAO.removeWhere(Op.build { GrandparentTable.documentId eq id })
                     CivilRegistryDocumentDAO.remove(id)
                 } catch (e: Exception) {
                     rollback()
@@ -127,7 +160,6 @@ class BirthCertificateDAO(id: EntityID<String>):Entity<String>(id), DAO<BirthCer
                 try {
                     find(condition).forEach {
                         it.delete()
-                        CivilRegistryDocumentDAO.remove(it.id.value)
                     }
 
                 } catch (e: Exception) {
@@ -153,12 +185,18 @@ class BirthCertificateDAO(id: EntityID<String>):Entity<String>(id), DAO<BirthCer
 
     override fun toType(): BirthCertificate? {
         val parent = CivilRegistryDocumentDAO.select(id.value)!!.toType()!!
+        var affiliations:List<Affiliation> = listOf()
+        var grandparents:List<Grandparent> = listOf()
+        transaction {
+            affiliations = AffiliationDAO.selectMany(Op.build { AffiliationTable.documentId eq this@BirthCertificateDAO.id }).map { it.toType()!! }
+            grandparents = GrandparentDAO.selectMany(Op.build { GrandparentTable.documentId eq this@BirthCertificateDAO.id }).map { it.toType()!! }
+        }
         return BirthCertificate(
             parent.id, parent.status, parent.officialId, parent.notaryId, parent.registration, parent.registering,
             LocalTime.of(dateTimeOfBirth.hour, dateTimeOfBirth.minute, dateTimeOfBirth.second),
             municipalityOfBirth, ufOfBirth,
             municipalityOfRegistry, ufOfRegistry,
-            listOf(),
+            affiliations,
             listOf(),
             false,
             listOf(),

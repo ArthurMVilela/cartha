@@ -21,8 +21,8 @@ class GrandparentDAO(id:EntityID<String>):Entity<String>(id), DAO<Grandparent> {
             transaction {
                 try {
                     r = new(obj.id!!) {
-                        documentId = CivilRegistryDocumentDAO.select(obj.id!!)!!.id
-                        personId = PersonDAO.select(obj.id!!)!!.id
+                        documentId = CivilRegistryDocumentDAO.select(obj.documentId!!)!!.id
+                        personId = PersonDAO.select(obj.personId)!!.id
                         name = obj.name
                         type = obj.type
                         uf = obj.uf
@@ -79,8 +79,8 @@ class GrandparentDAO(id:EntityID<String>):Entity<String>(id), DAO<Grandparent> {
             transaction {
                 try {
                     val found = findById(obj.id!!)!!
-                    found.documentId = CivilRegistryDocumentDAO.select(obj.id!!)!!.id
-                    found.personId = PersonDAO.select(obj.id!!)!!.id
+                    found.documentId = CivilRegistryDocumentDAO.select(obj.documentId!!)!!.id
+                    found.personId = PersonDAO.select(obj.personId)!!.id
                     found.name = obj.name
                     found.type = obj.type
                     found.uf = obj.uf
