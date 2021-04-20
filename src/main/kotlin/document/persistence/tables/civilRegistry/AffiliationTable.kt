@@ -8,6 +8,7 @@ import org.jetbrains.exposed.sql.Column
 
 object AffiliationTable : IdTable<String>("affiliation") {
     override val id: Column<EntityID<String>> = char("id", 32).entityId()
+    val documentId = reference("document_id", CivilRegistryDocumentTable.id)
     val personId = reference("person_id", PhysicalPersonTable.id)
     val name = varchar("name", 120)
     val uf = enumeration("uf", UF::class).nullable()

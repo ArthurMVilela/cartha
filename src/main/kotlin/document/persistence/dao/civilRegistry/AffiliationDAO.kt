@@ -1,6 +1,7 @@
 package document.persistence.dao.civilRegistry
 
 import document.civilRegistry.Affiliation
+import document.persistence.dao.DocumentDAO
 import persistence.CompanionDAO
 import persistence.DAO
 import document.persistence.dao.PhysicalPersonDAO
@@ -21,6 +22,7 @@ class AffiliationDAO(id:EntityID<String>): Entity<String>(id), DAO<Affiliation> 
             transaction {
                 try {
                     r = new(obj.id!!) {
+                        documentId = CivilRegistryDocumentDAO.select(obj.documentId!!)!!.id
                         personId = PhysicalPersonDAO.select(obj.personId)!!.id
                         name = obj.name
                         uf = obj.uf
@@ -77,6 +79,7 @@ class AffiliationDAO(id:EntityID<String>): Entity<String>(id), DAO<Affiliation> 
             transaction {
                 try {
                     val found = findById(obj.id!!)!!
+                    found.documentId = CivilRegistryDocumentDAO.select(obj.documentId!!)!!.id
                     found.personId = PhysicalPersonDAO.select(obj.personId)!!.id
                     found.name = obj.name
                     found.uf = obj.uf
@@ -113,6 +116,7 @@ class AffiliationDAO(id:EntityID<String>): Entity<String>(id), DAO<Affiliation> 
         }
     }
 
+    var documentId by AffiliationTable.documentId
     var personId by AffiliationTable.personId
     var name by AffiliationTable.name
     var uf by AffiliationTable.uf
@@ -121,6 +125,7 @@ class AffiliationDAO(id:EntityID<String>): Entity<String>(id), DAO<Affiliation> 
     override fun toType(): Affiliation? {
         return Affiliation(
             id.value,
+            documentId.value,
             personId.value,
             name,
             uf,
