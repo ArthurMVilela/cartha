@@ -1,0 +1,52 @@
+version: "3.3"
+services:
+  document-db:
+    container_name: "document-db"
+    image: mysql:latest
+    restart: always
+    ports:
+      - "3000:3306"
+    environment:
+      MYSQL_USER: "document"
+      MYSQL_PASSWORD: "document"
+      MYSQL_DATABASE: "cartha_document_db"
+      MYSQL_ROOT_PASSWORD: "root"
+    networks:
+      - net
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 20s
+      retries: 10
+
+  document:
+    container_name: "document"
+    build:
+      context: .
+      dockerfile: document.Dockerfile
+    depends_on:
+      - document-db
+    links:
+      - document-db
+    ports:
+      - "4000:8080"
+    environment:
+      DATABASE_HOST: "document-db"
+      DATABASE_PORT: "3306"
+      DATABASE_NAME: "cartha_document_db"
+      DATABASE_USER: "document"
+      DATABASE_PASSWORD: "document"
+    networks:
+      - net
+
+  ui:
+    container_name: "ui"
+    build:
+      context: .
+      dockerfile: ui.Dockerfile
+    ports:
+      - "8080:8080"
+    networks:
+      - net
+
+networks:
+  net:
