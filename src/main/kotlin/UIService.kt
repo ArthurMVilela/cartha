@@ -42,6 +42,13 @@ fun main() {
             get("/notary") {
                 call.respond(FreeMarkerContent("notary.ftl", null))
             }
+            get("/official") {
+                val data = mapOf(
+                    "sex" to EnumMaps.sex,
+                )
+
+                call.respond(FreeMarkerContent("official.ftl", data))
+            }
         }
     }.start(true)
 }
