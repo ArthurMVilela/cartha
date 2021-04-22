@@ -1,6 +1,7 @@
 package blockchain
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.encodeToJsonElement
@@ -16,11 +17,27 @@ class Block(
     var id:String?,
     @Serializable(with = LocalDateTimeSerializer::class)
     val timestamp: LocalDateTime,
-    var transactionsHash: String?,
     val transactions: List<Transaction>,
+    var transactionsHash: String?,
     val previousHash: String,
     var hash: String?
 ) {
+    constructor(
+        timestamp: LocalDateTime,
+        transactions: List<Transaction>,
+        previousHash: String
+    ):this(
+        null,
+        timestamp,
+        transactions,
+        null,
+        previousHash,
+        null
+    ) {
+        this.id = createId()
+        this.transactionsHash = createTransactionsHash()
+        this.hash = createHash()
+    }
     fun createId(): String {
         val md = MessageDigest.getInstance("SHA")
         val now = LocalDateTime.now(ZoneOffset.UTC)
@@ -31,7 +48,20 @@ class Block(
 
     fun createHash():String {
         val md = MessageDigest.getInstance("SHA-256")
-        val content = Json.encodeToString(this).toByteArray()
+        var content = Base64.getUrlDecoder().decode(id)
+        content = content.plus(timestamp.toString().toByteArray())
+        content = content.plus(Json.encodeToString(transactions).toByteArray())
+        content = content.plus(transactionsHash!!.toByteArray())
+        content = content.plus(previousHash.toByteArray())
+
         return Base64.getUrlEncoder().encodeToString(md.digest(content))
+    }
+
+    fun createTransactionsHash():String {
+        val merkleTree = MerkleTree.createMerkleTree(transactions.map {
+            Base64.getUrlDecoder().decode(it.hash)
+        })
+
+        return merkleTree.hash!!
     }
 }

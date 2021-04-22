@@ -1,7 +1,5 @@
 package blockchain
 
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import java.security.MessageDigest
 import java.util.*
 
@@ -19,12 +17,11 @@ class MerkleTree(
 ) {
     companion object {
         fun createMerkleTree(data:List<ByteArray>):MerkleTree {
+            if (data.isEmpty()) {
+                return MerkleTree(createHash("".toByteArray()))
+            }
             val leaves = data.map {
                 MerkleTree(createHash(it))
-            }
-
-            leaves.forEach {
-                println(it.hash)
             }
 
             var root = false
@@ -32,7 +29,6 @@ class MerkleTree(
             var currentGen = leaves
 
             while (!root) {
-                println("Geração atual = $gen; Tamanho = ${currentGen.size}")
                 if (currentGen.size == 1) {
                     root = true
                     break
@@ -42,14 +38,12 @@ class MerkleTree(
                 currentGen.forEachIndexed { index, merkleTree ->
                     if (index % 2 == 0) {
                         val nextIndex = index + 1
-                        println("$index $nextIndex ${currentGen.size} ${nextIndex >= currentGen.size}")
+
                         if (nextIndex >= currentGen.size) {
-                            println("impar")
                             val new = MerkleTree(merkleTree.hash, left = merkleTree)
                             merkleTree.parent = new
                             parents.add(new)
                         } else {
-                            println("par")
                             val next = currentGen.get(nextIndex)
 
                             val new = MerkleTree(null, left = merkleTree, right = next)
