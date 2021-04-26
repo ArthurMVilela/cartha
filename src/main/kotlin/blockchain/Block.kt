@@ -38,6 +38,7 @@ class Block(
         this.transactionsHash = createTransactionsHash()
         this.hash = createHash()
     }
+
     fun createId(): String {
         val md = MessageDigest.getInstance("SHA")
         val now = LocalDateTime.now(ZoneOffset.UTC)
