@@ -64,4 +64,19 @@ class Block(
 
         return merkleTree.hash!!
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other?.javaClass != javaClass) return false
+
+        other as Block
+
+        if (other.id != this.id) return false
+        if (other.timestamp != this.timestamp) return false
+        if (other.transactionsHash != this.transactionsHash) return false
+        if (other.previousHash != this.previousHash) return false
+        if (other.hash != this.hash) return false
+
+        return true
+    }
 }
