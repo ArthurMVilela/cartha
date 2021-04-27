@@ -20,6 +20,7 @@ services:
 
   document:
     container_name: "document"
+    restart: on-failure:20
     build:
       context: .
       dockerfile: document.Dockerfile
@@ -35,6 +36,16 @@ services:
       DATABASE_NAME: "cartha_document_db"
       DATABASE_USER: "document"
       DATABASE_PASSWORD: "document"
+    networks:
+      - net
+
+  node:
+    container_name: "node"
+    build:
+      context: .
+      dockerfile: node.Dockerfile
+    ports:
+      - "5000:8080"
     networks:
       - net
 
