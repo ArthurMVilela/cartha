@@ -11,6 +11,7 @@ function build() {
 }
 
 build "DocumentService"
+build "BlockchainNodeManagerService"
 build "BlockchainNodeService"
 build "UIService"
 

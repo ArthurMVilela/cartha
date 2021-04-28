@@ -1,7 +1,6 @@
-@file:JvmName("BlockchainNodeService")
+@file:JvmName("BlockchainNodeManagerService")
 
-import blockchain.network.Node
-import blockchain.network.NodeService
+import blockchain.network.NodeManagerService
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.http.*
@@ -13,7 +12,7 @@ import io.ktor.server.netty.*
 import serviceExceptions.BadRequestException
 
 fun main() {
-    val nodeService = NodeService("http://nodemanager:8080", Node(""))
+    val service = NodeManagerService()
 
     embeddedServer(Netty, port = 8080) {
         install(ContentNegotiation)  {
@@ -25,17 +24,11 @@ fun main() {
             }
         }
         routing {
-            get("/blocks/{id}") {
-                nodeService.getBlock(call)
+            get("/transactions") {
+                service.getTransactions(call)
             }
-            get("/blocks/last") {
-                nodeService.getLast(call)
-            }
-            get("/blockchain") {
-                nodeService.getBlockchain(call)
-            }
-            post("/blocks") {
-                nodeService.createBlock(call)
+            post("/transactions") {
+                service.createTransaction(call)
             }
         }
     }.start(true)

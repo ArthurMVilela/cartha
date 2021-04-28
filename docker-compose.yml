@@ -49,6 +49,16 @@ services:
     networks:
       - net
 
+  node_manager:
+    container_name: "node_manager"
+    build:
+      context: .
+      dockerfile: nodeManager.Dockerfile
+    ports:
+      - "6000:8080"
+    networks:
+      - net
+
   ui:
     container_name: "ui"
     build:

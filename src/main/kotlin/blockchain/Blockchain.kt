@@ -26,9 +26,6 @@ class Blockchain(private val blocks:MutableList<Block> = mutableListOf()) {
      * @param block         bloco a ser adicionado
      */
     fun addBlock(block: Block) {
-        if (block.transactions.size != Config.transactionAmount) {
-            println("error")
-        }
         blocks.add(block)
     }
 

@@ -11,7 +11,7 @@ import java.util.*
 class NodeManager (
     val nodes:MutableList<Node> = mutableListOf<Node>(),
 ) {
-    private var transactionQueue: Queue<Transaction> = LinkedList<Transaction>()
+    var transactionQueue: Queue<Transaction> = LinkedList<Transaction>()
 
     fun addTransactionToQueue(transaction: Transaction) {
         transactionQueue.add(transaction)
