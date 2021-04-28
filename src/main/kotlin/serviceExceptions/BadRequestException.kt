@@ -1,4 +1,4 @@
-package document.service
+package serviceExceptions
 
 class BadRequestException(
     override val message: String?

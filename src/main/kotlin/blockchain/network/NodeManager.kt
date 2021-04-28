@@ -3,8 +3,6 @@ package blockchain.network
 import blockchain.Block
 import blockchain.Config
 import blockchain.Transaction
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import java.util.*
 
 /**
@@ -23,7 +21,7 @@ class NodeManager (
         }
     }
 
-    fun addNode(node:Node) {
+    fun addNode(node: Node) {
         TODO("Not implemented yet")
     }
 

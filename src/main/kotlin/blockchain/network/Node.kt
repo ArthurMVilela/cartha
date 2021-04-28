@@ -1,7 +1,6 @@
 package blockchain.network
 
 import blockchain.Blockchain
-import blockchain.Transaction
 import java.security.MessageDigest
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -14,18 +13,24 @@ import kotlin.random.Random
 class Node (
     var id:String?,
     val chain: Blockchain,
-    val address: String,
     val notaryId: String
 ){
-    constructor(address: String, notaryId: String):this(null, Blockchain(), address, notaryId) {
+    constructor(notaryId: String):this(null, Blockchain(), notaryId) {
         id = createId()
     }
 
-    constructor(chain: Blockchain, address: String, notaryId: String):this(null, chain, address, notaryId) {
+    constructor(chain: Blockchain, notaryId: String):this(null, chain, notaryId) {
         id = createId()
     }
 
-    fun createId():String {
+    init {
+        chain.addBlock(LocalDateTime.now(), listOf())
+        chain.addBlock(LocalDateTime.now(), listOf())
+        chain.addBlock(LocalDateTime.now(), listOf())
+        chain.addBlock(LocalDateTime.now(), listOf())
+    }
+
+    private fun createId():String {
         val md = MessageDigest.getInstance("SHA")
         val now = LocalDateTime.now(ZoneOffset.UTC)
         var content = now.toString().toByteArray()
