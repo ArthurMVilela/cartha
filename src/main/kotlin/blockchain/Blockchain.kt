@@ -12,7 +12,7 @@ import java.util.*
  *  @property blocks        Lista de blocos da blockchain, caso vázia, a blockchain cria um bloco genesys
  */
 @Serializable
-class Blockchain(private val blocks:MutableList<Block> = mutableListOf()) {
+class Blockchain(val blocks:MutableList<Block> = mutableListOf()) {
     init {
         if (blocks.isEmpty()) {
             val genesys = createGenesys()
