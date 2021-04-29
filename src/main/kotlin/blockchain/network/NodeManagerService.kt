@@ -25,4 +25,14 @@ class NodeManagerService {
     suspend fun getTransactions(call: ApplicationCall) {
         call.respond(nodeManager.transactionQueue.toList())
     }
+
+    suspend fun getNodes(call: ApplicationCall) {
+        call.respond(nodeManager.nodes)
+    }
+
+    suspend fun getNode(call: ApplicationCall) {
+        val id = call.parameters["id"]
+        val node = nodeManager.nodes.first { node -> node.id == id }
+        call.respond(node)
+    }
 }

@@ -30,6 +30,12 @@ fun main() {
             post("/transactions") {
                 service.createTransaction(call)
             }
+            get("/nodes") {
+                service.getNodes(call)
+            }
+            get("/nodes/{id}") {
+                service.getNode(call)
+            }
         }
     }.start(true)
 }

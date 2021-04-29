@@ -1,6 +1,8 @@
 package blockchain.network
 
 import blockchain.Blockchain
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import java.security.MessageDigest
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -10,6 +12,7 @@ import kotlin.random.Random
 /**
  * Representa um nó na rede de blockchain
  */
+@Serializable
 class Node (
     var id:String?,
     val chain: Blockchain,
@@ -21,13 +24,6 @@ class Node (
 
     constructor(chain: Blockchain, notaryId: String):this(null, chain, notaryId) {
         id = createId()
-    }
-
-    init {
-        chain.addBlock(LocalDateTime.now(), listOf())
-        chain.addBlock(LocalDateTime.now(), listOf())
-        chain.addBlock(LocalDateTime.now(), listOf())
-        chain.addBlock(LocalDateTime.now(), listOf())
     }
 
     private fun createId():String {

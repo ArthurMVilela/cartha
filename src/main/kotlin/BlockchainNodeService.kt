@@ -3,6 +3,11 @@
 import blockchain.network.Node
 import blockchain.network.NodeService
 import io.ktor.application.*
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.features.json.*
+import io.ktor.client.features.json.serializer.*
+import io.ktor.client.request.*
 import io.ktor.features.*
 import io.ktor.http.*
 import io.ktor.response.*
@@ -10,12 +15,34 @@ import io.ktor.routing.*
 import io.ktor.serialization.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.Serializer
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import serviceExceptions.BadRequestException
 
 fun main() {
-    val nodeService = NodeService("http://nodemanager:8080", Node(""))
+//    val nodeId = System.getenv("NODE_ID")
+//    val nodeManagerURL = System.getenv("NODE_MANAGER_URL")
+    val nodeId = "1"
+    val nodeManagerURL = "http://localhost:8080"
 
-    embeddedServer(Netty, port = 8080) {
+    val client = HttpClient(CIO) {
+        install(JsonFeature) {
+            serializer = KotlinxSerializer()
+        }
+    }
+
+    var node:Node
+    runBlocking {
+        node = client.get {
+            url("$nodeManagerURL/nodes/$nodeId")
+        }
+    }
+
+    val nodeService = NodeService(nodeManagerURL, node)
+
+    embeddedServer(Netty, port = 8081) {
         install(ContentNegotiation)  {
             json()
         }
