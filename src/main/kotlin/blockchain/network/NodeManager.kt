@@ -48,6 +48,10 @@ class NodeManager (
             runBlocking {
                 block = requestBlock(transactions, pick)
             }
+
+            runBlocking {
+                transmitBlock(block)
+            }
         }
     }
 
@@ -59,8 +63,18 @@ class NodeManager (
         TODO("Not implemented yet")
     }
 
-    fun transmitBlock(block:Block) {
-        TODO("Not implemented yet")
+    suspend fun transmitBlock(block:Block) {
+        nodes.forEach {
+            println("${it.id} ${block.nodeId}")
+            if (it.id != block.nodeId) {
+                run {
+                    val block = client.post<Block>("${it.address}/blocks") {
+                        contentType(ContentType.Application.Json)
+                        body = block
+                    }
+                }
+            }
+        }
     }
 
     fun pickNodeToGenerateNextBlock(): Node {
@@ -70,7 +84,7 @@ class NodeManager (
     }
 
     suspend fun requestBlock(transactions: List<Transaction>, node: Node): Block {
-        val block = client.post<Block>("${node.address}/blocks") {
+        val block = client.post<Block>("${node.address}/blocks/new") {
             contentType(ContentType.Application.Json)
             body = transactions
         }

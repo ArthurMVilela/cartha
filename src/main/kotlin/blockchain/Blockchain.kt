@@ -35,8 +35,8 @@ class Blockchain(val blocks:MutableList<Block> = mutableListOf()) {
      * @param timestamp             timestamp do bloco
      * @param transactions          lista das transações do bloco
      */
-    fun addBlock(timestamp: LocalDateTime, transactions: List<Transaction>) {
-        this.addBlock(Block(timestamp, transactions, getLast().hash!!))
+    fun addBlock(timestamp: LocalDateTime, transactions: List<Transaction>, nodeId:String) {
+        this.addBlock(Block(timestamp, transactions, getLast().hash!!,nodeId))
     }
 
     /**
@@ -88,6 +88,6 @@ class Blockchain(val blocks:MutableList<Block> = mutableListOf()) {
      */
     private fun createGenesys():Block {
         val timestamp = LocalDateTime.of(Year.MIN_VALUE, Month.JANUARY, 1, 0, 0,0,0)
-        return Block(timestamp, listOf(), "")
+        return Block(timestamp, listOf(), "", null)
     }
 }

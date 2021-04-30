@@ -56,8 +56,11 @@ fun main() {
             get("/blockchain") {
                 nodeService.getBlockchain(call)
             }
-            post("/blocks") {
+            post("/blocks/new") {
                 nodeService.createBlock(call)
+            }
+            post("/blocks") {
+                nodeService.addBlock(call)
             }
         }
     }.start(true)

@@ -1,5 +1,6 @@
 package blockchain.network
 
+import blockchain.Block
 import blockchain.Transaction
 import io.ktor.application.*
 import io.ktor.client.*
@@ -39,4 +40,12 @@ class NodeManagerService {
         val node = nodeManager.nodes.first { node -> node.id == id }
         call.respond(node)
     }
+
+//    suspend fun transmitBlock(call: ApplicationCall) {
+//        val block = call.receive<Block>()
+//
+//        nodeManager.transmitBlock(block)
+//
+//        call.respond("ok")
+//    }
 }

@@ -36,6 +36,9 @@ fun main() {
             get("/nodes/{id}") {
                 service.getNode(call)
             }
+//            post("/block") {
+//                service.transmitBlock(call)
+//            }
         }
     }.start(true)
 }

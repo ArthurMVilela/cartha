@@ -5,11 +5,24 @@ import blockchain.Blockchain
 import blockchain.Transaction
 import serviceExceptions.BadRequestException
 import io.ktor.application.*
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.features.json.*
+import io.ktor.client.features.json.serializer.*
+import io.ktor.client.request.*
+import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
+import kotlinx.coroutines.runBlocking
 import java.time.LocalDateTime
 
 class NodeService(val nodeManagerAddress:String, val node: Node) {
+
+    val client = HttpClient(CIO) {
+        install(JsonFeature) {
+            serializer = KotlinxSerializer()
+        }
+    }
 
     suspend fun getBlock(call:ApplicationCall) {
         val id = call.parameters["id"]
@@ -36,8 +49,20 @@ class NodeService(val nodeManagerAddress:String, val node: Node) {
             throw BadRequestException("lista de transações vázia")
         }
 
-        node.chain.addBlock(LocalDateTime.now(), transactions)
+        node.chain.addBlock(LocalDateTime.now(), transactions, node.id!!)
         call.respond(node.chain.getLast())
+    }
+
+    suspend fun addBlock(call: ApplicationCall) {
+        val block = try {
+            call.receive<Block>()
+        } catch (ex: Exception) {
+            throw BadRequestException("Corpo da requisição inválida")
+        }
+
+        node.chain.addBlock(block)
+
+        call.respond(block)
     }
 
     suspend fun createTransaction(call: ApplicationCall) {

@@ -62,7 +62,8 @@ fun main() {
                         Transaction(LocalDateTime.now(), "2222", "-------", TransactionType.Creation),
                         Transaction(LocalDateTime.now(), "1111", "------1", TransactionType.Registering)
                     ),
-                    "11111"
+                    "11111",
+                    ""
                 )
 
                 val data = mapOf(

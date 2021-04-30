@@ -31,6 +31,7 @@
                         </div>
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item">ID: ${block.id}</li>
+                            <li class="list-group-item">Node criador: ${(block.nodeId)!"null"}</li>
                             <li class="list-group-item">Timestamp: ${block.timestamp}</li>
                             <li class="list-group-item">Hash das transações: ${block.transactionsHash}</li>
                             <li class="list-group-item">Hash do bloco: ${block.hash}</li>

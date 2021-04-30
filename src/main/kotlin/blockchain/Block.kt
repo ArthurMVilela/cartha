@@ -20,19 +20,22 @@ class Block(
     val transactions: List<Transaction>,
     var transactionsHash: String?,
     val previousHash: String,
-    var hash: String?
+    var hash: String?,
+    var nodeId: String?
 ) {
     constructor(
         timestamp: LocalDateTime,
         transactions: List<Transaction>,
-        previousHash: String
+        previousHash: String,
+        nodeId: String?
     ):this(
         null,
         timestamp,
         transactions,
         null,
         previousHash,
-        null
+        null,
+        nodeId
     ) {
         this.id = createId()
         this.transactionsHash = createTransactionsHash()
