@@ -37,7 +37,7 @@
                             <li class="list-group-item">Hash do bloco: ${block.hash}</li>
                         </ul>
                         <div class="card-body">
-                            <a href="/blocks/${block.id}" class="btn btn-primary">Ver detalhes do bloco</a>
+                            <a href="/blocks/${selected}/${block.id}" class="btn btn-primary">Ver detalhes do bloco</a>
                         </div>
 
                     </div>

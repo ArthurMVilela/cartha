@@ -54,22 +54,8 @@ fun main() {
             get("/blockchain/{notaryId}") {
                 service.getBlockChain(call)
             }
-            get("/block") {
-                val block = Block(
-                    LocalDateTime.now(),
-                    listOf(
-                        Transaction(LocalDateTime.now(), "1111", "-------", TransactionType.Creation),
-                        Transaction(LocalDateTime.now(), "2222", "-------", TransactionType.Creation),
-                        Transaction(LocalDateTime.now(), "1111", "------1", TransactionType.Registering)
-                    ),
-                    "11111",
-                    ""
-                )
-
-                val data = mapOf(
-                    "block" to block,
-                )
-                call.respond(FreeMarkerContent("block.ftl", data))
+            get("/blocks/{nodeId}/{blockId}") {
+                service.getBlock(call)
             }
         }
     }.start(true)

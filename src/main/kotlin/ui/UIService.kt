@@ -1,5 +1,6 @@
 package ui
 
+import blockchain.Block
 import blockchain.Blockchain
 import blockchain.Transaction
 import blockchain.TransactionType
@@ -60,5 +61,30 @@ class UIService {
         )
 
         call.respond(FreeMarkerContent("blockchain.ftl", data))
+    }
+    suspend fun getBlock(call: ApplicationCall) {
+        val blockId = call.parameters["blockId"]
+        val nodeId = call.parameters["nodeId"]
+
+        val nodes:List<Node>
+        runBlocking {
+            nodes = client.get {
+                url("$nodeManagerURL/nodes")
+            }
+        }
+
+        val node = nodes.first {node -> node.id == nodeId }
+        val block:Block
+        runBlocking {
+            block = client.get {
+                url("${node.address}/blocks/$blockId")
+            }
+        }
+
+        val data = mapOf(
+            "block" to block
+        )
+
+        call.respond(FreeMarkerContent("block.ftl", data))
     }
 }
