@@ -4,6 +4,14 @@ import blockchain.Block
 import blockchain.Blockchain
 import blockchain.Config
 import blockchain.Transaction
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.features.json.*
+import io.ktor.client.features.json.serializer.*
+import io.ktor.client.request.*
+import io.ktor.http.*
+import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.encodeToString
 import java.util.*
 
 /**
@@ -15,15 +23,31 @@ class NodeManager (
     var transactionQueue: Queue<Transaction> = LinkedList<Transaction>()
 
     init {
-        nodes.add(Node("1", Blockchain(), "1"))
-        nodes.add(Node("2", nodes[0].chain, "2"))
+        nodes.add(Node("1", Blockchain(), "1", "http://node_a:8080"))
+        nodes.add(Node("2", nodes[0].chain, "2", "http://node_b:8080"))
+    }
+
+    val client = HttpClient(CIO) {
+        install(JsonFeature) {
+            serializer = KotlinxSerializer()
+        }
     }
 
     fun addTransactionToQueue(transaction: Transaction) {
         transactionQueue.add(transaction)
-        transmitTransaction(transaction)
+        //transmitTransaction(transaction)
         if (transactionQueue.size >= Config.transactionAmount) {
-            pickNodeToGenerateNextBlock()
+            val pick = pickNodeToGenerateNextBlock()
+            val transactions = mutableListOf<Transaction>()
+
+            for (i in 0 until Config.transactionAmount) {
+                transactions.add(transactionQueue.remove())
+            }
+
+            val block:Block
+            runBlocking {
+                block = requestBlock(transactions, pick)
+            }
         }
     }
 
@@ -39,7 +63,18 @@ class NodeManager (
         TODO("Not implemented yet")
     }
 
-    fun pickNodeToGenerateNextBlock(){
-        TODO("Not implemented yet")
+    fun pickNodeToGenerateNextBlock(): Node {
+        val pick = nodes.random()
+
+        return pick
+    }
+
+    suspend fun requestBlock(transactions: List<Transaction>, node: Node): Block {
+        val block = client.post<Block>("${node.address}/blocks") {
+            contentType(ContentType.Application.Json)
+            body = transactions
+        }
+
+        return block
     }
 }

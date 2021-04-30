@@ -16,16 +16,11 @@ import io.ktor.serialization.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.Serializer
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import serviceExceptions.BadRequestException
 
 fun main() {
-//    val nodeId = System.getenv("NODE_ID")
-//    val nodeManagerURL = System.getenv("NODE_MANAGER_URL")
-    val nodeId = "1"
-    val nodeManagerURL = "http://localhost:8080"
+    val nodeId = System.getenv("NODE_ID")
+    val nodeManagerURL = System.getenv("NODE_MANAGER_URL")
 
     val client = HttpClient(CIO) {
         install(JsonFeature) {
@@ -42,7 +37,7 @@ fun main() {
 
     val nodeService = NodeService(nodeManagerURL, node)
 
-    embeddedServer(Netty, port = 8081) {
+    embeddedServer(Netty, port = 8080) {
         install(ContentNegotiation)  {
             json()
         }

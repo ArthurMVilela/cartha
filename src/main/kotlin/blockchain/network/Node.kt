@@ -16,13 +16,14 @@ import kotlin.random.Random
 class Node (
     var id:String?,
     val chain: Blockchain,
-    val notaryId: String
+    val notaryId: String,
+    val address:String
 ){
-    constructor(notaryId: String):this(null, Blockchain(), notaryId) {
+    constructor(notaryId: String, address:String):this(null, Blockchain(), notaryId, address) {
         id = createId()
     }
 
-    constructor(chain: Blockchain, notaryId: String):this(null, chain, notaryId) {
+    constructor(chain: Blockchain, notaryId: String, address:String):this(null, chain, notaryId,address) {
         id = createId()
     }
 

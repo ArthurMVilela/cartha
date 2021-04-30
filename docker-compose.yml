@@ -39,17 +39,41 @@ services:
     networks:
       - net
 
-  node:
-    container_name: "node"
+  node-a:
+    container_name: "node_a"
     build:
       context: .
       dockerfile: node.Dockerfile
+    depends_on:
+      - node-manager
+    links:
+      - node-manager
     ports:
-      - "5000:8080"
+      - "5001:8080"
     networks:
       - net
+    environment:
+      NODE_ID: "1"
+      NODE_MANAGER_URL: "http://node_manager:8080"
 
-  node_manager:
+  node-b:
+    container_name: "node_b"
+    build:
+      context: .
+      dockerfile: node.Dockerfile
+    depends_on:
+      - node-manager
+    links:
+      - node-manager
+    ports:
+      - "5002:8080"
+    networks:
+      - net
+    environment:
+      NODE_ID: "2"
+      NODE_MANAGER_URL: "http://node_manager:8080"
+
+  node-manager:
     container_name: "node_manager"
     build:
       context: .

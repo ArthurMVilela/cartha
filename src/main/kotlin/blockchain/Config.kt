@@ -1,5 +1,5 @@
 package blockchain
 
 object Config {
-    const val transactionAmount = 10
+    const val transactionAmount = 1
 }

@@ -8,6 +8,17 @@
     <#include "./partials/menu.ftl">
     <div class="container">
         <div class="row my-3">
+            <select class="form-select" id="node-select">
+                <#list nodes as node>
+                    <#if selected == node.id>
+                        <option value="${node.id}" selected>${node.id}</option>
+                    <#else>
+                        <option value="${node.id}">${node.id}</option>
+                    </#if>
+                </#list>
+            </select>
+        </div>
+        <div class="row my-3">
             <p>Número de blocos: ${blockchain.blocks?size}</p>
         </div>
 
@@ -35,5 +46,11 @@
     </div>
 
     <script type="text/javascript" src="/static/main.js"></script>
+    <script type="text/javascript">
+        $("#node-select").change(function () {
+            console.log( $( "#node-select option:selected" ).text())
+            $(location).attr('href', '/blockchain/' + $( "#node-select option:selected" ).text())
+        })
+    </script>
 </body>
 </html>

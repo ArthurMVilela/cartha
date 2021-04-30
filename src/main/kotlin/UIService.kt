@@ -14,9 +14,11 @@ import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import ui.EnumMaps
+import ui.UIService
 import java.time.LocalDateTime
 
 fun main() {
+    val service = UIService()
     embeddedServer(Netty, port = 8080) {
         install(FreeMarker) {
             templateLoader = ClassTemplateLoader(this::class.java.classLoader, "templates")
@@ -47,32 +49,10 @@ fun main() {
                 call.respond(FreeMarkerContent("official.ftl", data))
             }
             get("/blockchain") {
-                val blockchain = Blockchain()
-
-                blockchain.addBlock(
-                    LocalDateTime.now(),
-                    listOf(
-                        Transaction(LocalDateTime.now(), "1111", "-------", TransactionType.Creation),
-                        Transaction(LocalDateTime.now(), "2222", "-------", TransactionType.Creation),
-                        Transaction(LocalDateTime.now(), "1111", "------1", TransactionType.Registering)
-                    )
-                )
-
-                blockchain.addBlock(
-                    LocalDateTime.now(),
-                    listOf(
-                        Transaction(LocalDateTime.now(), "1111", "-------", TransactionType.Creation),
-                        Transaction(LocalDateTime.now(), "2222", "-------", TransactionType.Creation),
-                        Transaction(LocalDateTime.now(), "1111", "------1", TransactionType.Registering)
-                    )
-                )
-
-
-                val data = mapOf(
-                    "blockchain" to blockchain,
-                )
-
-                call.respond(FreeMarkerContent("blockchain.ftl", data))
+                service.getBlockChain(call)
+            }
+            get("/blockchain/{notaryId}") {
+                service.getBlockChain(call)
             }
             get("/block") {
                 val block = Block(
