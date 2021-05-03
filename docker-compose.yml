@@ -20,6 +20,7 @@ services:
 
   document:
     container_name: "document"
+    restart: on-failure:20
     build:
       context: .
       dockerfile: document.Dockerfile
@@ -35,6 +36,50 @@ services:
       DATABASE_NAME: "cartha_document_db"
       DATABASE_USER: "document"
       DATABASE_PASSWORD: "document"
+    networks:
+      - net
+
+  node-a:
+    container_name: "node_a"
+    build:
+      context: .
+      dockerfile: node.Dockerfile
+    depends_on:
+      - node-manager
+    links:
+      - node-manager
+    ports:
+      - "5001:8080"
+    networks:
+      - net
+    environment:
+      NODE_ID: "1"
+      NODE_MANAGER_URL: "http://node_manager:8080"
+
+  node-b:
+    container_name: "node_b"
+    build:
+      context: .
+      dockerfile: node.Dockerfile
+    depends_on:
+      - node-manager
+    links:
+      - node-manager
+    ports:
+      - "5002:8080"
+    networks:
+      - net
+    environment:
+      NODE_ID: "2"
+      NODE_MANAGER_URL: "http://node_manager:8080"
+
+  node-manager:
+    container_name: "node_manager"
+    build:
+      context: .
+      dockerfile: nodeManager.Dockerfile
+    ports:
+      - "6000:8080"
     networks:
       - net
 

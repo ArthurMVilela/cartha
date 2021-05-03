@@ -1,25 +1,24 @@
 @file:JvmName("UIService")
 
-import document.PhysicalPerson
-import document.Sex
-import document.service.BadRequestException
+import blockchain.Block
+import blockchain.Blockchain
+import blockchain.Transaction
+import blockchain.TransactionType
 import freemarker.cache.*
 import freemarker.core.*
 import io.ktor.application.*
-import io.ktor.features.*
 import io.ktor.freemarker.*
-import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.response.*
 import io.ktor.routing.*
-import io.ktor.serialization.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import ui.EnumMaps
-import java.time.Month
-import java.util.*
+import ui.UIService
+import java.time.LocalDateTime
 
 fun main() {
+    val service = UIService()
     embeddedServer(Netty, port = 8080) {
         install(FreeMarker) {
             templateLoader = ClassTemplateLoader(this::class.java.classLoader, "templates")
@@ -48,6 +47,15 @@ fun main() {
                 )
 
                 call.respond(FreeMarkerContent("official.ftl", data))
+            }
+            get("/blockchain") {
+                service.getBlockChain(call)
+            }
+            get("/blockchain/{notaryId}") {
+                service.getBlockChain(call)
+            }
+            get("/blocks/{nodeId}/{blockId}") {
+                service.getBlock(call)
             }
         }
     }.start(true)
