@@ -23,8 +23,8 @@ class UserDAO(id: EntityID<String>): Entity<String>(id), DAO<User> {
                 try {
                     r = new(obj.id!!) {
                         name = obj.name
-                        email = obj.email
-                        cpf = obj.cpf
+                        email = obj.email!!
+                        cpf = obj.cpf!!
                         salt = obj.salt!!
                         pass = obj.pass!!
                         role = obj.role
@@ -85,8 +85,8 @@ class UserDAO(id: EntityID<String>): Entity<String>(id), DAO<User> {
                 try {
                     val found = findById(obj.id!!)!!
                     found.name = obj.name
-                    found.email = obj.email
-                    found.cpf = obj.cpf
+                    found.email = obj.email!!
+                    found.cpf = obj.cpf!!
                     found.salt = obj.salt!!
                     found.pass = obj.pass!!
                     found.role = obj.role

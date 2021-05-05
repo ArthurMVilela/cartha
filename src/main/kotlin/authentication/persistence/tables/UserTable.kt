@@ -9,8 +9,8 @@ import org.jetbrains.exposed.sql.Column
 object UserTable: IdTable<String>("user") {
     override val id: Column<EntityID<String>> = char("id", 44).entityId()
     val name = varchar("name", 120)
-    val email = varchar("email", 120).nullable()
-    val cpf = char("cpf", 11).nullable()
+    val email = varchar("email", 120).uniqueIndex()
+    val cpf = char("cpf", 11).uniqueIndex()
     val salt = char("salt", 32)
     val pass = char("pass", 44)
     val role = enumeration("role", Role::class)

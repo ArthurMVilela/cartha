@@ -31,7 +31,7 @@ class User(
     var permissions: List<Permission>
 ) {
     companion object {
-        fun createClient(name: String, email: String?, cpf: String?, password: String):User {
+        fun createClient(name: String, email: String, cpf: String, password: String):User {
             val user = User(name, email, cpf, Role.Client, listOf(), password)
             val permissions = mutableListOf<Permission>()
 
@@ -41,7 +41,7 @@ class User(
             return user
         }
 
-        fun createOfficial(name: String, email: String?, cpf: String?, password: String, notaryId:String):User {
+        fun createOfficial(name: String, email: String, cpf: String, password: String, notaryId:String):User {
             val user = User(name, email, cpf, Role.Official, listOf(), password)
             val permissions = mutableListOf<Permission>()
 
@@ -51,7 +51,7 @@ class User(
             return user
         }
 
-        fun createManager(name: String, email: String?, cpf: String?, password: String, notaryId:String):User {
+        fun createManager(name: String, email: String, cpf: String, password: String, notaryId:String):User {
             val user = User(name, email, cpf, Role.Manager, listOf(), password)
             val permissions = mutableListOf<Permission>()
 
@@ -62,11 +62,11 @@ class User(
             return user
         }
 
-        fun createSysAdmin(name: String, email: String?, cpf: String?, password: String, notaryId:String):User {
+        fun createSysAdmin(name: String, email: String, cpf: String, password: String,):User {
             val user = User(name, email, cpf, Role.SysAdmin, listOf(), password)
             val permissions = mutableListOf<Permission>()
 
-            permissions.add(Permission(user.id!!,Subject.Notaries, null))
+            permissions.add(Permission(user.id!!, Subject.Notaries, null))
 
             user.permissions = permissions
             return user
@@ -75,8 +75,8 @@ class User(
 
     constructor(
         name: String,
-        email: String?,
-        cpf: String?,
+        email: String,
+        cpf: String,
         role: Role,
         permissions: List<Permission>,
         password: String

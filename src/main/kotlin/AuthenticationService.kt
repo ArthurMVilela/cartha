@@ -43,6 +43,17 @@ fun main() {
             post("/user/client") {
                 service.createClientUser(call)
             }
+            post("/user/official") {
+                service.createOfficialUser(call)
+            }
+            post("/user/manager") {
+                service.createManagerUser(call)
+            }
+            post("/user/sysadmin") {
+                service.createSysAdmin(call)
+            }
+
+
         }
     }.start(true)
 
