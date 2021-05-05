@@ -25,13 +25,15 @@ class User(
     var cpf: String?,
     var salt: String?,
     var pass: String?,
+    val role: Role
 ) {
     constructor(
         name: String,
         email: String?,
         cpf: String?,
+        role: Role,
         password: String
-    ):this(null, name, email, cpf, null, null,){
+    ):this(null, name, email, cpf, null, null, role){
         id = createId()
 
         salt = createSalt()
