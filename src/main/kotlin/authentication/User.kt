@@ -35,7 +35,7 @@ class User(
             val user = User(name, email, cpf, Role.Client, listOf(), password)
             val permissions = mutableListOf<Permission>()
 
-            permissions.add(Permission(Subject.PersonalDocument, user.id))
+            permissions.add(Permission(user.id!!, Subject.PersonalDocument, user.id))
 
             user.permissions = permissions
             return user
@@ -45,7 +45,7 @@ class User(
             val user = User(name, email, cpf, Role.Official, listOf(), password)
             val permissions = mutableListOf<Permission>()
 
-            permissions.add(Permission(Subject.CivilRegistry, notaryId))
+            permissions.add(Permission(user.id!!,Subject.CivilRegistry, notaryId))
 
             user.permissions = permissions
             return user
@@ -55,8 +55,8 @@ class User(
             val user = User(name, email, cpf, Role.Manager, listOf(), password)
             val permissions = mutableListOf<Permission>()
 
-            permissions.add(Permission(Subject.CivilRegistry, notaryId))
-            permissions.add(Permission(Subject.Notary, notaryId))
+            permissions.add(Permission(user.id!!,Subject.CivilRegistry, notaryId))
+            permissions.add(Permission(user.id!!,Subject.Notary, notaryId))
 
             user.permissions = permissions
             return user
@@ -66,7 +66,7 @@ class User(
             val user = User(name, email, cpf, Role.SysAdmin, listOf(), password)
             val permissions = mutableListOf<Permission>()
 
-            permissions.add(Permission(Subject.Notaries, null))
+            permissions.add(Permission(user.id!!,Subject.Notaries, null))
 
             user.permissions = permissions
             return user

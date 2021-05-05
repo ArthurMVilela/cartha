@@ -13,10 +13,11 @@ import kotlin.random.Random
 @Serializable
 class Permission(
     var id: String?,
+    val userId: String,
     val subject: Subject,
     val domainId: String?
 ) {
-    constructor(subject: Subject, domainId: String?): this(null, subject, domainId) {
+    constructor(userId: String, subject: Subject, domainId: String?): this(null, userId, subject, domainId) {
         id = createId()
     }
 
