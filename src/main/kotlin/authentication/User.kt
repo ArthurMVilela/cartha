@@ -25,15 +25,17 @@ class User(
     var cpf: String?,
     var salt: String?,
     var pass: String?,
-    val role: Role
+    val role: Role,
+    val permissions: List<Permission>
 ) {
     constructor(
         name: String,
         email: String?,
         cpf: String?,
         role: Role,
+        permissions: List<Permission>,
         password: String
-    ):this(null, name, email, cpf, null, null, role){
+    ):this(null, name, email, cpf, null, null, role, permissions){
         id = createId()
 
         salt = createSalt()
