@@ -117,6 +117,8 @@ class PermissionDAO(id: EntityID<String>): Entity<String>(id), DAO<Permission> {
     var domainId by PermissionTable.domainId
 
     override fun toType(): Permission? {
-        TODO("Not yet implemented")
+        return Permission(
+            userId.value, subject, domainId
+        )
     }
 }

@@ -1,5 +1,6 @@
 package authentication.persistence.dao
 
+import authentication.Permission
 import authentication.User
 import authentication.persistence.tables.PermissionTable
 import authentication.persistence.tables.UserTable
@@ -139,6 +140,12 @@ class UserDAO(id: EntityID<String>): Entity<String>(id), DAO<User> {
     val permissions by PermissionDAO referrersOn PermissionTable.userId
 
     override fun toType(): User? {
-        TODO("Not yet implemented")
+        var permissionList:List<Permission> = listOf()
+        transaction {
+            permissionList = permissions.map { it.toType()!! }
+        }
+        return User(
+            id.value, name, email, cpf, salt, pass, role, permissionList
+        )
     }
 }
