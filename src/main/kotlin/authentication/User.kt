@@ -10,12 +10,14 @@ import kotlin.random.Random
 /**
  * Representa um usuário do sistema
  *
- * @property id         identificador único do usuário
- * @property name       nome do usuário
- * @property email      email do usuário
- * @property cpf        cpf dp usuário
- * @property salt       salt para a validação do usuário
- * @property pass       pass para a validação do usuário
+ * @property id             identificador único do usuário
+ * @property name           nome do usuário
+ * @property email          email do usuário
+ * @property cpf            cpf dp usuário
+ * @property salt           salt para a validação do usuário
+ * @property pass           pass para a validação do usuário
+ * @property role           função/cargo do usuário
+ * @property permissions    permissções do usuário
  */
 @Serializable
 class User(
@@ -26,8 +28,51 @@ class User(
     var salt: String?,
     var pass: String?,
     val role: Role,
-    val permissions: List<Permission>
+    var permissions: List<Permission>
 ) {
+    companion object {
+        fun createClient(name: String, email: String?, cpf: String?, password: String):User {
+            val user = User(name, email, cpf, Role.Client, listOf(), password)
+            val permissions = mutableListOf<Permission>()
+
+            permissions.add(Permission(Subject.PersonalDocument, user.id))
+
+            user.permissions = permissions
+            return user
+        }
+
+        fun createOfficial(name: String, email: String?, cpf: String?, password: String, notaryId:String):User {
+            val user = User(name, email, cpf, Role.Official, listOf(), password)
+            val permissions = mutableListOf<Permission>()
+
+            permissions.add(Permission(Subject.CivilRegistry, notaryId))
+
+            user.permissions = permissions
+            return user
+        }
+
+        fun createManager(name: String, email: String?, cpf: String?, password: String, notaryId:String):User {
+            val user = User(name, email, cpf, Role.Manager, listOf(), password)
+            val permissions = mutableListOf<Permission>()
+
+            permissions.add(Permission(Subject.CivilRegistry, notaryId))
+            permissions.add(Permission(Subject.Notary, notaryId))
+
+            user.permissions = permissions
+            return user
+        }
+
+        fun createSysAdmin(name: String, email: String?, cpf: String?, password: String, notaryId:String):User {
+            val user = User(name, email, cpf, Role.SysAdmin, listOf(), password)
+            val permissions = mutableListOf<Permission>()
+
+            permissions.add(Permission(Subject.Notaries, null))
+
+            user.permissions = permissions
+            return user
+        }
+    }
+
     constructor(
         name: String,
         email: String?,
