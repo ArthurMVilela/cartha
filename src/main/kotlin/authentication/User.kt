@@ -88,6 +88,7 @@ class User(
     }
 
     fun validatePassword(password: String):Boolean {
+        println("$pass ${createPass(password)}")
         return pass == createPass(password)
     }
 

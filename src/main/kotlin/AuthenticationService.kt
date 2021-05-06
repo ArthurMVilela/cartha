@@ -52,6 +52,15 @@ fun main() {
             post("/user/sysadmin") {
                 service.createSysAdmin(call)
             }
+            post("/login") {
+                service.login(call)
+            }
+            get("/session/{id}") {
+                service.getSession(call)
+            }
+            post("/logout/{id}") {
+                service.logout(call)
+            }
 
 
         }
