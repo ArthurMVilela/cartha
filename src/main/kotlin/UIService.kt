@@ -24,11 +24,16 @@ import ui.UserSessionCookie
 import java.time.LocalDateTime
 
 fun main() {
+    val nodeManagerURL = System.getenv("NODE_MANAGER_URL")
+    val authenticationURL = System.getenv("AUTHENTICATION_URL")
+
+    println("$nodeManagerURL $authenticationURL")
+
     val service = UIService(
-        nodeManagerURL = System.getenv("NODE_MANAGER_URL"),
-        authenticationURL = System.getenv("AUTHENTICATION_URL")
+        nodeManagerURL = nodeManagerURL,
+        authenticationURL = authenticationURL
     )
-    embeddedServer(Netty, port = 8080) {
+    embeddedServer(Netty, port = 8081) {
         install(Sessions) {
             cookie<UserSessionCookie>("USER_SESSION"){
                 cookie.path = "/"
@@ -72,6 +77,10 @@ fun main() {
             get("/logout") {
                 service.logout(call)
             }
+            get("/create-account/client") {
+                service.getClientUserPage(call)
+            }
+            post("/create-account/client") {}
 
             authenticate {
                 get("/physical_person") {

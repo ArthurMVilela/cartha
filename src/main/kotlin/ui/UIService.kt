@@ -127,6 +127,23 @@ class UIService (
         call.respondRedirect("/")
     }
 
+    suspend fun getClientUserPage(call: ApplicationCall) {
+        val userSession = getUserSession(call)
+        val menu = getMenu(userSession?.userRole)
+
+        val data = mapOf(
+            "userRole" to userSession?.userRole,
+            "menu" to menu,
+            "sex" to EnumMaps.sex,
+            "month" to EnumMaps.month,
+            "civilStatus" to EnumMaps.civilStatus,
+            "color" to EnumMaps.color
+        )
+
+        call.respond(FreeMarkerContent("create-client.ftl", data))
+    }
+    suspend fun createClientUser(call: ApplicationCall) {}
+
     suspend fun logout(call: ApplicationCall) {
         val session = getUserSession(call)?:throw BadRequestException("Nenhuma sessão encontrada")
         if (session.end != null) {
