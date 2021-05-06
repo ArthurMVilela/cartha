@@ -7,14 +7,17 @@ import blockchain.TransactionType
 import freemarker.cache.*
 import freemarker.core.*
 import io.ktor.application.*
+import io.ktor.auth.*
 import io.ktor.freemarker.*
 import io.ktor.http.content.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import io.ktor.sessions.*
 import ui.EnumMaps
 import ui.UIService
+import ui.UserSessionCookie
 import java.time.LocalDateTime
 
 fun main() {
@@ -23,6 +26,20 @@ fun main() {
         authenticationURL = System.getenv("AUTHENTICATION_URL")
     )
     embeddedServer(Netty, port = 8080) {
+        install(Sessions) {
+            cookie<UserSessionCookie>("USER_SESSION"){
+                cookie.path = "/"
+                cookie.maxAgeInSeconds = 24*60*60
+            }
+        }
+        install(Authentication) {
+            session<UserSessionCookie>() {
+                challenge {
+                    call.respondRedirect("/login")
+                }
+                validate { session -> session }
+            }
+        }
         install(FreeMarker) {
             templateLoader = ClassTemplateLoader(this::class.java.classLoader, "templates")
             outputFormat = HTMLOutputFormat.INSTANCE
@@ -30,6 +47,9 @@ fun main() {
         routing {
             static("static") {
                 resources("js")
+            }
+            get("/") {
+                service.getMainPage(call)
             }
             get("/physical_person") {
                 val data = mapOf(

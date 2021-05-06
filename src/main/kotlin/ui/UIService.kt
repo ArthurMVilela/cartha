@@ -1,9 +1,9 @@
 package ui
 
+import authentication.Role
+import authentication.UserSession
 import blockchain.Block
 import blockchain.Blockchain
-import blockchain.Transaction
-import blockchain.TransactionType
 import blockchain.network.Node
 import io.ktor.application.*
 import io.ktor.client.*
@@ -13,11 +13,8 @@ import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
 import io.ktor.freemarker.*
 import io.ktor.response.*
-import io.ktor.util.*
-import io.ktor.util.url
+import io.ktor.sessions.*
 import kotlinx.coroutines.runBlocking
-import java.time.LocalDateTime
-import kotlin.text.get
 
 class UIService (
     val nodeManagerURL:String,
@@ -27,6 +24,43 @@ class UIService (
         install(JsonFeature) {
             serializer = KotlinxSerializer()
         }
+    }
+
+    suspend fun getUserSession(call: ApplicationCall): UserSession? {
+        val cookie = call.sessions.get<UserSessionCookie>() ?: return null
+
+        return try {
+            val session = runBlocking {
+                return@runBlocking client.get<UserSession>() {
+                    url("$authenticationURL/session/${cookie.sessionId}")
+                }
+            }
+            session
+        } catch (ex: Exception) {
+            null
+        }
+    }
+
+    fun getMenu(role: Role?):Map<String, String> {
+        return when(role) {
+            null -> Menus.anonimous
+            Role.Client -> Menus.client
+            Role.Official -> Menus.official
+            Role.Manager -> Menus.manager
+            Role.SysAdmin -> Menus.sysAdmin
+        }
+    }
+
+    suspend fun getMainPage(call: ApplicationCall) {
+        val userSession = getUserSession(call)
+        val menu = getMenu(userSession?.userRole)
+
+        val data = mapOf(
+            "userRole" to userSession?.userRole,
+            "menu" to menu
+        )
+
+        call.respond(FreeMarkerContent("main.ftl", data))
     }
 
     suspend fun getBlockChain(call:ApplicationCall) {
