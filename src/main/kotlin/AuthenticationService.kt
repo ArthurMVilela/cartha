@@ -3,10 +3,13 @@
 import authentication.services.AuthenticationService
 import io.ktor.application.*
 import io.ktor.features.*
+import io.ktor.http.*
+import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.serialization.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import kotlin.system.exitProcess
@@ -38,6 +41,17 @@ fun main() {
     embeddedServer(Netty, port = 8080) {
         install(ContentNegotiation) {
             json()
+        }
+        install(StatusPages) {
+            exception<BadRequestException> { cause ->
+                call.respond(HttpStatusCode.BadRequest, cause.message?:"")
+            }
+            exception<NotFoundException> { cause ->
+                call.respond(HttpStatusCode.NotFound, cause.message?:"")
+            }
+            exception<ExposedSQLException> { cause ->
+                call.respond(HttpStatusCode.BadRequest, cause.message?:"")
+            }
         }
         routing {
             post("/user/client") {

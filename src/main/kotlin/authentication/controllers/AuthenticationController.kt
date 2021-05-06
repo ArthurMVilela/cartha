@@ -87,10 +87,6 @@ class AuthenticationController {
             }
         }
 
-
-
-
-
         val session = UserSession(user!!, LocalDateTime.now(ZoneOffset.UTC))
 
         return UserSessionDAO.insert(session).toType()!!
