@@ -14,12 +14,12 @@ import kotlin.system.exitProcess
 fun main() {
 
     try {
-        val host = "localhost"//System.getenv("DATABASE_HOST")
-        val port = "3306"//System.getenv("DATABASE_PORT")
-        val database = "authentication_db"//System.getenv("DATABASE_NAME")
-        val user = "root"//System.getenv("DATABASE_USER")
-        val password = "test"//System.getenv("DATABASE_PASSWORD")
-        val url = "jdbc:mysql://$host:$port/$database?verifyServerCertificate=false&useSSL=false"
+        val host = System.getenv("DATABASE_HOST")
+        val port = System.getenv("DATABASE_PORT")
+        val database = System.getenv("DATABASE_NAME")
+        val user = System.getenv("DATABASE_USER")
+        val password = System.getenv("DATABASE_PASSWORD")
+        val url = "jdbc:mysql://$host:$port/$database?verifyServerCertificate=false&useSSL=true"
         println(url)
         val db = Database.connect(
             url = url,
