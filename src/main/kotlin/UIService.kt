@@ -8,6 +8,8 @@ import freemarker.cache.*
 import freemarker.core.*
 import io.ktor.application.*
 import io.ktor.auth.*
+import io.ktor.client.engine.*
+import io.ktor.features.*
 import io.ktor.freemarker.*
 import io.ktor.http.content.*
 import io.ktor.response.*
@@ -29,7 +31,6 @@ fun main() {
         install(Sessions) {
             cookie<UserSessionCookie>("USER_SESSION"){
                 cookie.path = "/"
-                cookie.maxAgeInSeconds = 24*60*60
             }
         }
         install(Authentication) {
@@ -37,7 +38,16 @@ fun main() {
                 challenge {
                     call.respondRedirect("/login")
                 }
-                validate { session -> session }
+                validate { session ->
+                    val userSession = service.getUserSession(session)?: return@validate null
+
+                    if (userSession.end != null) {
+
+                        return@validate null
+                    }
+
+                    session
+                }
             }
         }
         install(FreeMarker) {
@@ -51,6 +61,17 @@ fun main() {
             get("/") {
                 service.getMainPage(call)
             }
+
+            get("/login") {
+                service.getLogin(call)
+            }
+            post("/login") {
+                service.postLogin(call)
+            }
+            get("/logout") {
+                service.logout(call)
+            }
+
             get("/physical_person") {
                 val data = mapOf(
                     "sex" to EnumMaps.sex,

@@ -11,7 +11,11 @@ import io.ktor.client.engine.cio.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
+import io.ktor.client.request.forms.*
+import io.ktor.features.*
 import io.ktor.freemarker.*
+import io.ktor.http.*
+import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.sessions.*
 import kotlinx.coroutines.runBlocking
@@ -29,6 +33,10 @@ class UIService (
     suspend fun getUserSession(call: ApplicationCall): UserSession? {
         val cookie = call.sessions.get<UserSessionCookie>() ?: return null
 
+        return getUserSession(cookie)
+    }
+
+    suspend fun getUserSession(cookie: UserSessionCookie): UserSession? {
         return try {
             val session = runBlocking {
                 return@runBlocking client.get<UserSession>() {
@@ -61,6 +69,71 @@ class UIService (
         )
 
         call.respond(FreeMarkerContent("main.ftl", data))
+    }
+
+    suspend fun getLogin(call: ApplicationCall) {
+        val userSession = getUserSession(call)
+
+        if (userSession?.end != null) {
+            call.respondRedirect("/")
+            return
+        }
+
+        val menu = getMenu(null)
+
+        val data = mapOf(
+            "userRole" to null,
+            "menu" to menu
+        )
+
+        call.respond(FreeMarkerContent("login.ftl", data))
+    }
+
+    suspend fun postLogin(call: ApplicationCall) {
+        val parameters = call.receiveParameters()
+
+        if (parameters["email"].isNullOrEmpty() && parameters["cpf"].isNullOrEmpty()) {
+            throw BadRequestException("Email ou cpf deve não ser nulo")
+        }
+
+        if (parameters["password"].isNullOrEmpty()) {
+            throw BadRequestException("Senha não pode ser nula ou vázia")
+        }
+
+        val session = try {
+            runBlocking {
+                return@runBlocking client.submitForm<UserSession>(
+                    url = "$authenticationURL/login",
+                    formParameters = Parameters.build {
+                        parameters["email"]?.let { append("email", it) }
+                        parameters["cpf"]?.let { append("cpf", it) }
+                        append("password", parameters["password"]!!)
+                    }
+                )
+            }
+        } catch (ex: Exception) {
+            throw ex
+        }
+
+        call.sessions.set("USER_SESSION", UserSessionCookie(session.id!!))
+        call.respondRedirect("/")
+    }
+
+    suspend fun logout(call: ApplicationCall) {
+        val session = getUserSession(call)?:throw BadRequestException("Nenhuma sessão encontrada")
+        if (session.end != null) {
+            throw BadRequestException("Sessão já encerrada")
+        }
+
+        try {
+            client.post<Any>("$authenticationURL/logout/${session.id}")
+        } catch (ex: Exception) {
+            throw ex
+        }
+
+        call.sessions.clear("USER_SESSION")
+
+        call.respondRedirect("/")
     }
 
     suspend fun getBlockChain(call:ApplicationCall) {
