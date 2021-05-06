@@ -19,8 +19,10 @@ import kotlinx.coroutines.runBlocking
 import java.time.LocalDateTime
 import kotlin.text.get
 
-class UIService {
-    val nodeManagerURL = "http://node_manager:8080"
+class UIService (
+    val nodeManagerURL:String,
+    val authenticationURL:String
+) {
     val client = HttpClient(CIO) {
         install(JsonFeature) {
             serializer = KotlinxSerializer()

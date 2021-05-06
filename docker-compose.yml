@@ -129,6 +129,9 @@ services:
       dockerfile: ui.Dockerfile
     ports:
       - "8080:8080"
+    environment:
+      NODE_MANAGER_URL: "http://node_manager:8080"
+      AUTHENTICATION_URL: "http://authentication:8080"
     networks:
       - net
 

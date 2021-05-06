@@ -18,7 +18,10 @@ import ui.UIService
 import java.time.LocalDateTime
 
 fun main() {
-    val service = UIService()
+    val service = UIService(
+        nodeManagerURL = System.getenv("NODE_MANAGER_URL"),
+        authenticationURL = System.getenv("AUTHENTICATION_URL")
+    )
     embeddedServer(Netty, port = 8080) {
         install(FreeMarker) {
             templateLoader = ClassTemplateLoader(this::class.java.classLoader, "templates")
