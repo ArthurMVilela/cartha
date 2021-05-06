@@ -1,11 +1,13 @@
 package ui
 
 import authentication.Role
+import authentication.Subject
 import authentication.UserSession
 import blockchain.Block
 import blockchain.Blockchain
 import blockchain.network.Node
 import io.ktor.application.*
+import io.ktor.auth.*
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.features.json.*
@@ -24,10 +26,16 @@ class UIService (
     val nodeManagerURL:String,
     val authenticationURL:String
 ) {
+
     val client = HttpClient(CIO) {
         install(JsonFeature) {
             serializer = KotlinxSerializer()
         }
+    }
+
+    suspend fun isAuthorised(call: ApplicationCall, role: Role?, subject: Subject?, domainId: String?):Boolean {
+        val session = getUserSession(call)?:return false
+        return session.isAuthorized(role, subject, domainId)
     }
 
     suspend fun getUserSession(call: ApplicationCall): UserSession? {
@@ -140,6 +148,10 @@ class UIService (
         val notaryId = call.parameters["notaryId"]
         val selectedId:String
 
+        if (!isAuthorised(call, Role.SysAdmin, Subject.Blockchain, null)) {
+            throw BadRequestException("Accesso negado")
+        }
+
         val nodes:List<Node>
         runBlocking {
             nodes = client.get {
@@ -162,8 +174,12 @@ class UIService (
             }
         }
 
+        val userSession = getUserSession(call)
+        val menu = getMenu(userSession?.userRole)
 
         val data = mapOf(
+            "userRole" to userSession?.userRole,
+            "menu" to menu,
             "nodes" to nodes,
             "selected" to selectedId,
             "blockchain" to blockchain,

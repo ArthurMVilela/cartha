@@ -1,5 +1,6 @@
 @file:JvmName("UIService")
 
+import authentication.Role
 import blockchain.Block
 import blockchain.Blockchain
 import blockchain.Transaction
@@ -72,34 +73,36 @@ fun main() {
                 service.logout(call)
             }
 
-            get("/physical_person") {
-                val data = mapOf(
-                    "sex" to EnumMaps.sex,
-                    "month" to EnumMaps.month,
-                    "civilStatus" to EnumMaps.civilStatus,
-                    "color" to EnumMaps.color
-                )
+            authenticate {
+                get("/physical_person") {
+                    val data = mapOf(
+                        "sex" to EnumMaps.sex,
+                        "month" to EnumMaps.month,
+                        "civilStatus" to EnumMaps.civilStatus,
+                        "color" to EnumMaps.color
+                    )
 
-                call.respond(FreeMarkerContent("physical-person.ftl", data))
-            }
-            get("/notary") {
-                call.respond(FreeMarkerContent("notary.ftl", null))
-            }
-            get("/official") {
-                val data = mapOf(
-                    "sex" to EnumMaps.sex,
-                )
+                    call.respond(FreeMarkerContent("physical-person.ftl", data))
+                }
+                get("/notary") {
+                    call.respond(FreeMarkerContent("notary.ftl", null))
+                }
+                get("/official") {
+                    val data = mapOf(
+                        "sex" to EnumMaps.sex,
+                    )
 
-                call.respond(FreeMarkerContent("official.ftl", data))
-            }
-            get("/blockchain") {
-                service.getBlockChain(call)
-            }
-            get("/blockchain/{notaryId}") {
-                service.getBlockChain(call)
-            }
-            get("/blocks/{nodeId}/{blockId}") {
-                service.getBlock(call)
+                    call.respond(FreeMarkerContent("official.ftl", data))
+                }
+                get("/blockchain") {
+                    service.getBlockChain(call)
+                }
+                get("/blockchain/{notaryId}") {
+                    service.getBlockChain(call)
+                }
+                get("/blocks/{nodeId}/{blockId}") {
+                    service.getBlock(call)
+                }
             }
         }
     }.start(true)

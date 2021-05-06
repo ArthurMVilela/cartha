@@ -32,13 +32,16 @@ class UserSession(
         }
 
         if (role != userRole) {
+            println("role != userRole")
             return false
         }
 
         if (subject == null){
+            println("subject == null")
             return false
         }
 
+        println(userPermissions.firstOrNull { p -> p.subject == subject }?.id)
         val permission = userPermissions.firstOrNull { p -> p.subject == subject } ?: return false
 
         if (permission.domainId != domainId) {

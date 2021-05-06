@@ -67,6 +67,7 @@ class User(
             val permissions = mutableListOf<Permission>()
 
             permissions.add(Permission(user.id!!, Subject.Notaries, null))
+            permissions.add(Permission(user.id!!, Subject.Blockchain, null))
 
             user.permissions = permissions
             return user

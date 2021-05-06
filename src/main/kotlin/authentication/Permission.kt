@@ -25,7 +25,8 @@ class Permission(
         val md = MessageDigest.getInstance("SHA-256")
         val now = LocalDateTime.now(ZoneOffset.UTC)
         var content = now.toString().toByteArray()
-        content = content.plus(Random(now.toEpochSecond(ZoneOffset.UTC)).nextBytes(10))
+        Thread.sleep(0,2)
+        content = content.plus(Random(now.nano).nextBytes(10))
         return Base64.getUrlEncoder().encodeToString(md.digest(content))
     }
 }
