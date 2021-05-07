@@ -21,6 +21,6 @@ object Menus {
         "Início" to "/",
         "Blockchain" to "/blockchain",
         "Logs" to "/logs",
-        "Cartórios" to "/notaries"
+        "Cartórios" to "/notary"
     )
 }

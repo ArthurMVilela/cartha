@@ -97,7 +97,6 @@ class UIService (
 
         call.respond(FreeMarkerContent("login.ftl", data))
     }
-
     suspend fun postLogin(call: ApplicationCall) {
         val parameters = call.receiveParameters()
 
@@ -199,6 +198,7 @@ class UIService (
         }
 
         val nodes:List<Node>
+        println("$nodeManagerURL/nodes")
         runBlocking {
             nodes = client.get {
                 url("$nodeManagerURL/nodes")
@@ -258,4 +258,41 @@ class UIService (
 
         call.respond(FreeMarkerContent("block.ftl", data))
     }
+
+    suspend fun getOfficialUserPage(call: ApplicationCall) {
+        TODO("Not implemented yet")
+    }
+    suspend fun createOfficialUser(call: ApplicationCall) {
+        TODO("Not implemented yet")
+    }
+
+    suspend fun getManagerUserPage(call: ApplicationCall) {
+        TODO("Not implemented yet")
+    }
+    suspend fun createManagerUser(call: ApplicationCall) {
+        TODO("Not implemented yet")
+    }
+
+    suspend fun getNotaryPage(call: ApplicationCall) {
+        val userSession = getUserSession(call)
+
+        if (userSession?.end != null) {
+            call.respondRedirect("/")
+            return
+        }
+
+        val menu = getMenu(userSession?.userRole)
+
+        val data = mapOf(
+            "userRole" to userSession?.userRole,
+            "menu" to menu
+        )
+
+        call.respond(FreeMarkerContent("notary.ftl", data))
+    }
+    suspend fun createNotaryPage(call: ApplicationCall) {
+        TODO("Not implemented yet")
+    }
+
+
 }

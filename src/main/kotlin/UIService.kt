@@ -96,7 +96,7 @@ fun main() {
                     call.respond(FreeMarkerContent("physical-person.ftl", data))
                 }
                 get("/notary") {
-                    call.respond(FreeMarkerContent("notary.ftl", null))
+                    service.getNotaryPage(call)
                 }
                 get("/official") {
                     val data = mapOf(

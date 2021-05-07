@@ -79,7 +79,7 @@ services:
       context: .
       dockerfile: nodeManager.Dockerfile
     ports:
-      - "6000:8080"
+      - "5003:8080"
     networks:
       - net
 
