@@ -80,7 +80,9 @@ fun main() {
             get("/create-account/client") {
                 service.getClientUserPage(call)
             }
-            post("/create-account/client") {}
+            post("/create-account/client") {
+                service.createClientUser(call)
+            }
 
             authenticate {
                 get("/physical_person") {

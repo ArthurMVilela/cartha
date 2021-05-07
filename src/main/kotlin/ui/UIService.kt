@@ -2,6 +2,7 @@ package ui
 
 import authentication.Role
 import authentication.Subject
+import authentication.User
 import authentication.UserSession
 import blockchain.Block
 import blockchain.Blockchain
@@ -142,7 +143,35 @@ class UIService (
 
         call.respond(FreeMarkerContent("create-client.ftl", data))
     }
-    suspend fun createClientUser(call: ApplicationCall) {}
+    suspend fun createClientUser(call: ApplicationCall) {
+        val parameters = call.receiveParameters()
+        if(parameters["name"].isNullOrEmpty() ||
+            parameters["email"].isNullOrEmpty() ||
+            parameters["cpf"].isNullOrEmpty() ||
+            parameters["password"].isNullOrEmpty()
+        ) {
+            throw BadRequestException("Parametros não podem ser nulos")
+        }
+
+        val user = try {
+            runBlocking {
+                return@runBlocking client.submitForm<User>(
+                    url = "$authenticationURL/user/client",
+                    formParameters = Parameters.build {
+                        append("name", parameters["name"]!!)
+                        append("email", parameters["email"]!!)
+                        append("cpf", parameters["cpf"]!!)
+                        append("password", parameters["password"]!!)
+                    }
+                )
+            }
+
+        } catch (ex: Exception) {
+            throw ex
+        }
+
+        call.respondRedirect("/login")
+    }
 
     suspend fun logout(call: ApplicationCall) {
         val session = getUserSession(call)?:throw BadRequestException("Nenhuma sessão encontrada")
