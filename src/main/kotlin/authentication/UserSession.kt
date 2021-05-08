@@ -16,16 +16,13 @@ import kotlin.random.Random
 class UserSession(
     @Serializable(with = UUIDSerializer::class)
     var id:UUID?,
-    @Serializable(with = UUIDSerializer::class)
-    val userId: UUID,
-    val userRole: Role,
-    val userPermissions: List<Permission>,
+    val user: User,
     @Serializable(with = LocalDateTimeSerializer::class)
     val start: LocalDateTime,
     @Serializable(with = LocalDateTimeSerializer::class)
     var end: LocalDateTime?
 ) {
-    constructor(user: User, start:LocalDateTime):this(null, user.id!!, user.role, user.permissions, start, null){
+    constructor(user: User, start:LocalDateTime):this(null, user, start, null){
         id = createId()
     }
 
@@ -34,7 +31,7 @@ class UserSession(
             return true
         }
 
-        if (role != userRole) {
+        if (role != user.role) {
             println("role != userRole")
             return false
         }
@@ -44,8 +41,8 @@ class UserSession(
             return false
         }
 
-        println(userPermissions.firstOrNull { p -> p.subject == subject }?.id)
-        val permission = userPermissions.firstOrNull { p -> p.subject == subject } ?: return false
+        println(user.permissions.firstOrNull { p -> p.subject == subject }?.id)
+        val permission = user.permissions.firstOrNull { p -> p.subject == subject } ?: return false
 
         if (permission.domainId != domainId) {
             return false
