@@ -26,15 +26,14 @@ class User(
     var id: UUID?,
     var name: String,
     var email: String?,
-    var cpf: String?,
     var salt: String?,
     var pass: String?,
     val role: Role,
     var permissions: List<Permission>
 ) {
     companion object {
-        fun createClient(name: String, email: String, cpf: String, password: String):User {
-            val user = User(name, email, cpf, Role.Client, listOf(), password)
+        fun createClient(name: String, email: String, password: String):User {
+            val user = User(name, email, Role.Client, listOf(), password)
             val permissions = mutableListOf<Permission>()
 
             permissions.add(Permission(user.id!!, Subject.PersonalDocument, user.id.toString()))
@@ -43,8 +42,8 @@ class User(
             return user
         }
 
-        fun createOfficial(name: String, email: String, cpf: String, password: String, notaryId:String):User {
-            val user = User(name, email, cpf, Role.Official, listOf(), password)
+        fun createOfficial(name: String, email: String, password: String, notaryId:String):User {
+            val user = User(name, email, Role.Official, listOf(), password)
             val permissions = mutableListOf<Permission>()
 
             permissions.add(Permission(user.id!!,Subject.CivilRegistry, notaryId))
@@ -53,8 +52,8 @@ class User(
             return user
         }
 
-        fun createManager(name: String, email: String, cpf: String, password: String, notaryId:String):User {
-            val user = User(name, email, cpf, Role.Manager, listOf(), password)
+        fun createManager(name: String, email: String, password: String, notaryId:String):User {
+            val user = User(name, email, Role.Manager, listOf(), password)
             val permissions = mutableListOf<Permission>()
 
             permissions.add(Permission(user.id!!,Subject.CivilRegistry, notaryId))
@@ -64,8 +63,8 @@ class User(
             return user
         }
 
-        fun createSysAdmin(name: String, email: String, cpf: String, password: String,):User {
-            val user = User(name, email, cpf, Role.SysAdmin, listOf(), password)
+        fun createSysAdmin(name: String, email: String, password: String,):User {
+            val user = User(name, email,  Role.SysAdmin, listOf(), password)
             val permissions = mutableListOf<Permission>()
 
             permissions.add(Permission(user.id!!, Subject.Notaries, null))
@@ -79,11 +78,10 @@ class User(
     constructor(
         name: String,
         email: String,
-        cpf: String,
         role: Role,
         permissions: List<Permission>,
         password: String
-    ):this(null, name, email, cpf, null, null, role, permissions){
+    ):this(null, name, email, null, null, role, permissions){
         id = createId()
 
         salt = createSalt()
