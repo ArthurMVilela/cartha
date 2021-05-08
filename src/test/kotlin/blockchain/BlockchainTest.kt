@@ -13,8 +13,8 @@ internal class BlockchainTest {
     internal fun testValidate() {
         val blockchain = Blockchain()
         val last = blockchain.getLast()
-        val newBlock1 = Block(LocalDateTime.now(), listOf(), last.hash!!)
-        val newBlock2 = Block(LocalDateTime.now(), listOf(), newBlock1.hash!!)
+        val newBlock1 = Block(LocalDateTime.now(), listOf(), last.hash!!,"")
+        val newBlock2 = Block(LocalDateTime.now(), listOf(), newBlock1.hash!!,"")
 
         blockchain.addBlock(newBlock1)
         blockchain.addBlock(newBlock2)
@@ -27,8 +27,8 @@ internal class BlockchainTest {
     internal fun testGetBlock() {
         val blockchain = Blockchain()
         val last = blockchain.getLast()
-        val newBlock1 = Block(LocalDateTime.now(), listOf(), last.hash!!)
-        val newBlock2 = Block(LocalDateTime.now(), listOf(), newBlock1.hash!!)
+        val newBlock1 = Block(LocalDateTime.now(), listOf(), last.hash!!, "")
+        val newBlock2 = Block(LocalDateTime.now(), listOf(), newBlock1.hash!!, "")
 
         blockchain.addBlock(newBlock1)
         blockchain.addBlock(newBlock2)
