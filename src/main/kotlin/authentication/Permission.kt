@@ -1,6 +1,7 @@
 package authentication
 
 import kotlinx.serialization.Serializable
+import util.serializer.UUIDSerializer
 import java.security.MessageDigest
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -13,11 +14,12 @@ import kotlin.random.Random
 @Serializable
 class Permission(
     var id: String?,
-    val userId: String,
+    @Serializable(with = UUIDSerializer::class)
+    val userId: UUID,
     val subject: Subject,
     val domainId: String?
 ) {
-    constructor(userId: String, subject: Subject, domainId: String?): this(null, userId, subject, domainId) {
+    constructor(userId: UUID, subject: Subject, domainId: String?): this(null, userId, subject, domainId) {
         id = createId()
     }
 

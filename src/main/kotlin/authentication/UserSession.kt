@@ -2,6 +2,7 @@ package authentication
 
 import kotlinx.serialization.Serializable
 import util.serializer.LocalDateTimeSerializer
+import util.serializer.UUIDSerializer
 import java.security.MessageDigest
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -14,7 +15,8 @@ import kotlin.random.Random
 @Serializable
 class UserSession(
     var id:String?,
-    val userId: String,
+    @Serializable(with = UUIDSerializer::class)
+    val userId: UUID,
     val userRole: Role,
     val userPermissions: List<Permission>,
     @Serializable(with = LocalDateTimeSerializer::class)

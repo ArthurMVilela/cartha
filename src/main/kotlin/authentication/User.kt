@@ -1,6 +1,7 @@
 package authentication
 
 import kotlinx.serialization.Serializable
+import util.serializer.UUIDSerializer
 import java.security.MessageDigest
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -21,7 +22,8 @@ import kotlin.random.Random
  */
 @Serializable
 class User(
-    var id: String?,
+    @Serializable(with = UUIDSerializer::class)
+    var id: UUID?,
     var name: String,
     var email: String?,
     var cpf: String?,
@@ -35,7 +37,7 @@ class User(
             val user = User(name, email, cpf, Role.Client, listOf(), password)
             val permissions = mutableListOf<Permission>()
 
-            permissions.add(Permission(user.id!!, Subject.PersonalDocument, user.id))
+            permissions.add(Permission(user.id!!, Subject.PersonalDocument, user.id.toString()))
 
             user.permissions = permissions
             return user
@@ -108,11 +110,7 @@ class User(
         return Base64.getUrlEncoder().encodeToString(md.digest(content.toByteArray()))
     }
 
-    private fun createId():String {
-        val md = MessageDigest.getInstance("SHA-256")
-        val now = LocalDateTime.now(ZoneOffset.UTC)
-        var content = now.toString().toByteArray()
-        content = content.plus(Random(now.toEpochSecond(ZoneOffset.UTC)).nextBytes(10))
-        return Base64.getUrlEncoder().encodeToString(md.digest(content))
+    private fun createId():UUID {
+        return UUID.randomUUID()
     }
 }
