@@ -79,7 +79,46 @@ services:
       context: .
       dockerfile: nodeManager.Dockerfile
     ports:
-      - "6000:8080"
+      - "5003:8080"
+    networks:
+      - net
+
+  authentication-db:
+    container_name: "authentication-db"
+    image: mysql:latest
+    restart: always
+    ports:
+      - "3001:3306"
+    environment:
+      MYSQL_USER: "authentication"
+      MYSQL_PASSWORD: "authentication"
+      MYSQL_DATABASE: "authentication_db"
+      MYSQL_ROOT_PASSWORD: "root"
+    networks:
+      - net
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 20s
+      retries: 10
+
+  authentication:
+    container_name: "authentication"
+    build:
+      context: .
+      dockerfile: authentication.Dockerfile
+    restart: on-failure:20
+    links:
+      - authentication-db
+    depends_on:
+      - authentication-db
+    ports:
+      - "7000:8080"
+    environment:
+      DATABASE_HOST: "authentication-db"
+      DATABASE_PORT: "3306"
+      DATABASE_NAME: "authentication_db"
+      DATABASE_USER: "authentication"
+      DATABASE_PASSWORD: "authentication"
     networks:
       - net
 
@@ -90,6 +129,9 @@ services:
       dockerfile: ui.Dockerfile
     ports:
       - "8080:8080"
+    environment:
+      NODE_MANAGER_URL: "http://node_manager:8080"
+      AUTHENTICATION_URL: "http://authentication:8080"
     networks:
       - net
 

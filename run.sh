@@ -13,6 +13,7 @@ function build() {
 build "DocumentService"
 build "BlockchainNodeManagerService"
 build "BlockchainNodeService"
+build "AuthenticationService"
 build "UIService"
 
 docker-compose down
