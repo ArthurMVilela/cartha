@@ -14,7 +14,8 @@ import kotlin.random.Random
  */
 @Serializable
 class UserSession(
-    var id:String?,
+    @Serializable(with = UUIDSerializer::class)
+    var id:UUID?,
     @Serializable(with = UUIDSerializer::class)
     val userId: UUID,
     val userRole: Role,
@@ -57,11 +58,7 @@ class UserSession(
         end = time
     }
 
-    private fun createId():String {
-        val md = MessageDigest.getInstance("SHA")
-        val now = LocalDateTime.now(ZoneOffset.UTC)
-        var content = now.toString().toByteArray()
-        content = content.plus(Random(now.toEpochSecond(ZoneOffset.UTC)).nextBytes(10))
-        return Base64.getUrlEncoder().encodeToString(md.digest(content))
+    private fun createId():UUID {
+        return UUID.randomUUID()
     }
 }
