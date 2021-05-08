@@ -1,6 +1,7 @@
 package authentication
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import util.serializer.UUIDSerializer
 import java.security.MessageDigest
 import java.time.LocalDateTime
@@ -14,26 +15,27 @@ import kotlin.random.Random
  * @property id             identificador único do usuário
  * @property name           nome do usuário
  * @property email          email do usuário
- * @property cpf            cpf dp usuário
  * @property salt           salt para a validação do usuário
  * @property pass           pass para a validação do usuário
  * @property role           função/cargo do usuário
- * @property permissions    permissções do usuário
+ * @property permissions    permissões do usuário
+ * @property status         status do conta de usuário
  */
 @Serializable
 class User(
     @Serializable(with = UUIDSerializer::class)
     var id: UUID?,
-    var name: String,
-    var email: String?,
-    var salt: String?,
-    var pass: String?,
+    val name: String,
+    val email: String,
+    @Transient internal var salt: String? = null,
+    @Transient internal var pass: String? = null,
     val role: Role,
-    var permissions: List<Permission>
+    var permissions: MutableList<Permission>,
+    var status: UserStatus
 ) {
     companion object {
         fun createClient(name: String, email: String, password: String):User {
-            val user = User(name, email, Role.Client, listOf(), password)
+            val user = User(name, email, Role.Client, mutableListOf(), password)
             val permissions = mutableListOf<Permission>()
 
             permissions.add(Permission(user.id!!, Subject.PersonalDocument, user.id.toString()))
@@ -43,7 +45,7 @@ class User(
         }
 
         fun createOfficial(name: String, email: String, password: String, notaryId:String):User {
-            val user = User(name, email, Role.Official, listOf(), password)
+            val user = User(name, email, Role.Official, mutableListOf(), password)
             val permissions = mutableListOf<Permission>()
 
             permissions.add(Permission(user.id!!,Subject.CivilRegistry, notaryId))
@@ -53,7 +55,7 @@ class User(
         }
 
         fun createManager(name: String, email: String, password: String, notaryId:String):User {
-            val user = User(name, email, Role.Manager, listOf(), password)
+            val user = User(name, email, Role.Manager, mutableListOf(), password)
             val permissions = mutableListOf<Permission>()
 
             permissions.add(Permission(user.id!!,Subject.CivilRegistry, notaryId))
@@ -64,7 +66,7 @@ class User(
         }
 
         fun createSysAdmin(name: String, email: String, password: String,):User {
-            val user = User(name, email,  Role.SysAdmin, listOf(), password)
+            val user = User(name, email,  Role.SysAdmin, mutableListOf(), password)
             val permissions = mutableListOf<Permission>()
 
             permissions.add(Permission(user.id!!, Subject.Notaries, null))
@@ -79,9 +81,9 @@ class User(
         name: String,
         email: String,
         role: Role,
-        permissions: List<Permission>,
+        permissions: MutableList<Permission>,
         password: String
-    ):this(null, name, email, null, null, role, permissions){
+    ):this(null, name, email, null, null, role, permissions, UserStatus.Offline){
         id = createId()
 
         salt = createSalt()
