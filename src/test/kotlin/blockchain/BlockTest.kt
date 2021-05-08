@@ -21,6 +21,7 @@ internal class BlockTest {
             listOf(
                 Transaction(LocalDateTime.now(), "", "", TransactionType.Creation)
             ),
+            "",
             ""
         )
 
@@ -44,8 +45,8 @@ internal class BlockTest {
         val transactions = listOf<Transaction>(
             Transaction(now, "", "", TransactionType.Creation)
         )
-        val blockA = Block(now, transactions, "")
-        val blockB = Block(LocalDateTime.now(), transactions, blockA.hash!!)
+        val blockA = Block(now, transactions, "", "")
+        val blockB = Block(LocalDateTime.now(), transactions, blockA.hash!!, "")
 
         assertNotEquals(blockA.id, blockB.id)
         assertNotEquals(blockA.timestamp, blockB.timestamp)
