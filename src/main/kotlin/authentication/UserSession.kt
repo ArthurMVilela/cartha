@@ -41,7 +41,7 @@ class UserSession(
             return false
         }
 
-        println(user.permissions.firstOrNull { p -> p.subject == subject }?.id)
+        println(user.permissions.firstOrNull { p -> p.subject == subject }?.domainId)
         val permission = user.permissions.firstOrNull { p -> p.subject == subject } ?: return false
 
         if (permission.domainId != domainId) {

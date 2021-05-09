@@ -31,4 +31,23 @@ internal class UserTest {
 
         assert(decoded.salt == null)
     }
+
+    @Test
+    internal fun testPermissions() {
+        val user = User.createClient("fulano", "fulano @gmail.com", "1234")
+        val defaultPermissionLength = user.permissions.size
+
+        user.addPermission(Permission(Subject.Blockchain, null))
+        user.addPermission(Permission(Subject.Blockchain, null))
+
+        assert(user.permissions.size == defaultPermissionLength + 1)
+
+        user.removePermission(Permission(Subject.Blockchain, null))
+
+        assert(user.permissions.size == defaultPermissionLength)
+
+        user.addPermission(Permission(Subject.Blockchain, null))
+
+        assertNotNull(user.getPermission(Subject.Blockchain, null))
+    }
 }

@@ -30,58 +30,14 @@ class User(
     @Transient internal var salt: String? = null,
     @Transient internal var pass: String? = null,
     val role: Role,
-    var permissions: MutableList<Permission>,
+    var permissions: HashSet<Permission>,
     var status: UserStatus
 ) {
-    companion object {
-        fun createClient(name: String, email: String, password: String):User {
-            val user = User(name, email, Role.Client, mutableListOf(), password)
-            val permissions = mutableListOf<Permission>()
-
-            permissions.add(Permission(user.id!!, Subject.PersonalDocument, user.id.toString()))
-
-            user.permissions = permissions
-            return user
-        }
-
-        fun createOfficial(name: String, email: String, password: String, notaryId:String):User {
-            val user = User(name, email, Role.Official, mutableListOf(), password)
-            val permissions = mutableListOf<Permission>()
-
-            permissions.add(Permission(user.id!!,Subject.CivilRegistry, notaryId))
-
-            user.permissions = permissions
-            return user
-        }
-
-        fun createManager(name: String, email: String, password: String, notaryId:String):User {
-            val user = User(name, email, Role.Manager, mutableListOf(), password)
-            val permissions = mutableListOf<Permission>()
-
-            permissions.add(Permission(user.id!!,Subject.CivilRegistry, notaryId))
-            permissions.add(Permission(user.id!!,Subject.Notary, notaryId))
-
-            user.permissions = permissions
-            return user
-        }
-
-        fun createSysAdmin(name: String, email: String, password: String,):User {
-            val user = User(name, email,  Role.SysAdmin, mutableListOf(), password)
-            val permissions = mutableListOf<Permission>()
-
-            permissions.add(Permission(user.id!!, Subject.Notaries, null))
-            permissions.add(Permission(user.id!!, Subject.Blockchain, null))
-
-            user.permissions = permissions
-            return user
-        }
-    }
-
     constructor(
         name: String,
         email: String,
         role: Role,
-        permissions: MutableList<Permission>,
+        permissions: HashSet<Permission>,
         password: String
     ):this(null, name, email, null, null, role, permissions, UserStatus.Offline){
         id = createId()
@@ -90,11 +46,95 @@ class User(
         pass = createPass(password)
     }
 
+    companion object {
+        fun createClient(name: String, email: String, password: String):User {
+            val user = User(name, email, Role.Client, hashSetOf(), password)
+            val permissions = hashSetOf<Permission>()
+
+            permissions.add(Permission(Subject.PersonalDocument, user.id.toString()))
+
+            user.permissions = permissions
+            return user
+        }
+
+        fun createOfficial(name: String, email: String, password: String, notaryId:String):User {
+            val user = User(name, email, Role.Official, hashSetOf(), password)
+            val permissions = hashSetOf<Permission>()
+
+            permissions.add(Permission(Subject.CivilRegistry, notaryId))
+
+            user.permissions = permissions
+            return user
+        }
+
+        fun createManager(name: String, email: String, password: String, notaryId:String):User {
+            val user = User(name, email, Role.Manager, hashSetOf(), password)
+            val permissions = hashSetOf<Permission>()
+
+            permissions.add(Permission(Subject.CivilRegistry, notaryId))
+            permissions.add(Permission(Subject.Notary, notaryId))
+
+            user.permissions = permissions
+            return user
+        }
+
+        fun createSysAdmin(name: String, email: String, password: String,):User {
+            val user = User(name, email,  Role.SysAdmin, hashSetOf(), password)
+            val permissions = hashSetOf<Permission>()
+
+            permissions.add(Permission(Subject.Notaries, null))
+            permissions.add(Permission(Subject.Blockchain, null))
+
+            user.permissions = permissions
+            return user
+        }
+    }
+
+    /**
+     * verifica se a senha dada é correta
+     *
+     * @param password          senha a ser validada
+     * @return se a senha é valida
+     */
     fun validatePassword(password: String):Boolean {
-        println("$pass ${createPass(password)}")
         return pass == createPass(password)
     }
 
+    /**
+     * Adiciona uma permissão às permissões do usuário
+     *
+     * @param permission        permissão a ser adicionada para o usuário
+     */
+    fun addPermission(permission: Permission) {
+        permissions.add(permission)
+    }
+
+    /**
+     * Remove uma permissão do usuário
+     *
+     * @param permission        permissão a ser retirada do usuário
+     */
+    fun removePermission(permission: Permission) {
+        permissions.remove(permission)
+    }
+
+    /**
+     * Busca uma permissão nas permissões do usuário
+     *
+     * @param subject           Assunto da permissão
+     * @param domainId          Id do dominio da permissão
+     *
+     * @return a permissão encontrada ou nulo, caso não tenha sido encontrado
+     */
+    fun getPermission(subject: Subject, domainId: String?): Permission? {
+        return permissions.firstOrNull { p -> p.subject == subject && p.domainId == domainId }
+    }
+
+    /**
+     * Cria um valor salt para esta conta
+     *
+     * @return valor salt (hash)
+     */
     private fun createSalt():String {
         val now = LocalDateTime.now(ZoneOffset.UTC)
         val bytes = Random(now.toEpochSecond(ZoneOffset.UTC)).nextBytes(24)
@@ -103,6 +143,12 @@ class User(
         return Base64.getUrlEncoder().encodeToString(md.digest(bytes))
     }
 
+    /**
+     * Cria um valor pass (hash(senha + salt)
+     *
+     * @param password          senha
+     * @return valor pass
+     */
     private fun createPass(password: String):String {
         val md = MessageDigest.getInstance("SHA-256")
         val content = password + salt
@@ -110,6 +156,11 @@ class User(
         return Base64.getUrlEncoder().encodeToString(md.digest(content.toByteArray()))
     }
 
+    /**
+     * Cria o identificador único para esta conta
+     *
+     * @return UUID para a id do usuário
+     */
     private fun createId():UUID {
         return UUID.randomUUID()
     }
