@@ -1,5 +1,6 @@
 package authentication
 
+import authentication.exception.InvalidPasswordException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -49,5 +50,19 @@ internal class UserTest {
         user.addPermission(Permission(Subject.Blockchain, null))
 
         assertNotNull(user.getPermission(Subject.Blockchain, null))
+    }
+
+    @Test
+    internal fun testPassword() {
+        val user = User.createClient("fulano", "fulano@gmail.com", "1234")
+
+        assert(user.validatePassword("1234"))
+        assert(!user.validatePassword(""))
+
+        user.changePassword("1234", "4444")
+
+        assert(user.validatePassword("4444"))
+
+        assertThrows(InvalidPasswordException::class.java, fun() { user.changePassword("1111", "1111") })
     }
 }

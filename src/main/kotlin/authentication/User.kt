@@ -1,5 +1,6 @@
 package authentication
 
+import authentication.exception.InvalidPasswordException
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import util.serializer.UUIDSerializer
@@ -128,6 +129,21 @@ class User(
      */
     fun getPermission(subject: Subject, domainId: String?): Permission? {
         return permissions.firstOrNull { p -> p.subject == subject && p.domainId == domainId }
+    }
+
+    /**
+     * Muda senha da conta de usuário
+     *
+     * @param oldPassword       senha atual (antiga)
+     * @param newPassword       nova senha
+     */
+    fun changePassword(oldPassword: String, newPassword: String) {
+        if (!validatePassword(oldPassword)) {
+            throw InvalidPasswordException()
+        }
+
+        salt = createSalt()
+        pass = createPass(newPassword)
     }
 
     /**
