@@ -1,5 +1,8 @@
 package authentication
 
+import authentication.exception.UserDeactivatedException
+import authentication.exception.UserOfflineException
+import authentication.exception.UserOnlineException
 import kotlinx.serialization.Serializable
 import util.serializer.LocalDateTimeSerializer
 import util.serializer.UUIDSerializer
@@ -11,6 +14,11 @@ import kotlin.random.Random
 
 /**
  * Representa uma sessão de usuário
+ *
+ * @param id            identificador unico da sessão
+ * @param user          usuário que relaciona à sessão
+ * @param start         começo da sessão
+ * @param end           fim da sessão
  */
 @Serializable
 class UserSession(
@@ -23,35 +31,42 @@ class UserSession(
     var end: LocalDateTime?
 ) {
     constructor(user: User, start:LocalDateTime):this(null, user, start, null){
+        try {
+            user.login()
+        } catch (ex: UserOnlineException) {
+            throw UserOnlineException("Usuário já logado")
+        } catch (ex: UserDeactivatedException) {
+            throw UserDeactivatedException("Conta de usuário desativada")
+        }
+
         id = createId()
     }
 
-    fun isAuthorized(role: Role?, subject: Subject?,  domainId: UUID?): Boolean {
-        if (role == null) {
-            return true
-        }
-
-        if (role != user.role) {
-            println("role != userRole")
-            return false
-        }
-
-        if (subject == null){
-            println("subject == null")
-            return false
-        }
-
-        println(user.permissions.firstOrNull { p -> p.subject == subject }?.domainId)
-        val permission = user.permissions.firstOrNull { p -> p.subject == subject } ?: return false
-
-        if (permission.domainId != domainId) {
-            return false
-        }
-
-        return true
+    /**
+     * Retorna se a sessão já terminou
+     */
+    fun hasEnded():Boolean {
+        return end != null
     }
 
+    /**
+     * Termina a sessão
+     *
+     * @param time      hora e data que a sessão terminou
+     */
     fun endSession(time: LocalDateTime) {
+        if (hasEnded()) {
+            throw UserOfflineException("Sessão já foi terminada.")
+        }
+
+        try {
+            user.logout()
+        } catch (ex: UserOfflineException) {
+            throw UserOfflineException("Usuário já offline.")
+        } catch (ex: UserDeactivatedException) {
+            throw UserDeactivatedException("Conta de usuário desativada.")
+        }
+
         end = time
     }
 

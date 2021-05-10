@@ -193,6 +193,17 @@ class User(
         }
     }
 
+    fun isAuthorized(role: Role?, permission: Permission?):Boolean {
+        return when {
+            role == null -> true
+            role != this.role -> false
+            role == this.role && permission == null -> true
+            else -> {
+                this.permissions.contains(permission)
+            }
+        }
+    }
+
     /**
      * Cria um valor salt para esta conta
      *

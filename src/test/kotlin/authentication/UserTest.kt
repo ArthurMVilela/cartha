@@ -56,6 +56,18 @@ internal class UserTest {
     }
 
     @Test
+    internal fun testPermissionCheck() {
+        val client = User.createClient("fulano", "fulano @gmail.com", "1234")
+
+        assert(client.isAuthorized(null, null))
+        assert(client.isAuthorized(Role.Client, null))
+        assert(client.isAuthorized(Role.Client, Permission.getClientDefaultPermissions(client.id!!).first()))
+
+        assertFalse(client.isAuthorized(Role.SysAdmin, null))
+        assertFalse(client.isAuthorized(Role.SysAdmin, Permission(Subject.Blockchain, null)))
+    }
+
+    @Test
     internal fun testPassword() {
         val user = User.createClient("fulano", "fulano@gmail.com", "1234")
 
