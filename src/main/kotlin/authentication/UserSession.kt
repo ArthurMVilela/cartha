@@ -26,7 +26,7 @@ class UserSession(
         id = createId()
     }
 
-    fun isAuthorized(role: Role?, subject: Subject?,  domainId: String?): Boolean {
+    fun isAuthorized(role: Role?, subject: Subject?,  domainId: UUID?): Boolean {
         if (role == null) {
             return true
         }

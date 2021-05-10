@@ -14,8 +14,59 @@ import kotlin.random.Random
 @Serializable
 class Permission(
     val subject: Subject,
-    val domainId: String?
+    @Serializable(with = UUIDSerializer::class)
+    val domainId: UUID?
 ) {
+    companion object {
+        /**
+         * Retorna a HashSet de permissões padrão do usuário cliente
+         *
+         * @param userId        id do usuário
+         */
+        fun getClientDefaultPermissions(userId: UUID):HashSet<Permission> {
+            return hashSetOf(
+                Permission(Subject.PersonalDocument, userId)
+            )
+        }
+
+        /**
+         * Retorna a HashSet de permissões padrão do usuário oficial
+         *
+         * @param userId        id do usuário
+         * @param notaryId      id do cartório
+         */
+        fun getOfficialDefaultPermissions(userId: UUID, notaryId: UUID): HashSet<Permission> {
+            return hashSetOf(
+                Permission(Subject.CivilRegistry, notaryId)
+            )
+        }
+
+        /**
+         * Retorna a HashSet de permissões padrão do usuário gerente
+         *
+         * @param userId        id do usuário
+         * @param notaryId      id do cartório
+         */
+        fun getManagerDefaultPermissions(userId: UUID, notaryId: UUID): HashSet<Permission> {
+            return hashSetOf(
+                Permission(Subject.CivilRegistry, notaryId),
+                Permission(Subject.Notary, notaryId)
+            )
+        }
+
+        /**
+         * Retorna a HashSet de permissões padrão do usuário gerente
+         *
+         * @param userId        id do usuário
+         * @param notaryId      id do cartório
+         */
+        fun getSysadminDefaultPermissions(userId: UUID): HashSet<Permission> {
+            return hashSetOf(
+                Permission(Subject.Notaries, null),
+                Permission(Subject.Blockchain, null)
+            )
+        }
+    }
 
     override fun equals(other: Any?): Boolean {
         other as Permission

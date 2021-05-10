@@ -53,43 +53,25 @@ class User(
     companion object {
         fun createClient(name: String, email: String, password: String):User {
             val user = User(name, email, Role.Client, hashSetOf(), password)
-            val permissions = hashSetOf<Permission>()
-
-            permissions.add(Permission(Subject.PersonalDocument, user.id.toString()))
-
-            user.permissions = permissions
+            user.permissions = Permission.getClientDefaultPermissions(user.id!!)
             return user
         }
 
-        fun createOfficial(name: String, email: String, password: String, notaryId:String):User {
+        fun createOfficial(name: String, email: String, password: String, notaryId:UUID):User {
             val user = User(name, email, Role.Official, hashSetOf(), password)
-            val permissions = hashSetOf<Permission>()
-
-            permissions.add(Permission(Subject.CivilRegistry, notaryId))
-
-            user.permissions = permissions
+            user.permissions = Permission.getOfficialDefaultPermissions(user.id!!, notaryId)
             return user
         }
 
-        fun createManager(name: String, email: String, password: String, notaryId:String):User {
+        fun createManager(name: String, email: String, password: String, notaryId:UUID):User {
             val user = User(name, email, Role.Manager, hashSetOf(), password)
-            val permissions = hashSetOf<Permission>()
-
-            permissions.add(Permission(Subject.CivilRegistry, notaryId))
-            permissions.add(Permission(Subject.Notary, notaryId))
-
-            user.permissions = permissions
+            user.permissions = Permission.getManagerDefaultPermissions(user.id!!, notaryId)
             return user
         }
 
         fun createSysAdmin(name: String, email: String, password: String,):User {
             val user = User(name, email,  Role.SysAdmin, hashSetOf(), password)
-            val permissions = hashSetOf<Permission>()
-
-            permissions.add(Permission(Subject.Notaries, null))
-            permissions.add(Permission(Subject.Blockchain, null))
-
-            user.permissions = permissions
+            user.permissions = Permission.getSysadminDefaultPermissions(user.id!!)
             return user
         }
     }
@@ -114,6 +96,24 @@ class User(
     }
 
     /**
+     * Adiciona uma colleção de permissões às permissões do usuário
+     *
+     * @param permissions       permissões a serem adicionadas ao usuário
+     */
+    fun addPermissions(permissions: Collection<Permission>) {
+        permissions.forEach {
+            addPermission(it)
+        }
+    }
+
+    /**
+     * Remove todas as permissões do usuário
+     */
+    fun removeAllPermissions() {
+        permissions.removeAll { _ -> true }
+    }
+
+    /**
      * Remove uma permissão do usuário
      *
      * @param permission        permissão a ser retirada do usuário
@@ -130,7 +130,7 @@ class User(
      *
      * @return a permissão encontrada ou nulo, caso não tenha sido encontrado
      */
-    fun getPermission(subject: Subject, domainId: String?): Permission? {
+    fun getPermission(subject: Subject, domainId: UUID?): Permission? {
         return permissions.firstOrNull { p -> p.subject == subject && p.domainId == domainId }
     }
 
