@@ -1,6 +1,9 @@
 package authentication
 
 import authentication.exception.InvalidPasswordException
+import authentication.exception.UserDeactivatedException
+import authentication.exception.UserOfflineException
+import authentication.exception.UserOnlineException
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import util.serializer.UUIDSerializer
@@ -144,6 +147,50 @@ class User(
 
         salt = createSalt()
         pass = createPass(newPassword)
+    }
+
+    /**
+     * Deixa a conta de usuário online
+     */
+    fun login() {
+        when (status) {
+            UserStatus.Online -> throw UserOnlineException("Usuário já online.")
+            UserStatus.Deactivated -> throw UserDeactivatedException("Conta de usuário desativada.")
+            else -> status = UserStatus.Online
+        }
+    }
+
+    /**
+     * Deixa a conta de usuário offline
+     */
+    fun logout() {
+        when (status) {
+            UserStatus.Offline -> throw UserOfflineException("Usuário já offline.")
+            UserStatus.Deactivated -> throw UserDeactivatedException("Conta de usuário desativada.")
+            else -> status = UserStatus.Offline
+        }
+    }
+
+    /**
+     * Desativa a conta de usuário
+     */
+    fun deactivateAccount() {
+        when (status) {
+            UserStatus.Online -> throw UserOnlineException("Usuário online, termine sessão para que a conta possa ser desativada")
+            UserStatus.Deactivated -> throw UserDeactivatedException("Conta de usuário já desativada.")
+            else -> status = UserStatus.Deactivated
+        }
+    }
+
+    /**
+     * Reativa a conta de usuário
+     */
+    fun reactivateAccount() {
+        when (status) {
+            UserStatus.Online -> throw UserOnlineException("Conta já está ativada.")
+            UserStatus.Offline -> throw UserOfflineException("Conta já está ativada.")
+            else -> status = UserStatus.Offline
+        }
     }
 
     /**

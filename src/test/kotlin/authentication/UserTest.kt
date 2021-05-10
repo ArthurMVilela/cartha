@@ -1,6 +1,9 @@
 package authentication
 
 import authentication.exception.InvalidPasswordException
+import authentication.exception.UserDeactivatedException
+import authentication.exception.UserOfflineException
+import authentication.exception.UserOnlineException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -64,5 +67,29 @@ internal class UserTest {
         assert(user.validatePassword("4444"))
 
         assertThrows(InvalidPasswordException::class.java, fun() { user.changePassword("1111", "1111") })
+    }
+
+    @Test
+    internal fun testStatus() {
+        val user = User.createClient("fulano", "fulano@gmail.com", "1234")
+
+        assert(user.status == UserStatus.Offline)
+        assertThrows(UserOfflineException::class.java, fun(){ user.logout() })
+        assertDoesNotThrow(fun(){user.login()})
+
+        assert(user.status == UserStatus.Online)
+        assertThrows(UserOnlineException::class.java, fun(){ user.login() })
+        assertDoesNotThrow(fun(){ user.logout() })
+
+        assert(user.status == UserStatus.Offline)
+        assertThrows(UserOfflineException::class.java, fun(){ user.reactivateAccount() })
+        assertDoesNotThrow(fun(){ user.deactivateAccount() })
+
+        assert(user.status == UserStatus.Deactivated)
+        assertThrows(UserDeactivatedException::class.java, fun(){ user.login() })
+        assertThrows(UserDeactivatedException::class.java, fun(){ user.logout() })
+        assertThrows(UserDeactivatedException::class.java, fun(){ user.deactivateAccount() })
+        assertDoesNotThrow(fun(){ user.reactivateAccount() })
+        assert(user.status == UserStatus.Offline)
     }
 }
