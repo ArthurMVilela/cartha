@@ -28,7 +28,7 @@ import kotlin.random.Random
 @Serializable
 class User(
     @Serializable(with = UUIDSerializer::class)
-    var id: UUID?,
+    val id: UUID,
     val name: String,
     val email: String,
     @Transient internal var salt: String? = null,
@@ -43,14 +43,21 @@ class User(
         role: Role,
         permissions: HashSet<Permission>,
         password: String
-    ):this(null, name, email, null, null, role, permissions, UserStatus.Offline){
-        id = createId()
-
+    ):this(createId(), name, email, null, null, role, permissions, UserStatus.Offline){
         salt = createSalt()
         pass = createPass(password)
     }
 
     companion object {
+        /**
+         * Cria o identificador único para esta conta
+         *
+         * @return UUID para a id do usuário
+         */
+        private fun createId():UUID {
+            return UUID.randomUUID()
+        }
+
         /**
          * Criar um usuário do tipo cliente
          *
@@ -60,7 +67,7 @@ class User(
          */
         fun createClient(name: String, email: String, password: String):User {
             val user = User(name, email, Role.Client, hashSetOf(), password)
-            user.permissions = Permission.getClientDefaultPermissions(user.id!!)
+            user.permissions = Permission.getClientDefaultPermissions(user.id)
             return user
         }
 
@@ -74,7 +81,7 @@ class User(
          */
         fun createOfficial(name: String, email: String, password: String, notaryId:UUID):User {
             val user = User(name, email, Role.Official, hashSetOf(), password)
-            user.permissions = Permission.getOfficialDefaultPermissions(user.id!!, notaryId)
+            user.permissions = Permission.getOfficialDefaultPermissions(user.id, notaryId)
             return user
         }
 
@@ -88,7 +95,7 @@ class User(
          */
         fun createManager(name: String, email: String, password: String, notaryId:UUID):User {
             val user = User(name, email, Role.Manager, hashSetOf(), password)
-            user.permissions = Permission.getManagerDefaultPermissions(user.id!!, notaryId)
+            user.permissions = Permission.getManagerDefaultPermissions(user.id, notaryId)
             return user
         }
 
@@ -101,7 +108,7 @@ class User(
          */
         fun createSysAdmin(name: String, email: String, password: String,):User {
             val user = User(name, email,  Role.SysAdmin, hashSetOf(), password)
-            user.permissions = Permission.getSysadminDefaultPermissions(user.id!!)
+            user.permissions = Permission.getSysadminDefaultPermissions(user.id)
             return user
         }
     }
@@ -140,7 +147,7 @@ class User(
      * Remove todas as permissões do usuário
      */
     fun removeAllPermissions() {
-        permissions.removeAll { _ -> true }
+        permissions.removeAll { true }
     }
 
     /**
@@ -260,12 +267,5 @@ class User(
         return Base64.getUrlEncoder().encodeToString(md.digest(content.toByteArray()))
     }
 
-    /**
-     * Cria o identificador único para esta conta
-     *
-     * @return UUID para a id do usuário
-     */
-    private fun createId():UUID {
-        return UUID.randomUUID()
-    }
+
 }
