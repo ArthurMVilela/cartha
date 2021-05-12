@@ -51,24 +51,54 @@ class User(
     }
 
     companion object {
+        /**
+         * Criar um usuário do tipo cliente
+         *
+         * @param name          nome completo do usuário
+         * @param email         email do usuário
+         * @param password      senha da conta de usuário
+         */
         fun createClient(name: String, email: String, password: String):User {
             val user = User(name, email, Role.Client, hashSetOf(), password)
             user.permissions = Permission.getClientDefaultPermissions(user.id!!)
             return user
         }
 
+        /**
+         * Criar um usuário do tipo oficial
+         *
+         * @param name          nome completo do usuário
+         * @param email         email do usuário
+         * @param password      senha da conta de usuário
+         * @param notaryId      id do cartório relacionado à conta
+         */
         fun createOfficial(name: String, email: String, password: String, notaryId:UUID):User {
             val user = User(name, email, Role.Official, hashSetOf(), password)
             user.permissions = Permission.getOfficialDefaultPermissions(user.id!!, notaryId)
             return user
         }
 
+        /**
+         * Criar um usuário do tipo administrador de cartório
+         *
+         * @param name          nome completo do usuário
+         * @param email         email do usuário
+         * @param password      senha da conta de usuário
+         * @param notaryId      id do cartório relacionado à conta
+         */
         fun createManager(name: String, email: String, password: String, notaryId:UUID):User {
             val user = User(name, email, Role.Manager, hashSetOf(), password)
             user.permissions = Permission.getManagerDefaultPermissions(user.id!!, notaryId)
             return user
         }
 
+        /**
+         * Criar um usuário do tipo administrador de sistema
+         *
+         * @param name          nome completo do usuário
+         * @param email         email do usuário
+         * @param password      senha da conta de usuário
+         */
         fun createSysAdmin(name: String, email: String, password: String,):User {
             val user = User(name, email,  Role.SysAdmin, hashSetOf(), password)
             user.permissions = Permission.getSysadminDefaultPermissions(user.id!!)
