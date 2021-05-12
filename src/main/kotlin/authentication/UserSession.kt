@@ -23,14 +23,14 @@ import kotlin.random.Random
 @Serializable
 class UserSession(
     @Serializable(with = UUIDSerializer::class)
-    var id:UUID?,
+    val id:UUID,
     val user: User,
     @Serializable(with = LocalDateTimeSerializer::class)
     val start: LocalDateTime,
     @Serializable(with = LocalDateTimeSerializer::class)
     var end: LocalDateTime?
 ) {
-    constructor(user: User, start:LocalDateTime):this(null, user, start, null){
+    constructor(user: User, start:LocalDateTime):this(createId(), user, start, null){
         try {
             user.login()
         } catch (ex: UserOnlineException) {
@@ -38,8 +38,17 @@ class UserSession(
         } catch (ex: UserDeactivatedException) {
             throw UserDeactivatedException("Conta de usuário desativada")
         }
+    }
 
-        id = createId()
+    companion object {
+        /**
+         * Cria o identificador único para esta sessão de usuário
+         *
+         * @return UUID para a id da sessão do usuário
+         */
+        private fun createId():UUID {
+            return UUID.randomUUID()
+        }
     }
 
     /**
@@ -70,7 +79,5 @@ class UserSession(
         end = time
     }
 
-    private fun createId():UUID {
-        return UUID.randomUUID()
-    }
+
 }
