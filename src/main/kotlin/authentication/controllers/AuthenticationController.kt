@@ -1,5 +1,7 @@
 package authentication.controllers
 
-class AuthenticationController {
+import authentication.logging.controllers.AccessLogController
 
+class AuthenticationController {
+    private val accessLogController = AccessLogController()
 }
