@@ -8,6 +8,7 @@ interface DAO<Type, ID:Comparable<ID>>{
     fun insert(obj: Type): Type
     fun select(id: ID): Type?
     fun selectMany(condition: Op<Boolean>, page:Int=1, pageLength:Int=20): ResultSet<Type>
+    fun selectMany(condition: Op<Boolean>): List<Type>
     fun selectAll(page:Int=1, pageLength:Int=20): ResultSet<Type>
     fun update(obj: Type)
     fun remove(id: ID)

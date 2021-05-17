@@ -11,8 +11,28 @@ import io.ktor.routing.*
 import io.ktor.serialization.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.transactions.TransactionManager
 
 fun main() {
+    try {
+        val host = "localhost"
+        val port = 3306
+        val database = "authentication_db"
+        val user = "root"
+        val password = "test"
+        val url = "jdbc:mysql://$host:$port/$database?verifyServerCertificate=false&useSSL=false"
+        val db = Database.connect(
+            url = url,
+            driver = "com.mysql.jdbc.Driver",
+            user = user,
+            password = password,
+        )
+
+        TransactionManager.defaultDatabase = db
+    } catch (e:Exception) {
+        println(e.message)
+    }
     val userHandler = UserHandler()
     embeddedServer(Netty, port=8080) {
         install(ContentNegotiation)  {

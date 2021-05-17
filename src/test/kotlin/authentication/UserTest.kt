@@ -41,16 +41,16 @@ internal class UserTest {
         val user = User.createClient("fulano", "fulano @gmail.com", "1234")
         val defaultPermissionLength = user.permissions.size
 
-        user.addPermission(Permission(Subject.Blockchain, null))
-        user.addPermission(Permission(Subject.Blockchain, null))
+        user.addPermission(Permission(user.id, Subject.Blockchain, null))
+        user.addPermission(Permission(user.id, Subject.Blockchain, null))
 
         assert(user.permissions.size == defaultPermissionLength + 1)
 
-        user.removePermission(Permission(Subject.Blockchain, null))
+        user.removePermission(Permission(user.id, Subject.Blockchain, null))
 
         assert(user.permissions.size == defaultPermissionLength)
 
-        user.addPermission(Permission(Subject.Blockchain, null))
+        user.addPermission(Permission(user.id, Subject.Blockchain, null))
 
         assertNotNull(user.getPermission(Subject.Blockchain, null))
     }
@@ -64,7 +64,7 @@ internal class UserTest {
         assert(client.isAuthorized(Role.Client, Permission.getClientDefaultPermissions(client.id!!).first()))
 
         assertFalse(client.isAuthorized(Role.SysAdmin, null))
-        assertFalse(client.isAuthorized(Role.SysAdmin, Permission(Subject.Blockchain, null)))
+        assertFalse(client.isAuthorized(Role.SysAdmin, Permission(client.id, Subject.Blockchain, null)))
     }
 
     @Test

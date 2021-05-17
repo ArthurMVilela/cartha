@@ -4,12 +4,29 @@ import authentication.Permission
 import authentication.Role
 import authentication.User
 import authentication.UserSession
+import authentication.persistence.dao.PermissionDAO
+import authentication.persistence.dao.UserDAO
+import authentication.persistence.tables.PermissionTable
+import authentication.persistence.tables.UserTable
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
 /**
  * Controle para as classes de usuário e sessão de usuário
  */
 class UserController {
+    private val userDAO = UserDAO()
+
+    init {
+        transaction {
+            SchemaUtils.create(
+                UserTable,
+                PermissionTable
+            )
+        }
+    }
+
     /**
      * Criar um usuário do tipo cliente
      *
@@ -18,7 +35,8 @@ class UserController {
      * @param password      senha da conta de usuário
      */
     fun createClientUser(name:String, email:String, password:String):User {
-        return User.createClient(name, email, password)
+        val user = User.createClient(name, email, password)
+        return userDAO.insert(user)
     }
 
     /**
@@ -30,7 +48,8 @@ class UserController {
      * @param notaryId      id do cartório relacionado à conta
      */
     fun createOfficialUser(name:String, email:String, password:String, notaryId: UUID):User {
-        return User.createOfficial(name, email, password, notaryId)
+        val user = User.createOfficial(name, email, password, notaryId)
+        return userDAO.insert(user)
     }
 
     /**
@@ -42,7 +61,8 @@ class UserController {
      * @param notaryId      id do cartório relacionado à conta
      */
     fun createManagerUser(name:String, email:String, password:String, notaryId: UUID):User {
-        return User.createManager(name, email, password, notaryId)
+        val user = User.createManager(name, email, password, notaryId)
+        return userDAO.insert(user)
     }
 
     /**
@@ -53,7 +73,8 @@ class UserController {
      * @param password      senha da conta de usuário
      */
     fun createSysAdminUser(name:String, email:String, password:String):User {
-        return User.createSysAdmin(name, email, password)
+        val user = User.createSysAdmin(name, email, password)
+        return userDAO.insert(user)
     }
 
     fun login(email: String, password: String):UserSession {

@@ -1,6 +1,7 @@
 package authentication
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import util.serializer.UUIDSerializer
 import java.security.MessageDigest
 import java.time.LocalDateTime
@@ -13,6 +14,8 @@ import kotlin.random.Random
  */
 @Serializable
 class Permission(
+    @Transient
+    val userId:UUID?=null,
     val subject: Subject,
     @Serializable(with = UUIDSerializer::class)
     val domainId: UUID?
@@ -25,8 +28,8 @@ class Permission(
          */
         fun getClientDefaultPermissions(userId: UUID):HashSet<Permission> {
             return hashSetOf(
-                Permission(Subject.UserAccount, userId),
-                Permission(Subject.PersonalDocument, userId)
+                Permission(userId, Subject.UserAccount, userId),
+                Permission(userId, Subject.PersonalDocument, userId)
             )
         }
 
@@ -38,8 +41,8 @@ class Permission(
          */
         fun getOfficialDefaultPermissions(userId: UUID, notaryId: UUID): HashSet<Permission> {
             return hashSetOf(
-                Permission(Subject.UserAccount, userId),
-                Permission(Subject.CivilRegistry, notaryId)
+                Permission(userId, Subject.UserAccount, userId),
+                Permission(userId, Subject.CivilRegistry, notaryId)
             )
         }
 
@@ -51,9 +54,9 @@ class Permission(
          */
         fun getManagerDefaultPermissions(userId: UUID, notaryId: UUID): HashSet<Permission> {
             return hashSetOf(
-                Permission(Subject.UserAccount, userId),
-                Permission(Subject.CivilRegistry, notaryId),
-                Permission(Subject.Notary, notaryId)
+                Permission(userId, Subject.UserAccount, userId),
+                Permission(userId, Subject.CivilRegistry, notaryId),
+                Permission(userId, Subject.Notary, notaryId)
             )
         }
 
@@ -65,9 +68,9 @@ class Permission(
          */
         fun getSysadminDefaultPermissions(userId: UUID): HashSet<Permission> {
             return hashSetOf(
-                Permission(Subject.UserAccount, userId),
-                Permission(Subject.Notaries, null),
-                Permission(Subject.Blockchain, null)
+                Permission(userId, Subject.UserAccount, userId),
+                Permission(userId, Subject.Notaries, null),
+                Permission(userId, Subject.Blockchain, null)
             )
         }
     }
