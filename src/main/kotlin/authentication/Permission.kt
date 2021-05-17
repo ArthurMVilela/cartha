@@ -25,6 +25,7 @@ class Permission(
          */
         fun getClientDefaultPermissions(userId: UUID):HashSet<Permission> {
             return hashSetOf(
+                Permission(Subject.UserAccount, userId),
                 Permission(Subject.PersonalDocument, userId)
             )
         }
@@ -37,6 +38,7 @@ class Permission(
          */
         fun getOfficialDefaultPermissions(userId: UUID, notaryId: UUID): HashSet<Permission> {
             return hashSetOf(
+                Permission(Subject.UserAccount, userId),
                 Permission(Subject.CivilRegistry, notaryId)
             )
         }
@@ -49,6 +51,7 @@ class Permission(
          */
         fun getManagerDefaultPermissions(userId: UUID, notaryId: UUID): HashSet<Permission> {
             return hashSetOf(
+                Permission(Subject.UserAccount, userId),
                 Permission(Subject.CivilRegistry, notaryId),
                 Permission(Subject.Notary, notaryId)
             )
@@ -62,6 +65,7 @@ class Permission(
          */
         fun getSysadminDefaultPermissions(userId: UUID): HashSet<Permission> {
             return hashSetOf(
+                Permission(Subject.UserAccount, userId),
                 Permission(Subject.Notaries, null),
                 Permission(Subject.Blockchain, null)
             )
