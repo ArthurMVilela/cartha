@@ -10,7 +10,7 @@ internal class UserSessionTest {
     @Test
     internal fun testCreateSession() {
         val now = LocalDateTime.now()
-        val user = User.createClient("fulano", "fulano @gmail.com", "1234")
+        val user = User.createClient("fulano", "fulano @gmail.com", "11122233344", null,"1234")
         val session = UserSession(user, now)
 
         assert(session.start == now)
@@ -21,7 +21,7 @@ internal class UserSessionTest {
     @Test
     internal fun testTerminateSession() {
         val start = LocalDateTime.now()
-        val user = User.createClient("fulano", "fulano @gmail.com", "1234")
+        val user = User.createClient("fulano", "fulano @gmail.com", "11122233344", null,"1234")
         val session = UserSession(user, start)
 
         assertFalse(session.hasEnded())

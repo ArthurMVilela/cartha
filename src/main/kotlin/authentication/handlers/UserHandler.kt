@@ -34,6 +34,13 @@ class UserHandler {
         }
         val name = parameters["name"]?:throw BadRequestException("Nome do usuário deve ser expecificado na requisição.")
         val email = parameters["email"]?:throw BadRequestException("Email do usuário deve ser expecificado na requisição.")
+        val cpf = parameters["cpf"]
+        val cnpj = parameters["cnpj"]
+
+        if(cpf.isNullOrEmpty() && cnpj.isNullOrEmpty() || !cpf.isNullOrEmpty() && !cnpj.isNullOrEmpty()) {
+            throw BadRequestException("Usuário deve ter cpf ou cnpj definido, e somente um dos dois.")
+        }
+
         val password = parameters["password"]?:throw BadRequestException("Senha do usuário deve ser expecificado na requisiçãol")
         val notaryId = try {
             UUID.fromString(parameters["notary_id"]!!)
@@ -46,7 +53,7 @@ class UserHandler {
         }
 
         val user = try {
-            controller.createUser(role, name, email, password, notaryId)
+            controller.createUser(role, name, email,  password, cpf, cnpj, notaryId)
         } catch (ex: NullPointerException) {
             throw BadRequestException(ex.message?:"Erro ao criar usuário, parametros inválidos.")
         }

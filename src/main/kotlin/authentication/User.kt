@@ -31,6 +31,8 @@ class User(
     val id: UUID,
     val name: String,
     val email: String,
+    val cpf: String?,
+    val cnpj: String?,
     @Transient internal var salt: String? = null,
     @Transient internal var pass: String? = null,
     val role: Role,
@@ -40,10 +42,12 @@ class User(
     constructor(
         name: String,
         email: String,
+        cpf: String?,
+        cnpj: String?,
         role: Role,
         permissions: HashSet<Permission>,
         password: String
-    ):this(createId(), name, email, null, null, role, permissions, UserStatus.Offline){
+    ):this(createId(), name, email, cpf, cnpj, null, null, role, permissions, UserStatus.Offline){
         salt = createSalt()
         pass = createPass(password)
     }
@@ -65,8 +69,8 @@ class User(
          * @param email         email do usuário
          * @param password      senha da conta de usuário
          */
-        fun createClient(name: String, email: String, password: String):User {
-            val user = User(name, email, Role.Client, hashSetOf(), password)
+        fun createClient(name: String, email: String, cpf: String?, cnpj: String?, password: String):User {
+            val user = User(name, email, cpf, cnpj, Role.Client, hashSetOf(), password)
             user.permissions = Permission.getClientDefaultPermissions(user.id)
             return user
         }
@@ -79,8 +83,8 @@ class User(
          * @param password      senha da conta de usuário
          * @param notaryId      id do cartório relacionado à conta
          */
-        fun createOfficial(name: String, email: String, password: String, notaryId:UUID):User {
-            val user = User(name, email, Role.Official, hashSetOf(), password)
+        fun createOfficial(name: String, email: String, cpf: String?, password: String, notaryId:UUID):User {
+            val user = User(name, email, cpf, null, Role.Official, hashSetOf(), password)
             user.permissions = Permission.getOfficialDefaultPermissions(user.id, notaryId)
             return user
         }
@@ -93,8 +97,8 @@ class User(
          * @param password      senha da conta de usuário
          * @param notaryId      id do cartório relacionado à conta
          */
-        fun createManager(name: String, email: String, password: String, notaryId:UUID):User {
-            val user = User(name, email, Role.Manager, hashSetOf(), password)
+        fun createManager(name: String, email: String, cpf: String?, password: String, notaryId:UUID):User {
+            val user = User(name, email, cpf, null, Role.Manager, hashSetOf(), password)
             user.permissions = Permission.getManagerDefaultPermissions(user.id, notaryId)
             return user
         }
@@ -106,8 +110,8 @@ class User(
          * @param email         email do usuário
          * @param password      senha da conta de usuário
          */
-        fun createSysAdmin(name: String, email: String, password: String,):User {
-            val user = User(name, email,  Role.SysAdmin, hashSetOf(), password)
+        fun createSysAdmin(name: String, email: String, cpf: String?, password: String,):User {
+            val user = User(name, email, cpf, null, Role.SysAdmin, hashSetOf(), password)
             user.permissions = Permission.getSysadminDefaultPermissions(user.id)
             return user
         }

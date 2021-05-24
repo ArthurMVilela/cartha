@@ -14,8 +14,8 @@ import java.util.*
 internal class UserTest {
     @Test
     internal fun testUUID() {
-        val userA = User.createClient("Fulano", "fulano@gmail.com",  "1234")
-        val userB = User.createClient("Fulano", "fulano@gmail.com",  "1234")
+        val userA = User.createClient("fulano", "fulano @gmail.com", "11122233344", null,"1234")
+        val userB = User.createClient("fulano", "fulano @gmail.com", "11122233344", null,"1234")
 
         assertNotEquals(userA.id, userB.id)
         assertDoesNotThrow(fun () {
@@ -25,7 +25,7 @@ internal class UserTest {
 
     @Test
     internal fun testJsonSerialization() {
-        val user = User.createClient("fulano", "fulano @gmail.com", "1234")
+        val user = User.createClient("fulano", "fulano @gmail.com", "11122233344", null,"1234")
 
         val serialized = Json.encodeToString(user)
 
@@ -38,7 +38,7 @@ internal class UserTest {
 
     @Test
     internal fun testPermissions() {
-        val user = User.createClient("fulano", "fulano @gmail.com", "1234")
+        val user = User.createClient("fulano", "fulano @gmail.com", "11122233344", null,"1234")
         val defaultPermissionLength = user.permissions.size
 
         user.addPermission(Permission(user.id, Subject.Blockchain, null))
@@ -57,7 +57,7 @@ internal class UserTest {
 
     @Test
     internal fun testPermissionCheck() {
-        val client = User.createClient("fulano", "fulano @gmail.com", "1234")
+        val client = User.createClient("fulano", "fulano @gmail.com", "11122233344", null,"1234")
 
         assert(client.isAuthorized(null, null))
         assert(client.isAuthorized(Role.Client, null))
@@ -69,7 +69,7 @@ internal class UserTest {
 
     @Test
     internal fun testPassword() {
-        val user = User.createClient("fulano", "fulano@gmail.com", "1234")
+        val user = User.createClient("fulano", "fulano @gmail.com", "11122233344", null,"1234")
 
         assert(user.validatePassword("1234"))
         assert(!user.validatePassword(""))
@@ -83,7 +83,7 @@ internal class UserTest {
 
     @Test
     internal fun testStatus() {
-        val user = User.createClient("fulano", "fulano@gmail.com", "1234")
+        val user = User.createClient("fulano", "fulano @gmail.com", "11122233344", null,"1234")
 
         assert(user.status == UserStatus.Offline)
         assertThrows(UserOfflineException::class.java, fun(){ user.logout() })

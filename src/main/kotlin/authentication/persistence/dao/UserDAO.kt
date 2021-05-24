@@ -19,6 +19,8 @@ class UserDAO:DAO<User, UUID> {
                     it[id] = obj.id
                     it[name] = obj.name
                     it[email] = obj.email
+                    it[cpf] = obj.cpf
+                    it[cnpj] = obj.cnpj
                     it[salt] = obj.salt!!
                     it[pass] = obj.pass!!
                     it[role] = obj.role
@@ -37,7 +39,19 @@ class UserDAO:DAO<User, UUID> {
     }
 
     override fun select(id: UUID): User? {
-        TODO("Not yet implemented")
+        var found:User? = null
+
+        transaction {
+            try {
+                val foundRow = UserTable.select(Op.build { UserTable.id eq id }).firstOrNull()?:return@transaction
+                found = toType(foundRow)
+            } catch (ex: Exception) {
+                rollback()
+                throw ex
+            }
+        }
+
+        return found
     }
 
     override fun selectMany(condition: Op<Boolean>, page: Int, pageLength: Int): ResultSet<User> {
@@ -68,12 +82,14 @@ class UserDAO:DAO<User, UUID> {
         val id = row[UserTable.id].value
         val name = row[UserTable.name]
         val email = row[UserTable.email]
+        val cpf = row[UserTable.cpf]
+        val cnpj = row[UserTable.cnpj]
         val salt = row[UserTable.salt]
         val pass = row[UserTable.pass]
         val role = row[UserTable.role]
         val permissions = permissionDAO.selectMany(Op.build { PermissionTable.userId eq id }).toHashSet()
         val status = row[UserTable.status]
 
-        return User(id, name, email, salt, pass, role, permissions, status)
+        return User(id, name, email, cpf, cnpj, salt, pass, role, permissions, status)
     }
 }
