@@ -53,6 +53,12 @@ fun main() {
             post("/login") {
                 userHandler.login(call)
             }
+            get("/session/{id}") {
+                userHandler.getSession(call)
+            }
+            post("/logout/{id}") {
+                userHandler.logout(call)
+            }
         }
     }.start(wait = true)
 }

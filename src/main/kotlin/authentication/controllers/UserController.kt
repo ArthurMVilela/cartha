@@ -2,6 +2,7 @@ package authentication.controllers
 
 import authentication.*
 import authentication.exception.InvalidCredentialsException
+import authentication.exception.UserSessionNotFound
 import authentication.persistence.dao.PermissionDAO
 import authentication.persistence.dao.UserDAO
 import authentication.persistence.dao.UserSessionDAO
@@ -109,10 +110,15 @@ class UserController {
     }
 
     fun logout(sessionId: UUID):UserSession {
-        TODO()
+        val session = getSession(sessionId)
+        session.endSession(LocalDateTime.now())
+        userSessionDAO.update(session)
+        userDAO.update(session.user)
+        return session
     }
 
     fun getSession(sessionId: UUID):UserSession {
-        TODO()
+        val session = userSessionDAO.select(sessionId)?:throw UserSessionNotFound("Sessão de usuário não encontrada.")
+        return session
     }
 }

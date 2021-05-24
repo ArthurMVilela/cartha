@@ -4,6 +4,7 @@ import authentication.Role
 import authentication.controllers.AuthenticationController
 import authentication.exception.InvalidCredentialsException
 import authentication.exception.InvalidPasswordException
+import authentication.exception.UserSessionNotFound
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.http.*
@@ -84,5 +85,27 @@ class UserHandler {
         }
 
         call.respond(HttpStatusCode.OK, session)
+    }
+
+    suspend fun getSession(call: ApplicationCall) {
+        val id = call.parameters["id"]?:throw BadRequestException("Id não pode ser nula.")
+        val session = try {
+            controller.getSession(UUID.fromString(id))
+        } catch (ex: UserSessionNotFound) {
+            throw NotFoundException("Sessão de usuário não encontrada.")
+        } catch (ex: Exception) {
+            throw ex
+        }
+        call.respond(HttpStatusCode.OK, session)
+    }
+
+    suspend fun logout(call: ApplicationCall) {
+        val id = call.parameters["id"]?:throw BadRequestException("Id não pode ser nula.")
+        val logoutSession = try {
+            controller.logout(UUID.fromString(id))
+        } catch (ex:Exception) {
+            throw ex
+        }
+        call.respond(HttpStatusCode.OK, logoutSession)
     }
 }

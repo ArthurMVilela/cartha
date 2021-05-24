@@ -46,4 +46,8 @@ class AuthenticationController {
     fun login(email: String?, cpf: String?, cnpj: String?, password: String):UserSession {
         return userController.login(email, cpf, cnpj, password)
     }
+
+    fun logout(sessionId: UUID):UserSession { return  userController.logout(sessionId) }
+
+    fun getSession(sessionId:UUID):UserSession { return userController.getSession(sessionId) }
 }

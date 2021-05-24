@@ -4,10 +4,7 @@ import authentication.UserSession
 import authentication.persistence.tables.UserSessionTable
 import newPersistence.DAO
 import newPersistence.ResultSet
-import org.jetbrains.exposed.sql.Op
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.insertAndGetId
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
@@ -64,7 +61,20 @@ class UserSessionDAO:DAO<UserSession, UUID> {
     }
 
     override fun update(obj: UserSession) {
-        TODO("Not yet implemented")
+        transaction {
+            try {
+                UserSessionTable.update({UserSessionTable.id eq obj.id}) {
+                    with(SqlExpressionBuilder) {
+                        it[userId] = obj.user.id
+                        it[start] = obj.start
+                        it[end] = obj.end
+                    }
+                }
+            } catch (ex: Exception) {
+                rollback()
+                throw ex
+            }
+        }
     }
 
     override fun remove(id: UUID) {
