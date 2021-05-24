@@ -50,6 +50,9 @@ fun main() {
             post("/users") {
                 userHandler.createUser(call)
             }
+            post("/login") {
+                userHandler.login(call)
+            }
         }
     }.start(wait = true)
 }

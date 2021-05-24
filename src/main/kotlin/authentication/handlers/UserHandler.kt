@@ -2,6 +2,8 @@ package authentication.handlers
 
 import authentication.Role
 import authentication.controllers.AuthenticationController
+import authentication.exception.InvalidCredentialsException
+import authentication.exception.InvalidPasswordException
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.http.*
@@ -59,5 +61,28 @@ class UserHandler {
         }
 
         call.respond(HttpStatusCode.OK, user)
+    }
+
+    /**
+     * Recebe uma chamada de API e inicia uma sessão de usuário
+     *
+     * @param call          Chamada de API
+     */
+    suspend fun login(call: ApplicationCall) {
+        val parameters = call.receiveParameters()
+        val email = parameters["email"]
+        val cpf = parameters["cpf"]
+        val cnpj = parameters["cnpj"]
+        val password = parameters["password"]?:throw BadRequestException("Senha do usuário deve ser expecificads na requisição.")
+
+        val session = try {
+            controller.login(email, cpf, cnpj, password)
+        } catch (ex: InvalidCredentialsException) {
+            throw BadRequestException(ex.message?:"")
+        } catch (ex: InvalidPasswordException) {
+            throw BadRequestException(ex.message?:"")
+        }
+
+        call.respond(HttpStatusCode.OK, session)
     }
 }

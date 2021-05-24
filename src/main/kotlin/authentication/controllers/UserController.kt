@@ -1,15 +1,17 @@
 package authentication.controllers
 
-import authentication.Permission
-import authentication.Role
-import authentication.User
-import authentication.UserSession
+import authentication.*
+import authentication.exception.InvalidCredentialsException
 import authentication.persistence.dao.PermissionDAO
 import authentication.persistence.dao.UserDAO
+import authentication.persistence.dao.UserSessionDAO
 import authentication.persistence.tables.PermissionTable
+import authentication.persistence.tables.UserSessionTable
 import authentication.persistence.tables.UserTable
+import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.time.LocalDateTime
 import java.util.*
 
 /**
@@ -17,12 +19,14 @@ import java.util.*
  */
 class UserController {
     private val userDAO = UserDAO()
+    private val userSessionDAO = UserSessionDAO()
 
     init {
         transaction {
             SchemaUtils.create(
                 UserTable,
-                PermissionTable
+                PermissionTable,
+                UserSessionTable,
             )
         }
     }
@@ -77,8 +81,31 @@ class UserController {
         return userDAO.insert(user)
     }
 
-    fun login(email: String, password: String):UserSession {
-        TODO()
+    fun login(email: String?, cpf: String?, cnpj: String?, password: String):UserSession {
+        if ((email.isNullOrEmpty() && cpf.isNullOrEmpty() && cnpj.isNullOrEmpty()) || (!email.isNullOrEmpty() && !cpf.isNullOrEmpty() && !cnpj.isNullOrEmpty())) {
+            throw InvalidCredentialsException("Deve haver somente email ou cpf no login, não os dois.")
+        }
+
+        val user = when {
+            email != null -> userDAO.selectMany(Op.build { UserTable.email eq email }).firstOrNull()
+            cpf != null -> userDAO.selectMany(Op.build { UserTable.cpf eq cpf }).firstOrNull()
+            cnpj != null -> userDAO.selectMany(Op.build { UserTable.cnpj eq cnpj }).firstOrNull()
+            else -> throw InvalidCredentialsException("Deve haver somente email ou cpf no login, não os dois.")
+        }?: throw InvalidCredentialsException("Usuário não existe.")
+
+        when(user.status) {
+            UserStatus.Online -> throw InvalidCredentialsException("Usuário já está logado.")
+            UserStatus.Deactivated -> throw InvalidCredentialsException("Conta de usuário desativada.")
+        }
+
+        if (!user.validatePassword(password)) {
+            throw InvalidCredentialsException("Senha inválida")
+        }
+
+        val session = UserSession(user, LocalDateTime.now())
+
+        userDAO.update(user)
+        return userSessionDAO.insert(session)
     }
 
     fun logout(sessionId: UUID):UserSession {

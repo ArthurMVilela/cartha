@@ -1,5 +1,6 @@
 package authentication.persistence.dao
 
+import authentication.Permission
 import authentication.User
 import authentication.persistence.tables.PermissionTable
 import authentication.persistence.tables.UserTable
@@ -59,7 +60,18 @@ class UserDAO:DAO<User, UUID> {
     }
 
     override fun selectMany(condition: Op<Boolean>): List<User> {
-        TODO("Not yet implemented")
+        var selected = emptyList<User>()
+        transaction {
+            try {
+                selected = UserTable.select(condition).map {
+                    toType(it)
+                }
+            } catch (ex: Exception) {
+                rollback()
+                throw ex
+            }
+        }
+        return selected
     }
 
     override fun selectAll(page: Int, pageLength: Int): ResultSet<User> {
@@ -67,7 +79,25 @@ class UserDAO:DAO<User, UUID> {
     }
 
     override fun update(obj: User) {
-        TODO("Not yet implemented")
+        transaction {
+            try {
+                UserTable.update({ UserTable.id eq obj.id }) {
+                    with(SqlExpressionBuilder) {
+                        it[UserTable.name] = obj.name
+                        it[UserTable.email] = obj.email
+                        it[UserTable.cpf] = obj.cpf
+                        it[UserTable.cnpj] = obj.cnpj
+                        it[UserTable.salt] = obj.salt!!
+                        it[UserTable.pass] = obj.pass!!
+                        it[UserTable.role] = obj.role
+                        it[UserTable.status] = obj.status
+                    }
+                }
+            } catch (ex:Exception) {
+                rollback()
+                throw ex
+            }
+        }
     }
 
     override fun remove(id: UUID) {

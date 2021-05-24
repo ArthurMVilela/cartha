@@ -2,6 +2,7 @@ package authentication.controllers
 
 import authentication.Role
 import authentication.User
+import authentication.UserSession
 import authentication.logging.controllers.AccessLogController
 import java.util.*
 
@@ -40,5 +41,9 @@ class AuthenticationController {
                 }
             }
         }
+    }
+
+    fun login(email: String?, cpf: String?, cnpj: String?, password: String):UserSession {
+        return userController.login(email, cpf, cnpj, password)
     }
 }

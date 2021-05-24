@@ -10,7 +10,7 @@ import org.jetbrains.exposed.sql.Column
 
 object UserTable:UUIDTable("user") {
     val name = varchar("name", 120)
-    val email = varchar("email", 120)
+    val email = varchar("email", 120).uniqueIndex()
     val cpf = char("cpf", 11).nullable()
     val cnpj = char("cnpj", 14).nullable()
     val salt = char("salt", 32)
