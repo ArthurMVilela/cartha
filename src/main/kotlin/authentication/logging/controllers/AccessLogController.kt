@@ -5,6 +5,11 @@ import authentication.exception.UserOfflineException
 import authentication.logging.AccessLog
 import authentication.logging.AccessLogSearchFilter
 import authentication.logging.Action
+import authentication.logging.persistence.AccessLogTable
+import authentication.logging.persistence.ActionTable
+import authentication.logging.persistence.dao.AccessLogDAO
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
 import java.util.*
 
@@ -12,6 +17,16 @@ import java.util.*
  * Classe controle para operações relacionadas a logs de acesso
  */
 class AccessLogController {
+    private val accessLogDAO = AccessLogDAO()
+
+    init {
+        transaction {
+            SchemaUtils.create(
+                AccessLogTable,
+                ActionTable
+            )
+        }
+    }
 
     /**
      * Cria um log de acesso e o registra no banco de dados
@@ -20,7 +35,7 @@ class AccessLogController {
      * @param action        ação efetuada
      * @param timestamp     instante em que ocorreu
      */
-    fun logAction(session: UserSession, action: Action, timestamp: LocalDateTime) {
+    fun logAction(session: UserSession, action: Action, timestamp: LocalDateTime):AccessLog {
         val log = try {
             AccessLog(session, action, timestamp)
         } catch (ex: UserOfflineException) {
@@ -28,6 +43,9 @@ class AccessLogController {
         }
 
         //registrar na persistência
+
+
+        return accessLogDAO.insert(log)
     }
 
     /**

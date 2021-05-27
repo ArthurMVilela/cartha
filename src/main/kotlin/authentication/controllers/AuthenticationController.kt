@@ -3,7 +3,12 @@ package authentication.controllers
 import authentication.Role
 import authentication.User
 import authentication.UserSession
+import authentication.exception.AuthenticationException
+import authentication.exception.UserSessionNotFound
+import authentication.logging.AccessLog
+import authentication.logging.Action
 import authentication.logging.controllers.AccessLogController
+import java.time.LocalDateTime
 import java.util.*
 
 /**
@@ -50,4 +55,18 @@ class AuthenticationController {
     fun logout(sessionId: UUID):UserSession { return  userController.logout(sessionId) }
 
     fun getSession(sessionId:UUID):UserSession { return userController.getSession(sessionId) }
+
+    fun logAction(sessionId: UUID, action: Action, timestamp: LocalDateTime): AccessLog {
+        val session = try {
+            userController.getSession(sessionId)
+        } catch (ex: UserSessionNotFound) {
+            throw ex
+        }
+
+        if (session.hasEnded()) {
+            throw AuthenticationException("Sessão já foi terminada.")
+        }
+
+        return accessLogController.logAction(session,action,timestamp)
+    }
 }

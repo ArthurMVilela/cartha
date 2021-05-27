@@ -2,6 +2,7 @@
 
 package authentication.service
 
+import authentication.handlers.AccessLogHandler
 import authentication.handlers.UserHandler
 import io.ktor.application.*
 import io.ktor.features.*
@@ -34,6 +35,7 @@ fun main() {
         println(e.message)
     }
     val userHandler = UserHandler()
+    val accessLogHandler = AccessLogHandler()
     embeddedServer(Netty, port=8080) {
         install(ContentNegotiation)  {
             json()
@@ -58,6 +60,9 @@ fun main() {
             }
             post("/logout/{id}") {
                 userHandler.logout(call)
+            }
+            post("/access_logs") {
+                accessLogHandler.logAction(call)
             }
         }
     }.start(wait = true)
