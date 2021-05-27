@@ -5,6 +5,7 @@ import authentication.exception.UserOfflineException
 import authentication.logging.AccessLog
 import authentication.logging.AccessLogSearchFilter
 import authentication.logging.Action
+import authentication.logging.exceptions.AccessLogNotFoundException
 import authentication.logging.persistence.AccessLogTable
 import authentication.logging.persistence.ActionTable
 import authentication.logging.persistence.dao.AccessLogDAO
@@ -53,8 +54,8 @@ class AccessLogController {
      *
      * @param id        id do log
      */
-    fun getLog(id: UUID):AccessLog {
-        TODO("Not yet implemented")
+    fun getLog(id: UUID): AccessLog {
+        return accessLogDAO.select(id) ?: throw AccessLogNotFoundException()
     }
 
     /**

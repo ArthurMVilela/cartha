@@ -64,6 +64,9 @@ fun main() {
             post("/access_logs") {
                 accessLogHandler.logAction(call)
             }
+            get("/access_logs/{id}") {
+                accessLogHandler.getLog(call)
+            }
         }
     }.start(wait = true)
 }

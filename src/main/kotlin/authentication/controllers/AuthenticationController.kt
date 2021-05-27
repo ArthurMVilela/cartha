@@ -69,4 +69,6 @@ class AuthenticationController {
 
         return accessLogController.logAction(session,action,timestamp)
     }
+
+    fun getAccessLog(logId: UUID):AccessLog {return accessLogController.getLog(logId)}
 }

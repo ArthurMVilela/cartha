@@ -41,7 +41,22 @@ class AccessLogDAO:DAO<AccessLog, UUID> {
     }
 
     override fun select(id: UUID): AccessLog? {
-        TODO("Not yet implemented")
+        var found:AccessLog? = null
+
+        transaction {
+            try {
+                val row = (AccessLogTable innerJoin ActionTable)
+                    .select { AccessLogTable.id eq ActionTable.logId and (AccessLogTable.id eq id) }
+                    .firstOrNull()?:return@transaction
+
+                found = toType(row)
+            } catch (ex: Exception) {
+                rollback()
+                throw ex
+            }
+        }
+
+        return found
     }
 
     override fun selectMany(condition: Op<Boolean>, page: Int, pageLength: Int): ResultSet<AccessLog> {
