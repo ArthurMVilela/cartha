@@ -6,6 +6,7 @@ import authentication.UserSession
 import authentication.exception.AuthenticationException
 import authentication.exception.UserSessionNotFound
 import authentication.logging.AccessLog
+import authentication.logging.AccessLogSearchFilter
 import authentication.logging.Action
 import authentication.logging.controllers.AccessLogController
 import java.time.LocalDateTime
@@ -71,4 +72,5 @@ class AuthenticationController {
     }
 
     fun getAccessLog(logId: UUID):AccessLog {return accessLogController.getLog(logId)}
+    fun getAccessLogs(filter: AccessLogSearchFilter):List<AccessLog> {return accessLogController.getLogs(filter)}
 }

@@ -8,6 +8,7 @@ import newPersistence.DAO
 import newPersistence.ResultSet
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
+import kotlin.math.ceil
 import java.util.*
 
 class AccessLogDAO:DAO<AccessLog, UUID> {
@@ -64,7 +65,22 @@ class AccessLogDAO:DAO<AccessLog, UUID> {
     }
 
     override fun selectMany(condition: Op<Boolean>): List<AccessLog> {
-        TODO("Not yet implemented")
+        val result = mutableListOf<AccessLog>()
+
+        transaction {
+            try {
+                val rows = (AccessLogTable innerJoin ActionTable)
+                    .select { AccessLogTable.id eq ActionTable.logId and condition }
+                rows.forEach {
+                    result.add(toType(it))
+                }
+            } catch (ex: Exception) {
+                rollback()
+                throw ex
+            }
+        }
+
+        return result
     }
 
     override fun selectAll(page: Int, pageLength: Int): ResultSet<AccessLog> {

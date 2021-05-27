@@ -2,6 +2,7 @@ package authentication.handlers
 
 import authentication.Subject
 import authentication.controllers.AuthenticationController
+import authentication.logging.AccessLogSearchFilter
 import authentication.logging.Action
 import authentication.logging.ActionType
 import authentication.logging.exceptions.AccessLogNotFoundException
@@ -32,5 +33,11 @@ class AccessLogHandler {
             throw NotFoundException(ex.message)
         }
         call.respond(HttpStatusCode.OK, log)
+    }
+
+    suspend fun getLogs(call: ApplicationCall) {
+        val filter = call.receive<AccessLogSearchFilter>()
+        val logs = authenticationController.getAccessLogs(filter)
+        call.respond(HttpStatusCode.OK, logs)
     }
 }

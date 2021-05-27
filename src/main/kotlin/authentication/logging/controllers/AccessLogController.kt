@@ -62,6 +62,7 @@ class AccessLogController {
      * Busca logs de acesso no banco de dados aplicando um filtro para a busca
      */
     fun getLogs(filter: AccessLogSearchFilter):List<AccessLog> {
-        TODO("Not yet implemented")
+        val logs = accessLogDAO.selectMany(filter.createSearchCondition())
+        return logs
     }
 }
