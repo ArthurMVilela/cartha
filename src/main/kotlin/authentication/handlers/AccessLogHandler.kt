@@ -37,7 +37,8 @@ class AccessLogHandler {
 
     suspend fun getLogs(call: ApplicationCall) {
         val filter = call.receive<AccessLogSearchFilter>()
-        val logs = authenticationController.getAccessLogs(filter)
+        val page = call.request.queryParameters["page"]?.toInt()?:1
+        val logs = authenticationController.getAccessLogs(filter, page)
         call.respond(HttpStatusCode.OK, logs)
     }
 }

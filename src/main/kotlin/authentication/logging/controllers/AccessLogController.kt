@@ -9,6 +9,7 @@ import authentication.logging.exceptions.AccessLogNotFoundException
 import authentication.logging.persistence.AccessLogTable
 import authentication.logging.persistence.ActionTable
 import authentication.logging.persistence.dao.AccessLogDAO
+import newPersistence.ResultSet
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
@@ -63,6 +64,14 @@ class AccessLogController {
      */
     fun getLogs(filter: AccessLogSearchFilter):List<AccessLog> {
         val logs = accessLogDAO.selectMany(filter.createSearchCondition())
+        return logs
+    }
+
+    /**
+     * Busca logs de acesso no banco de dados aplicando um filtro para a busca
+     */
+    fun getLogs(filter: AccessLogSearchFilter, page: Int):ResultSet<AccessLog> {
+        val logs = accessLogDAO.selectMany(filter.createSearchCondition(), page)
         return logs
     }
 }

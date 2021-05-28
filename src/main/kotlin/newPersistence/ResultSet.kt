@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-abstract class ResultSet<Type>(
+class ResultSet<Type>(
     val rows:List<Type>,
     @SerialName("current_page")
     val currentPage:Int,

@@ -9,6 +9,7 @@ import authentication.logging.AccessLog
 import authentication.logging.AccessLogSearchFilter
 import authentication.logging.Action
 import authentication.logging.controllers.AccessLogController
+import newPersistence.ResultSet
 import java.time.LocalDateTime
 import java.util.*
 
@@ -73,4 +74,5 @@ class AuthenticationController {
 
     fun getAccessLog(logId: UUID):AccessLog {return accessLogController.getLog(logId)}
     fun getAccessLogs(filter: AccessLogSearchFilter):List<AccessLog> {return accessLogController.getLogs(filter)}
+    fun getAccessLogs(filter: AccessLogSearchFilter, page:Int):ResultSet<AccessLog> {return accessLogController.getLogs(filter, page)}
 }

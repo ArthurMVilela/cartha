@@ -7,6 +7,7 @@ import authentication.logging.persistence.ActionTable
 import newPersistence.DAO
 import newPersistence.ResultSet
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 import kotlin.math.ceil
 import java.util.*
@@ -61,7 +62,30 @@ class AccessLogDAO:DAO<AccessLog, UUID> {
     }
 
     override fun selectMany(condition: Op<Boolean>, page: Int, pageLength: Int): ResultSet<AccessLog> {
-        TODO("Not yet implemented")
+        var numberOfPages = 0
+        val results = mutableListOf<AccessLog>()
+
+        transaction {
+            try {
+                val logsTable = (AccessLogTable innerJoin ActionTable)
+
+                val count = logsTable
+                    .select { AccessLogTable.id eq ActionTable.logId }
+                    .count()
+                numberOfPages = ceil(count/(pageLength * 1.0f)).toInt()
+                val rows = logsTable
+                    .select { AccessLogTable.id eq ActionTable.logId and condition }
+                    .limit((pageLength * page) , ((page - 1) * pageLength).toLong())
+                rows.forEach {
+                    results.add(toType(it))
+                }
+            } catch (ex: Exception) {
+                rollback()
+                throw ex
+            }
+        }
+
+        return ResultSet(results, page, numberOfPages, pageLength)
     }
 
     override fun selectMany(condition: Op<Boolean>): List<AccessLog> {
