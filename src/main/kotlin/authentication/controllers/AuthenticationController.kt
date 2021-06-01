@@ -1,6 +1,7 @@
 package authentication.controllers
 
 import authentication.Role
+import authentication.Subject
 import authentication.User
 import authentication.UserSession
 import authentication.exception.AuthenticationException
@@ -8,10 +9,12 @@ import authentication.exception.UserSessionNotFound
 import authentication.logging.AccessLog
 import authentication.logging.AccessLogSearchFilter
 import authentication.logging.Action
+import authentication.logging.ActionType
 import authentication.logging.controllers.AccessLogController
 import newPersistence.ResultSet
 import java.time.LocalDateTime
 import java.util.*
+import kotlin.Exception
 
 /**
  * Façade para os controles do pacore de autentificação
@@ -51,10 +54,26 @@ class AuthenticationController {
     }
 
     fun login(email: String?, cpf: String?, cnpj: String?, password: String):UserSession {
-        return userController.login(email, cpf, cnpj, password)
+        var session:UserSession? = null
+        try {
+            session = userController.login(email, cpf, cnpj, password)
+            accessLogController.logAction(session, Action(ActionType.Login, Subject.UserAccount, session.user.id), LocalDateTime.now())
+        } catch (ex: Exception) {
+            throw ex
+        }
+        return session
     }
 
-    fun logout(sessionId: UUID):UserSession { return  userController.logout(sessionId) }
+    fun logout(sessionId: UUID):UserSession {
+        var endedSession:UserSession? = null
+        try {
+            endedSession = userController.logout(sessionId)
+            accessLogController.logAction(endedSession, Action(ActionType.Logout, Subject.UserAccount, endedSession.user.id), LocalDateTime.now())
+        } catch (ex: Exception) {
+            throw ex
+        }
+        return endedSession
+    }
 
     fun getSession(sessionId:UUID):UserSession { return userController.getSession(sessionId) }
 
@@ -74,5 +93,5 @@ class AuthenticationController {
 
     fun getAccessLog(logId: UUID):AccessLog {return accessLogController.getLog(logId)}
     fun getAccessLogs(filter: AccessLogSearchFilter):List<AccessLog> {return accessLogController.getLogs(filter)}
-    fun getAccessLogs(filter: AccessLogSearchFilter, page:Int):ResultSet<AccessLog> {return accessLogController.getLogs(filter, page)}
+    fun getAccessLogs(filter: AccessLogSearchFilter, page:Int): ResultSet<AccessLog> {return accessLogController.getLogs(filter, page)}
 }

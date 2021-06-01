@@ -40,9 +40,9 @@ class AccessLog (
         timestamp,
         action
     ) {
-        if (session.hasEnded()) {
-            throw UserOfflineException("A sessão já foi terminada.")
-        }
+//        if (session.hasEnded()) {
+//            throw UserOfflineException("A sessão já foi terminada.")
+//        }
     }
 
     companion object {

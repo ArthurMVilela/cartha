@@ -44,9 +44,6 @@ class AccessLogController {
             throw UserOfflineException("Sessão inválida, sessão já foi terminada.")
         }
 
-        //registrar na persistência
-
-
         return accessLogDAO.insert(log)
     }
 
