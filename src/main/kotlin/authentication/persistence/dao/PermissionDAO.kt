@@ -1,124 +1,79 @@
 package authentication.persistence.dao
 
 import authentication.Permission
+import authentication.User
 import authentication.persistence.tables.PermissionTable
-import authentication.persistence.tables.UserTable
-import org.jetbrains.exposed.dao.Entity
-import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.dao.id.IdTable
+import newPersistence.DAO
+import newPersistence.ResultSet
 import org.jetbrains.exposed.sql.Op
-import org.jetbrains.exposed.sql.SizedIterable
-import org.jetbrains.exposed.sql.emptySized
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.insertAndGetId
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
-import persistence.CompanionDAO
-import persistence.DAO
-import java.lang.Exception
 
-class PermissionDAO(id: EntityID<String>): Entity<String>(id), DAO<Permission> {
-
-    companion object : CompanionDAO<Permission, PermissionDAO, String, IdTable<String>>(PermissionTable) {
-        override fun insert(obj: Permission): PermissionDAO {
-            var r:PermissionDAO? = null
-            transaction {
-                try {
-                    r = PermissionDAO.new(obj.id!!) {
-                        userId = EntityID<String>(obj.userId, UserTable)
-                        subject = obj.subject
-                        domainId = obj.domainId
-                    }
-                } catch (e: Exception) {
-                    rollback()
-                    throw e
+class PermissionDAO:DAO<Permission, Int> {
+    override fun insert(obj: Permission): Permission {
+        var inserted:Permission? = null
+        transaction { 
+            try {
+                val insertedId = PermissionTable.insertAndGetId {
+                    it[userId] = obj.userId
+                    it[subject] = obj.subject
+                    it[domainId] = obj.domainId
                 }
-            }
-            return r!!
-        }
-
-        override fun select(id: String): PermissionDAO? {
-            var r:PermissionDAO? = null
-            transaction {
-                try {
-                    r = findById(id)
-                } catch (e: Exception) {
-                    rollback()
-                    throw e
-                }
-            }
-            return r
-        }
-
-        override fun selectMany(condition: Op<Boolean>): SizedIterable<PermissionDAO> {
-            var r:SizedIterable<PermissionDAO> = emptySized()
-            transaction {
-                try {
-                    r = find(condition)
-                } catch (e:Exception){
-                    rollback()
-                    throw e
-                }
-            }
-            return r
-        }
-
-        override fun selectAll(): SizedIterable<PermissionDAO> {
-            var r:SizedIterable<PermissionDAO> = emptySized()
-            transaction {
-                try {
-                    r = all()
-                } catch (e:Exception){
-                    rollback()
-                    throw e
-                }
-            }
-            return r
-        }
-
-        override fun update(obj: Permission) {
-            transaction {
-                try {
-                    val found = findById(obj.id!!)!!
-                    found.userId = EntityID<String>(obj.userId, UserTable)
-                    found.subject = obj.subject
-                    found.domainId = obj.domainId
-                } catch (e: Exception) {
-                    rollback()
-                    throw e
-                }
+                inserted = toType(PermissionTable.select(Op.build { PermissionTable.id eq insertedId }).first())
+            } catch (ex: Exception) {
+                rollback()
+                throw ex
             }
         }
-
-        override fun remove(id: String) {
-            transaction {
-                try {
-                    findById(id)?.delete()
-                } catch (e: Exception) {
-                    rollback()
-                    throw e
-                }
-            }
-        }
-
-        override fun removeWhere(condition: Op<Boolean>) {
-            transaction {
-                try {
-                    find(condition).forEach {
-                        it.delete()
-                    }
-                } catch (e: Exception) {
-                    rollback()
-                    throw e
-                }
-            }
-        }
+        return inserted!!
     }
 
-    var userId by PermissionTable.userId
-    var subject by PermissionTable.subject
-    var domainId by PermissionTable.domainId
+    override fun select(id: Int): Permission? {
+        TODO("Not yet implemented")
+    }
 
-    override fun toType(): Permission? {
-        return Permission(
-            userId.value, subject, domainId
-        )
+    override fun selectMany(condition: Op<Boolean>, page: Int, pageLength: Int): ResultSet<Permission> {
+        TODO("Not yet implemented")
+    }
+
+    override fun selectMany(condition: Op<Boolean>): List<Permission> {
+        var selected = emptyList<Permission>()
+        transaction {
+            try {
+                selected = PermissionTable.select(condition).map {
+                    toType(it)
+                }
+            } catch (ex: Exception) {
+                rollback()
+                throw ex
+            }
+        }
+        return selected
+    }
+
+    override fun selectAll(page: Int, pageLength: Int): ResultSet<Permission> {
+        TODO("Not yet implemented")
+    }
+
+    override fun update(obj: Permission) {
+        TODO("Not yet implemented")
+    }
+
+    override fun remove(id: Int) {
+        TODO("Not yet implemented")
+    }
+
+    override fun removeWhere(condition: Op<Boolean>) {
+        TODO("Not yet implemented")
+    }
+
+    override fun toType(row: ResultRow): Permission {
+        val userId = row[PermissionTable.userId]
+        val subject = row[PermissionTable.subject]
+        val domainId = row[PermissionTable.domainId]
+
+        return Permission(userId.value, subject, domainId)
     }
 }

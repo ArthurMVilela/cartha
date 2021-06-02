@@ -1,6 +1,8 @@
 package authentication
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
+import util.serializer.UUIDSerializer
 import java.security.MessageDigest
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -12,21 +14,75 @@ import kotlin.random.Random
  */
 @Serializable
 class Permission(
-    var id: String?,
-    val userId: String,
+    @Transient
+    val userId:UUID?=null,
     val subject: Subject,
-    val domainId: String?
+    @Serializable(with = UUIDSerializer::class)
+    val domainId: UUID?
 ) {
-    constructor(userId: String, subject: Subject, domainId: String?): this(null, userId, subject, domainId) {
-        id = createId()
+    companion object {
+        /**
+         * Retorna a HashSet de permissões padrão do usuário cliente
+         *
+         * @param userId        id do usuário
+         */
+        fun getClientDefaultPermissions(userId: UUID):HashSet<Permission> {
+            return hashSetOf(
+                Permission(userId, Subject.UserAccount, userId),
+                Permission(userId, Subject.PersonalDocument, userId)
+            )
+        }
+
+        /**
+         * Retorna a HashSet de permissões padrão do usuário oficial
+         *
+         * @param userId        id do usuário
+         * @param notaryId      id do cartório
+         */
+        fun getOfficialDefaultPermissions(userId: UUID, notaryId: UUID): HashSet<Permission> {
+            return hashSetOf(
+                Permission(userId, Subject.UserAccount, userId),
+                Permission(userId, Subject.CivilRegistry, notaryId)
+            )
+        }
+
+        /**
+         * Retorna a HashSet de permissões padrão do usuário gerente
+         *
+         * @param userId        id do usuário
+         * @param notaryId      id do cartório
+         */
+        fun getManagerDefaultPermissions(userId: UUID, notaryId: UUID): HashSet<Permission> {
+            return hashSetOf(
+                Permission(userId, Subject.UserAccount, userId),
+                Permission(userId, Subject.CivilRegistry, notaryId),
+                Permission(userId, Subject.Notary, notaryId)
+            )
+        }
+
+        /**
+         * Retorna a HashSet de permissões padrão do usuário gerente
+         *
+         * @param userId        id do usuário
+         * @param notaryId      id do cartório
+         */
+        fun getSysadminDefaultPermissions(userId: UUID): HashSet<Permission> {
+            return hashSetOf(
+                Permission(userId, Subject.UserAccount, userId),
+                Permission(userId, Subject.Notaries, null),
+                Permission(userId, Subject.Blockchain, null)
+            )
+        }
     }
 
-    private fun createId():String {
-        val md = MessageDigest.getInstance("SHA-256")
-        val now = LocalDateTime.now(ZoneOffset.UTC)
-        var content = now.toString().toByteArray()
-        Thread.sleep(0,2)
-        content = content.plus(Random(now.nano).nextBytes(10))
-        return Base64.getUrlEncoder().encodeToString(md.digest(content))
+    override fun equals(other: Any?): Boolean {
+        other as Permission
+        return other.subject == subject && other.domainId == domainId
+    }
+
+    override fun hashCode(): Int {
+        var result = subject.hashCode()
+        result = 31 * result + (domainId?.hashCode() ?: 0)
+        return result
     }
 }

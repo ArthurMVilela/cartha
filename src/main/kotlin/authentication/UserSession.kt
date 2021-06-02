@@ -1,7 +1,11 @@
 package authentication
 
+import authentication.exception.UserDeactivatedException
+import authentication.exception.UserOfflineException
+import authentication.exception.UserOnlineException
 import kotlinx.serialization.Serializable
 import util.serializer.LocalDateTimeSerializer
+import util.serializer.UUIDSerializer
 import java.security.MessageDigest
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -10,56 +14,70 @@ import kotlin.random.Random
 
 /**
  * Representa uma sessão de usuário
+ *
+ * @param id            identificador unico da sessão
+ * @param user          usuário que relaciona à sessão
+ * @param start         começo da sessão
+ * @param end           fim da sessão
  */
 @Serializable
 class UserSession(
-    var id:String?,
-    val userId: String,
-    val userRole: Role,
-    val userPermissions: List<Permission>,
+    @Serializable(with = UUIDSerializer::class)
+    val id:UUID,
+    val user: User,
     @Serializable(with = LocalDateTimeSerializer::class)
     val start: LocalDateTime,
     @Serializable(with = LocalDateTimeSerializer::class)
     var end: LocalDateTime?
 ) {
-    constructor(user: User, start:LocalDateTime):this(null, user.id!!, user.role, user.permissions, start, null){
-        id = createId()
+    constructor(user: User, start:LocalDateTime):this(createId(), user, start, null){
+        try {
+            user.login()
+        } catch (ex: UserOnlineException) {
+            throw UserOnlineException("Usuário já logado")
+        } catch (ex: UserDeactivatedException) {
+            throw UserDeactivatedException("Conta de usuário desativada")
+        }
     }
 
-    fun isAuthorized(role: Role?, subject: Subject?,  domainId: String?): Boolean {
-        if (role == null) {
-            return true
+    companion object {
+        /**
+         * Cria o identificador único para esta sessão de usuário
+         *
+         * @return UUID para a id da sessão do usuário
+         */
+        private fun createId():UUID {
+            return UUID.randomUUID()
         }
-
-        if (role != userRole) {
-            println("role != userRole")
-            return false
-        }
-
-        if (subject == null){
-            println("subject == null")
-            return false
-        }
-
-        println(userPermissions.firstOrNull { p -> p.subject == subject }?.id)
-        val permission = userPermissions.firstOrNull { p -> p.subject == subject } ?: return false
-
-        if (permission.domainId != domainId) {
-            return false
-        }
-
-        return true
     }
 
+    /**
+     * Retorna se a sessão já terminou
+     */
+    fun hasEnded():Boolean {
+        return end != null
+    }
+
+    /**
+     * Termina a sessão
+     *
+     * @param time      hora e data que a sessão terminou
+     */
     fun endSession(time: LocalDateTime) {
+        if (hasEnded()) {
+            throw UserOfflineException("Sessão já foi terminada.")
+        }
+
+        try {
+            user.logout()
+        } catch (ex: UserOfflineException) {
+            throw UserOfflineException("Usuário já offline.")
+        } catch (ex: UserDeactivatedException) {
+            throw UserDeactivatedException("Conta de usuário desativada.")
+        }
+
         end = time
     }
 
-    private fun createId():String {
-        val md = MessageDigest.getInstance("SHA")
-        val now = LocalDateTime.now(ZoneOffset.UTC)
-        var content = now.toString().toByteArray()
-        content = content.plus(Random(now.toEpochSecond(ZoneOffset.UTC)).nextBytes(10))
-        return Base64.getUrlEncoder().encodeToString(md.digest(content))
-    }
+
 }

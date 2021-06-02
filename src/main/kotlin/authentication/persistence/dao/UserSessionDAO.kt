@@ -1,143 +1,96 @@
 package authentication.persistence.dao
 
-import authentication.Permission
-import authentication.User
 import authentication.UserSession
-import authentication.persistence.tables.PermissionTable
 import authentication.persistence.tables.UserSessionTable
-import authentication.persistence.tables.UserTable
-import org.jetbrains.exposed.dao.Entity
-import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.dao.id.IdTable
-import org.jetbrains.exposed.sql.Op
-import org.jetbrains.exposed.sql.SizedIterable
-import org.jetbrains.exposed.sql.emptySized
+import newPersistence.DAO
+import newPersistence.ResultSet
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import persistence.CompanionDAO
-import persistence.DAO
-import java.lang.Exception
+import java.util.*
 
-class UserSessionDAO(id: EntityID<String>): Entity<String>(id), DAO<UserSession> {
-    companion object: CompanionDAO<UserSession, UserSessionDAO, String, IdTable<String>>(UserSessionTable) {
-        override fun insert(obj: UserSession): UserSessionDAO {
-            var r:UserSessionDAO? = null
-            transaction {
-                try {
-                    r = new(obj.id!!) {
-                        userId = EntityID<String>(obj.userId, UserTable)
-                        userRole = obj.userRole
-                        start = obj.start
-                        end = obj.end
+class UserSessionDAO:DAO<UserSession, UUID> {
+    private val userDAO = UserDAO()
 
-                        permissions = PermissionDAO.selectMany(Op.build { PermissionTable.userId eq obj.userId })
-                            .map { it.toType()!! }
+    override fun insert(obj: UserSession): UserSession {
+        var inserted:UserSession? = null
+
+        transaction {
+            try {
+                val insertedId = UserSessionTable.insertAndGetId {
+                    it[id] = obj.id
+                    it[userId] = obj.user.id
+                    it[start] = obj.start
+                    it[end] = obj.end
+                }
+                inserted = toType(UserSessionTable.select(Op.build { UserSessionTable.id eq insertedId }).first())
+            } catch (ex: Exception) {
+                rollback()
+                throw ex
+            }
+        }
+
+        return inserted!!
+    }
+
+    override fun select(id: UUID): UserSession? {
+        var found:UserSession? = null
+
+        transaction {
+            try {
+                val foundRow = UserSessionTable.select(Op.build { UserSessionTable.id eq id }).first()
+                found = toType(foundRow)
+            } catch (ex: Exception) {
+                rollback()
+                throw ex
+            }
+        }
+
+        return found
+    }
+
+    override fun selectMany(condition: Op<Boolean>, page: Int, pageLength: Int): ResultSet<UserSession> {
+        TODO("Not yet implemented")
+    }
+
+    override fun selectMany(condition: Op<Boolean>): List<UserSession> {
+        TODO("Not yet implemented")
+    }
+
+    override fun selectAll(page: Int, pageLength: Int): ResultSet<UserSession> {
+        TODO("Not yet implemented")
+    }
+
+    override fun update(obj: UserSession) {
+        transaction {
+            try {
+                UserSessionTable.update({UserSessionTable.id eq obj.id}) {
+                    with(SqlExpressionBuilder) {
+                        it[userId] = obj.user.id
+                        it[start] = obj.start
+                        it[end] = obj.end
                     }
-                } catch (e: Exception) {
-                    rollback()
-                    throw e
                 }
-            }
-            return r!!
-        }
-
-        override fun select(id: String): UserSessionDAO? {
-            var r:UserSessionDAO? = null
-            transaction {
-                try {
-                    r = findById(id)
-                    r?.permissions = PermissionDAO.selectMany(Op.build { PermissionTable.userId eq r!!.userId })
-                        .map { it.toType()!! }
-                } catch (e: Exception) {
-                    rollback()
-                    throw e
-                }
-            }
-            return r
-        }
-
-        override fun selectMany(condition: Op<Boolean>): SizedIterable<UserSessionDAO> {
-            var r:SizedIterable<UserSessionDAO> = emptySized()
-            transaction {
-                try {
-                    r = find(condition)
-                    r.forEach {
-                        it.permissions = PermissionDAO.selectMany(Op.build { PermissionTable.userId eq it.userId })
-                            .map { p -> p.toType()!! }
-                    }
-                } catch (e:Exception){
-                    rollback()
-                    throw e
-                }
-            }
-            return r
-        }
-
-        override fun selectAll(): SizedIterable<UserSessionDAO> {
-            var r:SizedIterable<UserSessionDAO> = emptySized()
-            transaction {
-                try {
-                    r = all()
-                    r.forEach {
-                        it.permissions = PermissionDAO.selectMany(Op.build { PermissionTable.userId eq it.userId })
-                            .map { p -> p.toType()!! }
-                    }
-                } catch (e:Exception){
-                    rollback()
-                    throw e
-                }
-            }
-            return r
-        }
-
-        override fun update(obj: UserSession) {
-            transaction {
-                try {
-                    val found = findById(obj.id!!)!!
-                    found.userId = EntityID<String>(obj.userId, UserTable)
-                    found.userRole = obj.userRole
-                    found.start = obj.start
-                    found.end = obj.end
-                } catch (e: Exception) {
-                    rollback()
-                    throw e
-                }
-            }
-        }
-
-        override fun remove(id: String) {
-            transaction {
-                try {
-                    findById(id)?.delete()
-                } catch (e: Exception) {
-                    rollback()
-                    throw e
-                }
-            }
-        }
-
-        override fun removeWhere(condition: Op<Boolean>) {
-            transaction {
-                try {
-                    find(condition).forEach {
-                        it.delete()
-                    }
-                } catch (e: Exception) {
-                    rollback()
-                    throw e
-                }
+            } catch (ex: Exception) {
+                rollback()
+                throw ex
             }
         }
     }
 
-    var userId by UserSessionTable.userId
-    var userRole by UserSessionTable.userRole
-    var start by UserSessionTable.start
-    var end by UserSessionTable.end
-    var permissions:List<Permission> = listOf()
+    override fun remove(id: UUID) {
+        TODO("Not yet implemented")
+    }
 
-    override fun toType(): UserSession? {
-        return UserSession(
-            id.value, userId.value, userRole, permissions, start, end
-        )
+    override fun removeWhere(condition: Op<Boolean>) {
+        TODO("Not yet implemented")
+    }
+
+    override fun toType(row: ResultRow): UserSession {
+        val id = row[UserSessionTable.id].value
+        val user = userDAO.select(row[UserSessionTable.userId].value)?:throw NullPointerException("Usuário não existe.")
+        val start = row[UserSessionTable.start]
+        val end = row[UserSessionTable.end]
+
+        return UserSession(id, user, start, end)
     }
 }

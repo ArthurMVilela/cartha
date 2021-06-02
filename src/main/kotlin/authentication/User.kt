@@ -1,6 +1,12 @@
 package authentication
 
+import authentication.exception.InvalidPasswordException
+import authentication.exception.UserDeactivatedException
+import authentication.exception.UserOfflineException
+import authentication.exception.UserOnlineException
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
+import util.serializer.UUIDSerializer
 import java.security.MessageDigest
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -13,86 +19,237 @@ import kotlin.random.Random
  * @property id             identificador único do usuário
  * @property name           nome do usuário
  * @property email          email do usuário
- * @property cpf            cpf dp usuário
  * @property salt           salt para a validação do usuário
  * @property pass           pass para a validação do usuário
  * @property role           função/cargo do usuário
- * @property permissions    permissções do usuário
+ * @property permissions    permissões do usuário
+ * @property status         status do conta de usuário
  */
 @Serializable
 class User(
-    var id: String?,
-    var name: String,
-    var email: String?,
-    var cpf: String?,
-    var salt: String?,
-    var pass: String?,
+    @Serializable(with = UUIDSerializer::class)
+    val id: UUID,
+    val name: String,
+    val email: String,
+    val cpf: String?,
+    val cnpj: String?,
+    @Transient internal var salt: String? = null,
+    @Transient internal var pass: String? = null,
     val role: Role,
-    var permissions: List<Permission>
+    var permissions: HashSet<Permission>,
+    var status: UserStatus
 ) {
-    companion object {
-        fun createClient(name: String, email: String, cpf: String, password: String):User {
-            val user = User(name, email, cpf, Role.Client, listOf(), password)
-            val permissions = mutableListOf<Permission>()
-
-            permissions.add(Permission(user.id!!, Subject.PersonalDocument, user.id))
-
-            user.permissions = permissions
-            return user
-        }
-
-        fun createOfficial(name: String, email: String, cpf: String, password: String, notaryId:String):User {
-            val user = User(name, email, cpf, Role.Official, listOf(), password)
-            val permissions = mutableListOf<Permission>()
-
-            permissions.add(Permission(user.id!!,Subject.CivilRegistry, notaryId))
-
-            user.permissions = permissions
-            return user
-        }
-
-        fun createManager(name: String, email: String, cpf: String, password: String, notaryId:String):User {
-            val user = User(name, email, cpf, Role.Manager, listOf(), password)
-            val permissions = mutableListOf<Permission>()
-
-            permissions.add(Permission(user.id!!,Subject.CivilRegistry, notaryId))
-            permissions.add(Permission(user.id!!,Subject.Notary, notaryId))
-
-            user.permissions = permissions
-            return user
-        }
-
-        fun createSysAdmin(name: String, email: String, cpf: String, password: String,):User {
-            val user = User(name, email, cpf, Role.SysAdmin, listOf(), password)
-            val permissions = mutableListOf<Permission>()
-
-            permissions.add(Permission(user.id!!, Subject.Notaries, null))
-            permissions.add(Permission(user.id!!, Subject.Blockchain, null))
-
-            user.permissions = permissions
-            return user
-        }
-    }
-
     constructor(
         name: String,
         email: String,
-        cpf: String,
+        cpf: String?,
+        cnpj: String?,
         role: Role,
-        permissions: List<Permission>,
+        permissions: HashSet<Permission>,
         password: String
-    ):this(null, name, email, cpf, null, null, role, permissions){
-        id = createId()
-
+    ):this(createId(), name, email, cpf, cnpj, null, null, role, permissions, UserStatus.Offline){
         salt = createSalt()
         pass = createPass(password)
     }
 
+    companion object {
+        /**
+         * Cria o identificador único para esta conta
+         *
+         * @return UUID para a id do usuário
+         */
+        private fun createId():UUID {
+            return UUID.randomUUID()
+        }
+
+        /**
+         * Criar um usuário do tipo cliente
+         *
+         * @param name          nome completo do usuário
+         * @param email         email do usuário
+         * @param password      senha da conta de usuário
+         */
+        fun createClient(name: String, email: String, cpf: String?, cnpj: String?, password: String):User {
+            val user = User(name, email, cpf, cnpj, Role.Client, hashSetOf(), password)
+            user.permissions = Permission.getClientDefaultPermissions(user.id)
+            return user
+        }
+
+        /**
+         * Criar um usuário do tipo oficial
+         *
+         * @param name          nome completo do usuário
+         * @param email         email do usuário
+         * @param password      senha da conta de usuário
+         * @param notaryId      id do cartório relacionado à conta
+         */
+        fun createOfficial(name: String, email: String, cpf: String?, password: String, notaryId:UUID):User {
+            val user = User(name, email, cpf, null, Role.Official, hashSetOf(), password)
+            user.permissions = Permission.getOfficialDefaultPermissions(user.id, notaryId)
+            return user
+        }
+
+        /**
+         * Criar um usuário do tipo administrador de cartório
+         *
+         * @param name          nome completo do usuário
+         * @param email         email do usuário
+         * @param password      senha da conta de usuário
+         * @param notaryId      id do cartório relacionado à conta
+         */
+        fun createManager(name: String, email: String, cpf: String?, password: String, notaryId:UUID):User {
+            val user = User(name, email, cpf, null, Role.Manager, hashSetOf(), password)
+            user.permissions = Permission.getManagerDefaultPermissions(user.id, notaryId)
+            return user
+        }
+
+        /**
+         * Criar um usuário do tipo administrador de sistema
+         *
+         * @param name          nome completo do usuário
+         * @param email         email do usuário
+         * @param password      senha da conta de usuário
+         */
+        fun createSysAdmin(name: String, email: String, cpf: String?, password: String,):User {
+            val user = User(name, email, cpf, null, Role.SysAdmin, hashSetOf(), password)
+            user.permissions = Permission.getSysadminDefaultPermissions(user.id)
+            return user
+        }
+    }
+
+    /**
+     * verifica se a senha dada é correta
+     *
+     * @param password          senha a ser validada
+     * @return se a senha é valida
+     */
     fun validatePassword(password: String):Boolean {
-        println("$pass ${createPass(password)}")
         return pass == createPass(password)
     }
 
+    /**
+     * Adiciona uma permissão às permissões do usuário
+     *
+     * @param permission        permissão a ser adicionada para o usuário
+     */
+    fun addPermission(permission: Permission) {
+        permissions.add(permission)
+    }
+
+    /**
+     * Adiciona uma colleção de permissões às permissões do usuário
+     *
+     * @param permissions       permissões a serem adicionadas ao usuário
+     */
+    fun addPermissions(permissions: Collection<Permission>) {
+        permissions.forEach {
+            addPermission(it)
+        }
+    }
+
+    /**
+     * Remove todas as permissões do usuário
+     */
+    fun removeAllPermissions() {
+        permissions.removeAll { true }
+    }
+
+    /**
+     * Remove uma permissão do usuário
+     *
+     * @param permission        permissão a ser retirada do usuário
+     */
+    fun removePermission(permission: Permission) {
+        permissions.remove(permission)
+    }
+
+    /**
+     * Busca uma permissão nas permissões do usuário
+     *
+     * @param subject           Assunto da permissão
+     * @param domainId          Id do dominio da permissão
+     *
+     * @return a permissão encontrada ou nulo, caso não tenha sido encontrado
+     */
+    fun getPermission(subject: Subject, domainId: UUID?): Permission? {
+        return permissions.firstOrNull { p -> p.subject == subject && p.domainId == domainId }
+    }
+
+    /**
+     * Muda senha da conta de usuário
+     *
+     * @param oldPassword       senha atual (antiga)
+     * @param newPassword       nova senha
+     */
+    fun changePassword(oldPassword: String, newPassword: String) {
+        if (!validatePassword(oldPassword)) {
+            throw InvalidPasswordException()
+        }
+
+        salt = createSalt()
+        pass = createPass(newPassword)
+    }
+
+    /**
+     * Deixa a conta de usuário online
+     */
+    fun login() {
+        when (status) {
+            UserStatus.Online -> throw UserOnlineException("Usuário já online.")
+            UserStatus.Deactivated -> throw UserDeactivatedException("Conta de usuário desativada.")
+            else -> status = UserStatus.Online
+        }
+    }
+
+    /**
+     * Deixa a conta de usuário offline
+     */
+    fun logout() {
+        when (status) {
+            UserStatus.Offline -> throw UserOfflineException("Usuário já offline.")
+            UserStatus.Deactivated -> throw UserDeactivatedException("Conta de usuário desativada.")
+            else -> status = UserStatus.Offline
+        }
+    }
+
+    /**
+     * Desativa a conta de usuário
+     */
+    fun deactivateAccount() {
+        when (status) {
+            UserStatus.Online -> throw UserOnlineException("Usuário online, termine sessão para que a conta possa ser desativada")
+            UserStatus.Deactivated -> throw UserDeactivatedException("Conta de usuário já desativada.")
+            else -> status = UserStatus.Deactivated
+        }
+    }
+
+    /**
+     * Reativa a conta de usuário
+     */
+    fun reactivateAccount() {
+        when (status) {
+            UserStatus.Online -> throw UserOnlineException("Conta já está ativada.")
+            UserStatus.Offline -> throw UserOfflineException("Conta já está ativada.")
+            else -> status = UserStatus.Offline
+        }
+    }
+
+    fun isAuthorized(role: Role?, permission: Permission?):Boolean {
+        return when {
+            role == null -> true
+            role != this.role -> false
+            role == this.role && permission == null -> true
+            else -> {
+                this.permissions.contains(permission)
+            }
+        }
+    }
+
+    /**
+     * Cria um valor salt para esta conta
+     *
+     * @return valor salt (hash)
+     */
     private fun createSalt():String {
         val now = LocalDateTime.now(ZoneOffset.UTC)
         val bytes = Random(now.toEpochSecond(ZoneOffset.UTC)).nextBytes(24)
@@ -101,6 +258,12 @@ class User(
         return Base64.getUrlEncoder().encodeToString(md.digest(bytes))
     }
 
+    /**
+     * Cria um valor pass (hash(senha + salt)
+     *
+     * @param password          senha
+     * @return valor pass
+     */
     private fun createPass(password: String):String {
         val md = MessageDigest.getInstance("SHA-256")
         val content = password + salt
@@ -108,11 +271,5 @@ class User(
         return Base64.getUrlEncoder().encodeToString(md.digest(content.toByteArray()))
     }
 
-    private fun createId():String {
-        val md = MessageDigest.getInstance("SHA-256")
-        val now = LocalDateTime.now(ZoneOffset.UTC)
-        var content = now.toString().toByteArray()
-        content = content.plus(Random(now.toEpochSecond(ZoneOffset.UTC)).nextBytes(10))
-        return Base64.getUrlEncoder().encodeToString(md.digest(content))
-    }
+
 }
