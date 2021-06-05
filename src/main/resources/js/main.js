@@ -5,18 +5,16 @@ function setupFormMasks() {
     $(".input-year").maxLength = (new Date()).getFullYear()
 
     $(".mask-cpf-cnpj").keydown(function () {
-        try {
-            this.unmask();
-        } catch (e) {
+        $(this).unmask();
+        if ($(this).val().length < 11) {
+            $(this).attr("name", "cpf")
+            $(this).mask("000.000.000-00")
+        } else if ($(this).val().length > 11) {
+            $(this).attr("name", "cnpj")
+            $(this).mask("00.000.000/0000-00")
         }
 
-        if (this.val().length < 11) {
-            this.mask("000.000.000-00")
-        } else {
-            this.mask("00.000.000.0000-00")
-        }
-
-        let elem = this;
+        let elem = $(this);
         setTimeout(function () {
             elem.selectionStart = elem.selectionEnd = 10000;
         }, 0);

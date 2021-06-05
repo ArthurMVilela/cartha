@@ -27,6 +27,9 @@ fun main() {
             get("/login") {
                 userAccountHandler.loginPage(call)
             }
+            post("/login") {
+                userAccountHandler.postLogin(call)
+            }
         }
     }.start(true)
 }
