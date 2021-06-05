@@ -8,10 +8,12 @@ import io.ktor.client.call.*
 import io.ktor.http.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.features.*
+import io.ktor.client.features.json.*
 import io.ktor.client.request.forms.*
 
 class AuthenticationClient {
     private val client = HttpClient(CIO) {
+        install(JsonFeature)
         expectSuccess = false
         HttpResponseValidator {
             validateResponse { response ->
