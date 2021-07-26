@@ -1,4 +1,4 @@
-package ui
+package ui.features
 
 import io.ktor.auth.*
 
