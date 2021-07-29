@@ -43,16 +43,11 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.0'
 }
 
-ext.mainClassName = System.getenv("MAIN_CLASS_NAME")
-if(ext.mainClassName == null) {
-    ext.mainClassName = "DocumentService"
-}
-
 shadowJar {
-    archiveBaseName.set(mainClassName)
+    archiveBaseName.set(BaseName)
     archiveClassifier.set('')
     archiveVersion.set('')
     manifest {
-        attributes 'Main-Class': mainClassName
+        attributes 'Main-Class': MainClassName
     }
 }

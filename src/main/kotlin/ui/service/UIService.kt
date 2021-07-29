@@ -17,7 +17,7 @@ import ui.handlers.UserAccountHandler
 fun main() {
     val userAccountHandler = UserAccountHandler()
 
-    embeddedServer(Netty, port = 8081, watchPaths = listOf("templates", "js")) {
+    embeddedServer(Netty, port = 8080, watchPaths = listOf("templates", "js")) {
         //Prepara para os cookies que serão usados para controlar sessões de usuário
         install(Sessions) {
             cookie<UserSessionCookie>("user_session", SessionStorageMemory())
