@@ -12,9 +12,11 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.sessions.*
 import ui.features.UserSessionCookie
+import ui.handlers.MainPageHandler
 import ui.handlers.UserAccountHandler
 
 fun main() {
+    val mainPageHandler = MainPageHandler()
     val userAccountHandler = UserAccountHandler()
 
     embeddedServer(Netty, port = 8080, watchPaths = listOf("templates", "js")) {
@@ -30,6 +32,9 @@ fun main() {
         routing {
             static("static") {
                 resources("js")
+            }
+            get("/") {
+                mainPageHandler.mainPage(call)
             }
             get("/login") {
                 userAccountHandler.loginPage(call)
