@@ -1,4 +1,4 @@
-package ui
+package ui.values
 
 import document.CivilStatus
 import document.Color
