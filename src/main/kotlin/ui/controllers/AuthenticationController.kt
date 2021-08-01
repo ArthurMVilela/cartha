@@ -31,6 +31,18 @@ class AuthenticationController {
         return session != null && !session.hasEnded()
     }
 
+    suspend fun getSession(sessionCookie:UserSessionCookie) : UserSession {
+        val id = UUID.fromString(sessionCookie.sessionId)
+
+        val session = try {
+            authenticationClient.getSession(UUID.fromString(sessionCookie.sessionId))
+        } catch (ex: Exception) {
+            throw ex
+        }?:throw Exception()
+
+        return session
+    }
+
     suspend fun getUserRole(sessionCookie:UserSessionCookie) : Role {
         val id = UUID.fromString(sessionCookie.sessionId)
 
