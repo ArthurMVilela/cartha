@@ -10,8 +10,11 @@ import io.ktor.client.engine.cio.*
 import io.ktor.client.features.*
 import io.ktor.client.features.json.*
 import io.ktor.client.request.forms.*
+import java.util.*
 
 class AuthenticationClient {
+    val authenticationURL = System.getenv("AUTHENTICATION_URL")?:throw Exception()
+
     private val client = HttpClient(CIO) {
         install(JsonFeature)
         expectSuccess = false
@@ -26,12 +29,11 @@ class AuthenticationClient {
             }
         }
     }
-    private val baseUrl = "http://localhost:8080"
 
     suspend fun login(email: String?, cpf: String?, cnpj: String?, password: String): UserSession {
         val response:HttpResponse = try {
             client.submitForm (
-                url = baseUrl + "/login",
+                url = "$authenticationURL/login",
                 formParameters = Parameters.build {
                     if (email != null) append("email", email)
                     if (cpf != null) append("cpf", cpf)
@@ -42,6 +44,26 @@ class AuthenticationClient {
         } catch (ex: Exception) {
             throw ex
         }
+        return response.receive<UserSession>()
+    }
+
+    suspend fun logout(sessionId: UUID) : UserSession {
+        val response:HttpResponse = try {
+            client.post("$authenticationURL/logout/${sessionId.toString()}")
+        } catch (ex: Exception) {
+            throw ex
+        }
+
+        return response.receive<UserSession>()
+    }
+
+    suspend fun getSession(id: UUID):UserSession? {
+        val response:HttpResponse = try {
+            client.get("$authenticationURL/session/${id.toString()}")
+        } catch (ex: Exception) {
+            throw ex
+        }
+
         return response.receive<UserSession>()
     }
 }
