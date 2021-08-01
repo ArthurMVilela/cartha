@@ -20,17 +20,22 @@ import ui.exception.AuthenticationFeatureException
 import ui.features.AuthenticationFeature
 import ui.features.UserSessionCookie
 import ui.features.authorizedRoute
+import ui.handlers.ErrorPagesHandlers
 import ui.handlers.MainPageHandler
 import ui.handlers.UserAccountHandler
 
 fun main() {
     val mainPageHandler = MainPageHandler()
     val userAccountHandler = UserAccountHandler()
+    val errorPageHandler = ErrorPagesHandlers()
 
     embeddedServer(Netty, port = 8080, watchPaths = listOf("templates", "js")) {
         install(StatusPages) {
-            exception<AuthenticationFeatureException> {
-                call.respond(HttpStatusCode.Forbidden, "Acesso Negado.")
+            exception<Exception> { cause ->
+                errorPageHandler.handleError(call, cause)
+            }
+            status(HttpStatusCode.NotFound) {
+                errorPageHandler.handleError(call, NotFoundException())
             }
         }
 
