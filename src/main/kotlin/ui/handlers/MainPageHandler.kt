@@ -1,9 +1,11 @@
 package ui.handlers
 
+import authentication.Role
 import io.ktor.application.*
 import io.ktor.freemarker.*
 import io.ktor.http.*
 import io.ktor.response.*
+import ui.util.Util
 
 class MainPageHandler {
     /**
@@ -12,6 +14,8 @@ class MainPageHandler {
      * @param call          chamada de aplicação
      */
     suspend fun mainPage(call: ApplicationCall) {
-        call.respond(HttpStatusCode.OK, FreeMarkerContent("main.ftl", null))
+        val data = mutableMapOf<String, Any?>()
+        Util.addMenuToLayoutMap(data, null)
+        call.respond(HttpStatusCode.OK, FreeMarkerContent("main.ftl", data))
     }
 }

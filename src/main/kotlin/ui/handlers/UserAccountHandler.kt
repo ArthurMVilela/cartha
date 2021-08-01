@@ -1,6 +1,5 @@
 package ui.handlers
 
-import authentication.UserSession
 import io.ktor.application.*
 import io.ktor.freemarker.*
 import io.ktor.http.*
@@ -8,6 +7,7 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.utils.io.*
 import ui.controllers.AuthenticationClient
+import ui.util.Util
 
 class UserAccountHandler {
     private val authenticationClient = AuthenticationClient()
@@ -17,7 +17,9 @@ class UserAccountHandler {
      * @param call          chamada de aplicação
      */
     suspend fun loginPage(call: ApplicationCall) {
-        call.respond(HttpStatusCode.OK, FreeMarkerContent("login.ftl", null))
+        val data = mutableMapOf<String, Any?>()
+        Util.addMenuToLayoutMap(data, null)
+        call.respond(HttpStatusCode.OK, FreeMarkerContent("login.ftl", data))
     }
 
     suspend fun postLogin(call: ApplicationCall) {
