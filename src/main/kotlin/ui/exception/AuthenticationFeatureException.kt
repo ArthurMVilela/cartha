@@ -3,5 +3,5 @@ package ui.exception
 /**
  * Representa uma excessão ocorrida na feature/middleware de autentificação
  */
-class AuthenticationFeatureException(override val message: String?):Exception(message) {
+open class AuthenticationFeatureException(override val message: String? = "Sessão de usuário inválida"):Exception(message) {
 }
