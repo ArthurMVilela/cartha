@@ -16,8 +16,7 @@ import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.sessions.*
-import ui.exception.AuthenticationFeatureException
-import ui.features.AuthenticationFeature
+import ui.features.AuthenticationMiddleware
 import ui.features.UserSessionCookie
 import ui.features.authorizedRoute
 import ui.handlers.ErrorPagesHandlers
@@ -53,7 +52,7 @@ fun main() {
                 }
             }
         }
-        install(AuthenticationFeature)
+        install(AuthenticationMiddleware)
 
         //FreeMaker renderiza templates em HTML que é servido no 
         install(FreeMarker) {

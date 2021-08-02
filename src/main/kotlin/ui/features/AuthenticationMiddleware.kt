@@ -8,22 +8,22 @@ import io.ktor.routing.*
 import io.ktor.util.*
 import io.ktor.util.pipeline.*
 import ui.controllers.AuthenticationController
-import ui.exception.AuthenticationFeatureException
+import ui.exception.AuthenticationMiddlewareException
 
-class AuthenticationFeature(config: Configuration) {
+class AuthenticationMiddleware(config: Configuration) {
     val authController = AuthenticationController()
     class Configuration() {}
 
-    companion object Feature : ApplicationFeature<ApplicationCallPipeline, Configuration, AuthenticationFeature> {
-        override val key = AttributeKey<AuthenticationFeature>("AuthenticationFeature")
+    companion object Feature : ApplicationFeature<ApplicationCallPipeline, Configuration, AuthenticationMiddleware> {
+        override val key = AttributeKey<AuthenticationMiddleware>("AuthenticationFeature")
         val AuthorizationPhase = PipelinePhase("Authorization")
 
         override fun install(
             pipeline: ApplicationCallPipeline,
             configure: Configuration.() -> Unit
-        ): AuthenticationFeature {
+        ): AuthenticationMiddleware {
             val configuration = Configuration().apply(configure)
-            return AuthenticationFeature(configuration)
+            return AuthenticationMiddleware(configuration)
         }
     }
 
@@ -32,11 +32,11 @@ class AuthenticationFeature(config: Configuration) {
         pipeline.insertPhaseAfter(Authentication.ChallengePhase, AuthorizationPhase)
 
         pipeline.intercept(AuthorizationPhase) {
-            val principal = call.authentication.principal<UserSessionCookie>() ?: throw AuthenticationFeatureException("Usuário não logado")
+            val principal = call.authentication.principal<UserSessionCookie>() ?: throw AuthenticationMiddlewareException("Usuário não logado")
             val session = authController.getSession(principal)
 
             if (!session.user.isAuthorized(role, permission)) {
-                throw AuthenticationFeatureException("Usuário não pode acessar")
+                throw AuthenticationMiddlewareException("Usuário não pode acessar")
             }
         }
     }
@@ -50,7 +50,7 @@ class AuthorizedRouteSelector():RouteSelector(RouteSelectorEvaluation.qualityCon
 
 fun Route.authorizedRoute(role: Role?, permission: Permission?, build: Route.() -> Unit): Route {
     var authorizedRoute = createChild(AuthorizedRouteSelector())
-    application.feature(AuthenticationFeature).interceptPipeline(authorizedRoute, role, permission)
+    application.feature(AuthenticationMiddleware).interceptPipeline(authorizedRoute, role, permission)
     authorizedRoute.build()
     return authorizedRoute
 }

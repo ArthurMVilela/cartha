@@ -3,5 +3,5 @@ package ui.exception
 /**
  *
  */
-class InvalidUserSessionException(override val message: String?):AuthenticationFeatureException(message) {
+class InvalidUserSessionException(override val message: String?):AuthenticationMiddlewareException(message) {
 }

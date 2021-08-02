@@ -7,7 +7,7 @@ import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.sessions.*
 import ui.controllers.AuthenticationController
-import ui.exception.AuthenticationFeatureException
+import ui.exception.AuthenticationMiddlewareException
 import ui.features.UserSessionCookie
 import ui.util.Util
 import java.lang.Exception
@@ -25,7 +25,7 @@ class ErrorPagesHandlers {
         val data = mutableMapOf<String, Any?>()
         var code:HttpStatusCode
         when (exception) {
-            is AuthenticationFeatureException -> {
+            is AuthenticationMiddlewareException -> {
                 code = HttpStatusCode.Unauthorized
                 data["code"] = code.value
                 data["errorTitle"] = "Não autorizado."
