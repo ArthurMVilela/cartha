@@ -11,13 +11,19 @@ import ui.exception.AuthenticationFeatureException
 import ui.features.UserSessionCookie
 import ui.util.Util
 import java.lang.Exception
-import javax.management.relation.Role
 
 class ErrorPagesHandlers {
     val authController = AuthenticationController()
+
+    /**
+     * Recebe uma chamada de aplicação e uma excessão, e retorna ao usuário uma tela informando sobre o erro.
+     *
+     * @param call          chamada de aplicação
+     * @param exception     excessão que causou o erro
+     */
     suspend fun handleError(call: ApplicationCall, exception: Exception) {
         val data = mutableMapOf<String, Any?>()
-        var code = HttpStatusCode.OK
+        var code:HttpStatusCode
         when (exception) {
             is AuthenticationFeatureException -> {
                 code = HttpStatusCode.Unauthorized
