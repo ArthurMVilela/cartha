@@ -2,6 +2,9 @@ package ui.controllers
 
 import authentication.Role
 import authentication.UserSession
+import authentication.logging.AccessLog
+import authentication.logging.AccessLogSearchFilter
+import newPersistence.ResultSet
 import ui.exception.InvalidUserSessionException
 import ui.features.UserSessionCookie
 import java.util.*
@@ -82,5 +85,9 @@ class AuthenticationController {
         } else {
             throw InvalidUserSessionException("Sessão de usuário inválida.")
         }
+    }
+
+    suspend fun getAccessLogs(filter: AccessLogSearchFilter, page: Int = 1):ResultSet<AccessLog> {
+        return authenticationClient.getAccessLogs(filter, page)
     }
 }

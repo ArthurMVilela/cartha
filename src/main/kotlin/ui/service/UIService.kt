@@ -19,6 +19,7 @@ import io.ktor.sessions.*
 import ui.features.AuthenticationMiddleware
 import ui.features.UserSessionCookie
 import ui.features.authorizedRoute
+import ui.handlers.AccessLogsHandlers
 import ui.handlers.ErrorPagesHandlers
 import ui.handlers.MainPageHandler
 import ui.handlers.UserAccountHandler
@@ -26,11 +27,13 @@ import ui.handlers.UserAccountHandler
 fun main() {
     val mainPageHandler = MainPageHandler()
     val userAccountHandler = UserAccountHandler()
+    val accessLogsHandlers = AccessLogsHandlers()
     val errorPageHandler = ErrorPagesHandlers()
 
     embeddedServer(Netty, port = 8080, watchPaths = listOf("templates", "js")) {
         install(StatusPages) {
             exception<Exception> { cause ->
+                cause.printStackTrace()
                 errorPageHandler.handleError(call, cause)
             }
             status(HttpStatusCode.NotFound) {
@@ -83,6 +86,9 @@ fun main() {
                     }
                 }
                 authorizedRoute(Role.SysAdmin, null) {
+                    get("/logs") {
+                        accessLogsHandlers.getLogs(call)
+                    }
                     get("/blockchain") {
                         call.respond("Hello")
                     }

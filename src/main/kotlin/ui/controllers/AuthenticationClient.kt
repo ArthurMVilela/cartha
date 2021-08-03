@@ -1,6 +1,8 @@
 package ui.controllers
 
 import authentication.UserSession
+import authentication.logging.AccessLog
+import authentication.logging.AccessLogSearchFilter
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.client.*
@@ -9,14 +11,18 @@ import io.ktor.http.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.features.*
 import io.ktor.client.features.json.*
+import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.forms.*
+import newPersistence.ResultSet
 import java.util.*
 
 class AuthenticationClient {
     val authenticationURL = System.getenv("AUTHENTICATION_URL")?:throw Exception()
 
     private val client = HttpClient(CIO) {
-        install(JsonFeature)
+        install(JsonFeature) {
+            serializer = KotlinxSerializer()
+        }
         expectSuccess = false
         HttpResponseValidator {
             validateResponse { response ->
@@ -65,5 +71,17 @@ class AuthenticationClient {
         }
 
         return response.receive<UserSession>()
+    }
+
+    suspend fun getAccessLogs(filter: AccessLogSearchFilter, page: Int) : ResultSet<AccessLog> {
+        return try {
+            client.get<ResultSet<AccessLog>>("$authenticationURL/access_logs") {
+                parameter("page", page)
+                contentType(ContentType.Application.Json)
+                body = filter
+            }
+        } catch (ex: Exception) {
+            throw ex
+        }
     }
 }
