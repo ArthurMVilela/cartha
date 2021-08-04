@@ -1,5 +1,7 @@
 package ui.values
 
+import authentication.Subject
+import authentication.logging.ActionType
 import document.CivilStatus
 import document.Color
 import document.Sex
@@ -25,6 +27,9 @@ object EnumMaps {
     val civilStatus = mutableMapOf<String,String>()
     val color = mutableMapOf<String,String>()
     val uf = mutableMapOf<String,String>()
+
+    val subjects = mutableMapOf<String,String>()
+    val actionTypes = mutableMapOf<String,String>()
     init {
         Sex.values().forEach {
             sex[it.name] = it.value
@@ -37,6 +42,13 @@ object EnumMaps {
         }
         UF.values().forEach {
             uf[it.name] = it.value
+        }
+
+        Subject.values().forEach {
+            subjects[it.name] = it.value
+        }
+        ActionType.values().forEach {
+            actionTypes[it.name] = it.value
         }
     }
 

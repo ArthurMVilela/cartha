@@ -3,6 +3,7 @@
 package ui.service
 
 import authentication.Role
+import authentication.logging.AccessLogSearchFilter
 import freemarker.cache.ClassTemplateLoader
 import freemarker.core.HTMLOutputFormat
 import io.ktor.application.*
@@ -44,6 +45,7 @@ fun main() {
         //Prepara para os cookies que serão usados para controlar sessões de usuário
         install(Sessions) {
             cookie<UserSessionCookie>("user_session", SessionStorageMemory())
+            cookie<AccessLogSearchFilter>("accessLogSearchFilter", SessionStorageMemory())
         }
         install(Authentication) {
             session<UserSessionCookie> {
@@ -88,6 +90,9 @@ fun main() {
                 authorizedRoute(Role.SysAdmin, null) {
                     get("/logs") {
                         accessLogsHandlers.getLogs(call)
+                    }
+                    post("/logs") {
+                        accessLogsHandlers.postGetLogs(call)
                     }
                     get("/blockchain") {
                         call.respond("Hello")
