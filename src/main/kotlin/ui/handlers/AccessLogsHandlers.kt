@@ -87,13 +87,11 @@ class AccessLogsHandlers {
         } catch (ex: Exception) {
             null
         }
-        println(parameters["start"])
         val start = try {
             LocalDateTime.parse(parameters["start"], dateTimeFormat)
         } catch (ex: Exception) {
             null
         }
-        println(start)
         val end = try {
             LocalDateTime.parse(parameters["end"], dateTimeFormat)
         } catch (ex: Exception) {
@@ -105,14 +103,11 @@ class AccessLogsHandlers {
             null
         }
         val actionType = try {
-            println(parameters["action-type"])
-            println(ActionType.valueOf(parameters["action-type"]!!))
             ActionType.valueOf(parameters["action-type"]!!)
         } catch (ex: Exception) {
             null
         }
         val subject = try {
-            println(parameters["subject"])
             Subject.valueOf(parameters["subject"]!!)
         } catch (ex: Exception) {
             null
