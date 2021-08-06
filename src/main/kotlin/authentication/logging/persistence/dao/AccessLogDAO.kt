@@ -75,6 +75,7 @@ class AccessLogDAO:DAO<AccessLog, UUID> {
                 numberOfPages = ceil(count/(pageLength * 1.0f)).toInt()
                 val rows = logsTable
                     .select { AccessLogTable.id eq ActionTable.logId and condition }
+                    .orderBy( AccessLogTable.timestamp, SortOrder.DESC )
                     .limit((pageLength * page) , ((page - 1) * pageLength).toLong())
                 rows.forEach {
                     results.add(toType(it))
@@ -95,6 +96,7 @@ class AccessLogDAO:DAO<AccessLog, UUID> {
             try {
                 val rows = (AccessLogTable innerJoin ActionTable)
                     .select { AccessLogTable.id eq ActionTable.logId and condition }
+                    .orderBy( AccessLogTable.timestamp, SortOrder.DESC )
                 rows.forEach {
                     result.add(toType(it))
                 }

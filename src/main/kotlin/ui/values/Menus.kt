@@ -1,4 +1,4 @@
-package ui
+package ui.values
 
 object Menus {
     val anonimous = mapOf(

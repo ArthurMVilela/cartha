@@ -17,12 +17,12 @@ import org.jetbrains.exposed.sql.transactions.TransactionManager
 
 fun main() {
     try {
-        val host = "localhost"
-        val port = 3306
-        val database = "authentication_db"
-        val user = "root"
-        val password = "test"
-        val url = "jdbc:mysql://$host:$port/$database?verifyServerCertificate=false&useSSL=false"
+        val host = System.getenv("DATABASE_HOST")?:throw IllegalArgumentException("Necessário expecificar host do DB")
+        val port = System.getenv("DATABASE_PORT")?:throw IllegalArgumentException("Necessário expecificar porta do DB")
+        val database = System.getenv("DATABASE_NAME")?:throw IllegalArgumentException("Necessário expecificar nome do DB")
+        val user = System.getenv("DATABASE_USER")?:throw IllegalArgumentException("Necessário expecificar usuário do DB")
+        val password = System.getenv("DATABASE_PASSWORD")?:throw IllegalArgumentException("Necessário expecificar senha do DB")
+        val url = "jdbc:mysql://$host:$port/$database?verifyServerCertificate=false&useSSL=false&allowPublicKeyRetrieval=true"
         val db = Database.connect(
             url = url,
             driver = "com.mysql.jdbc.Driver",

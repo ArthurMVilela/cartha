@@ -30,3 +30,6 @@ restart-authentication-service: build-authentication-service
 
 restart-node-manager-service: build-node-manager-service
 	docker-compose up --build --force-recreate node_manager
+
+restart-authentication-db:
+	docker-compose up --force-recreate authentication-db

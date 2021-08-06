@@ -1,6 +1,8 @@
 package ui.controllers
 
 import authentication.UserSession
+import authentication.logging.AccessLog
+import authentication.logging.AccessLogSearchFilter
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.client.*
@@ -9,11 +11,18 @@ import io.ktor.http.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.features.*
 import io.ktor.client.features.json.*
+import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.forms.*
+import newPersistence.ResultSet
+import java.util.*
 
 class AuthenticationClient {
+    val authenticationURL = System.getenv("AUTHENTICATION_URL")?:throw Exception()
+
     private val client = HttpClient(CIO) {
-        install(JsonFeature)
+        install(JsonFeature) {
+            serializer = KotlinxSerializer()
+        }
         expectSuccess = false
         HttpResponseValidator {
             validateResponse { response ->
@@ -26,12 +35,11 @@ class AuthenticationClient {
             }
         }
     }
-    private val baseUrl = "http://localhost:8080"
 
     suspend fun login(email: String?, cpf: String?, cnpj: String?, password: String): UserSession {
         val response:HttpResponse = try {
             client.submitForm (
-                url = baseUrl + "/login",
+                url = "$authenticationURL/login",
                 formParameters = Parameters.build {
                     if (email != null) append("email", email)
                     if (cpf != null) append("cpf", cpf)
@@ -43,5 +51,47 @@ class AuthenticationClient {
             throw ex
         }
         return response.receive<UserSession>()
+    }
+
+    suspend fun logout(sessionId: UUID) : UserSession {
+        val response:HttpResponse = try {
+            client.post("$authenticationURL/logout/${sessionId.toString()}")
+        } catch (ex: Exception) {
+            throw ex
+        }
+
+        return response.receive<UserSession>()
+    }
+
+    suspend fun getSession(id: UUID):UserSession? {
+        val response:HttpResponse = try {
+            client.get("$authenticationURL/session/${id.toString()}")
+        } catch (ex: Exception) {
+            throw ex
+        }
+
+        return response.receive<UserSession>()
+    }
+
+    suspend fun getAccessLogs(filter: AccessLogSearchFilter, page: Int) : ResultSet<AccessLog> {
+        return try {
+            client.get<ResultSet<AccessLog>>("$authenticationURL/access_logs") {
+                parameter("page", page)
+                contentType(ContentType.Application.Json)
+                body = filter
+            }
+        } catch (ex: Exception) {
+            throw ex
+        }
+    }
+
+    suspend fun getAccessLog(id:UUID) : AccessLog {
+        return try {
+            client.get<AccessLog>("$authenticationURL/access_logs/$id") {
+
+            }
+        } catch (ex: Exception) {
+            throw ex
+        }
     }
 }

@@ -2,6 +2,16 @@ function setupFormMasks() {
     $(".mask-cpf").mask("000.000.000-00")
     $(".mask-cnpj").mask("00.000.000.0000-00")
     $(".mask-cns").mask("00.000-0")
+    $(".mask-date-time").mask("00/00/0000 00:00:00", {placeholder:"__/__/____ 00:00:00"})
+    $(".mask-uuid").mask(
+        "HHHHHHHH-HHHH-HHHH-HHHH-HHHHHHHHHHHH",
+        {
+            placeholder:"00000000-0000-0000-0000-000000000000",
+            translation: {
+                "H": {pattern:/[0-9a-f]/}
+            }
+        }
+    )
     $(".input-year").maxLength = (new Date()).getFullYear()
 
     $(".mask-cpf-cnpj").keydown(function () {

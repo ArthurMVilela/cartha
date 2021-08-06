@@ -1,38 +1,84 @@
 package ui.handlers
 
-import authentication.UserSession
 import io.ktor.application.*
 import io.ktor.freemarker.*
 import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
+import io.ktor.sessions.*
 import io.ktor.utils.io.*
-import ui.controllers.AuthenticationClient
+import ui.controllers.AuthenticationController
+import ui.features.UserSessionCookie
+import ui.util.Util
 
 class UserAccountHandler {
-    private val authenticationClient = AuthenticationClient()
+    private val authController = AuthenticationController()
     /**
      * Recebe uma chamada da aplicação e retorna a tela de login
      *
      * @param call          chamada de aplicação
      */
     suspend fun loginPage(call: ApplicationCall) {
-        call.respond(HttpStatusCode.OK, FreeMarkerContent("login.ftl", null))
+        val data = mutableMapOf<String, Any?>()
+        Util.addMenuToLayoutMap(data, null)
+        val sessionCookie = call.sessions.get<UserSessionCookie>()
+        if (sessionCookie != null) {
+            if (authController.isSessionValid(sessionCookie)) {
+                call.respondRedirect("/")
+                return
+            }
+        }
+        call.respond(HttpStatusCode.OK, FreeMarkerContent("login.ftl", data))
     }
 
+    /**
+     * Recebe uma chamada da aplicação e processa o formulário de login
+     *
+     * @param call          chamada de aplicação
+     */
     suspend fun postLogin(call: ApplicationCall) {
         val form = call.receiveParameters()
+
+        val sessionCookie = call.sessions.get<UserSessionCookie>()
+        if (sessionCookie != null) {
+            if (authController.isSessionValid(sessionCookie)) {
+                call.respondRedirect("/")
+                return
+            }
+
+        }
 
         try {
             val email = if(form["email"].isNullOrEmpty()) null else form["email"]
             val cpf = if(form["cpf"].isNullOrEmpty()) null else form["cpf"]
             val cnpj = if(form["cnpj"].isNullOrEmpty()) null else form["cnpj"]
-            val userSession = authenticationClient.login(email, cpf, cnpj, form["password"]!!)
-            call.respond(HttpStatusCode.OK, userSession.id.toString())
+            val userSession = authController.login(email, cpf, cnpj, form["password"]!!)
+            call.sessions.set(UserSessionCookie(userSession.id.toString()))
+            println(call.sessions.get<UserSessionCookie>())
+            call.respondRedirect("/")
         } catch (ex: Exception) {
             ex.printStack()
             call.respond(FreeMarkerContent("login.ftl", mapOf("errorMessage" to ex.message)))
         }
+    }
+
+    /**
+     * Recebe uma chamada da aplicação e o logout
+     *
+     * @param call          chamada de aplicação
+     */
+    suspend fun logout(call: ApplicationCall) {
+        val sessionCookie = call.sessions.get<UserSessionCookie>()
+        if (sessionCookie != null) {
+            if (authController.isSessionValid(sessionCookie)) {
+                authController.logout(sessionCookie)
+                call.sessions.clear<UserSessionCookie>()
+                call.respondRedirect("/")
+                return
+            }
+        }
+
+        call.respondRedirect("/")
     }
 
     fun userAccountPage(call: ApplicationCall) {
