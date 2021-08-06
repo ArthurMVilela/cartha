@@ -90,4 +90,7 @@ class AuthenticationController {
     suspend fun getAccessLogs(filter: AccessLogSearchFilter, page: Int = 1):ResultSet<AccessLog> {
         return authenticationClient.getAccessLogs(filter, page)
     }
+    suspend fun getAccessLog(id:UUID):AccessLog {
+        return authenticationClient.getAccessLog(id)
+    }
 }

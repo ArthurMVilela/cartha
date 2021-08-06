@@ -4,6 +4,7 @@ import authentication.Subject
 import authentication.logging.AccessLogSearchFilter
 import authentication.logging.ActionType
 import io.ktor.application.*
+import io.ktor.features.*
 import io.ktor.freemarker.*
 import io.ktor.http.*
 import io.ktor.request.*
@@ -53,7 +54,7 @@ class AccessLogsHandlers {
         val data = mutableMapOf<String, Any?>()
         val parameters = call.receiveParameters()
         val page = call.request.queryParameters["page"]?.toInt()?:1
-        println(page)
+
         val sessionCookie = call.sessions.get<UserSessionCookie>()
         if (sessionCookie != null && authController.isSessionValid(sessionCookie)) {
             try {
@@ -78,6 +79,36 @@ class AccessLogsHandlers {
         data["filter"] = filter
 
         call.respond(HttpStatusCode.OK, FreeMarkerContent("accessLogs.ftl", data))
+    }
+
+    suspend fun getLog(call: ApplicationCall) {
+        val logId = try {
+            UUID.fromString(call.parameters["id"])
+        } catch (ex: Exception) {
+            throw BadRequestException("Id não válida", ex)
+        }
+
+        val data = mutableMapOf<String, Any?>()
+        val log = try {
+            authController.getAccessLog(logId)
+        } catch (ex: Exception) {
+            throw NotFoundException()
+        }
+
+        val sessionCookie = call.sessions.get<UserSessionCookie>()
+        if (sessionCookie != null && authController.isSessionValid(sessionCookie)) {
+            try {
+                Util.addMenuToLayoutMap(data, authController.getUserRole(sessionCookie))
+            }catch (ex: Exception) {
+                Util.addMenuToLayoutMap(data, null)
+            }
+        } else {
+            Util.addMenuToLayoutMap(data, null)
+        }
+
+        data["log"] = log
+
+        call.respond(HttpStatusCode.OK, FreeMarkerContent("accessLog.ftl", data))
     }
 
     private fun parseFilterForm(parameters: Parameters):AccessLogSearchFilter {

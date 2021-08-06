@@ -95,6 +95,7 @@
                         <td>${row.userId}</td>
                         <td>${row.timestamp}</td>
                         <td>${row.action.type}</td>
+                        <td><a href="/logs/${row.id}">Ver log</a></td>
                     </tr>
                 </#list>
             </tbody>

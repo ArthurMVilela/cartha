@@ -94,6 +94,9 @@ fun main() {
                     post("/logs") {
                         accessLogsHandlers.postGetLogs(call)
                     }
+                    get("/logs/{id}") {
+                        accessLogsHandlers.getLog(call)
+                    }
                     get("/blockchain") {
                         call.respond("Hello")
                     }

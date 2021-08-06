@@ -84,4 +84,14 @@ class AuthenticationClient {
             throw ex
         }
     }
+
+    suspend fun getAccessLog(id:UUID) : AccessLog {
+        return try {
+            client.get<AccessLog>("$authenticationURL/access_logs/$id") {
+
+            }
+        } catch (ex: Exception) {
+            throw ex
+        }
+    }
 }
