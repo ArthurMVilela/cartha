@@ -47,6 +47,8 @@ class AccessLogsHandlers {
         data["subjects"] = EnumMaps.subjects
         data["filter"] = filter
 
+        authController.logAction(sessionCookie!!, ActionType.SeeLogs, Subject.UserAccount, null)
+
         call.respond(HttpStatusCode.OK, FreeMarkerContent("accessLogs.ftl", data))
     }
 

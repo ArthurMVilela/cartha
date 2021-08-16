@@ -5,5 +5,7 @@ package authentication.logging
  */
 enum class ActionType(val value: String) {
     Login("login"),
-    Logout("logout")
+    Logout("logout"),
+    SeeLogs("ver logs"),
+    SeeLog("ver log")
 }
