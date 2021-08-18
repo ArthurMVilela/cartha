@@ -15,7 +15,9 @@
                 <li class="list-group-item">ID da sessão de usuário: ${log.sessionId}</li>
                 <li class="list-group-item">ID de usuário: ${log.userId}</li>
                 <li class="list-group-item">Data e hora: ${log.timestamp}</li>
-                <li class="list-group-item">Ação: ${log.action.type} | ${log.action.subject} | ${log.action.domainId}</li>
+                <li class="list-group-item">
+                    Ação: ${log.action.type.value} | ${log.action.subject.value} | <#if log.action.domainId??>${log.action.domainId}<#else>NA</#if>
+                </li>
             </ul>
         </div>
     </div>

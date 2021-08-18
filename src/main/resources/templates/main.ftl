@@ -1,4 +1,4 @@
-<#assign title="Login">
+<#assign title="Cartha">
 <!DOCTYPE html>
 <html lang="en">
 <head>

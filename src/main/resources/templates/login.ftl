@@ -25,7 +25,7 @@
                     </div>
                     <div class="m-3">
                         <label for="cpf-cnpj" class="form-label">CPF/CNPJ: </label>
-                        <input id="cpf-cnpj" type="text" class="form-control mask-cpf-cnpj" name="cpf">
+                        <input id="cpf-cnpj" type="text" class="form-control mask-cpf-cnpj" name="cpf" disabled>
                         <div id="cpf-cnpj-invalid-msg" class="invalid-feedback">
                             Você deve informar email OU CPF/CNPJ
                         </div>

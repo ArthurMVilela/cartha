@@ -1,12 +1,17 @@
 package ui.controllers
 
 import authentication.Role
+import authentication.Subject
 import authentication.UserSession
+import authentication.handlers.AccessLogRequestBody
 import authentication.logging.AccessLog
 import authentication.logging.AccessLogSearchFilter
+import authentication.logging.Action
+import authentication.logging.ActionType
 import newPersistence.ResultSet
 import ui.exception.InvalidUserSessionException
 import ui.features.UserSessionCookie
+import java.time.LocalDateTime
 import java.util.*
 
 class AuthenticationController {
@@ -92,5 +97,18 @@ class AuthenticationController {
     }
     suspend fun getAccessLog(id:UUID):AccessLog {
         return authenticationClient.getAccessLog(id)
+    }
+
+    /**
+     * Registra um log de acesso
+     */
+    suspend fun logAction(sessionCookie:UserSessionCookie, actionType: ActionType, subject: Subject, domainId: UUID?) {
+        val request = AccessLogRequestBody(
+            UUID.fromString(sessionCookie.sessionId),
+            Action(actionType, subject, domainId),
+            LocalDateTime.now()
+        )
+
+        authenticationClient.logAction(request)
     }
 }

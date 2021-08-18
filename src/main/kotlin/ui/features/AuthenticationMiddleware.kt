@@ -2,6 +2,8 @@ package ui.features
 
 import authentication.Permission
 import authentication.Role
+import authentication.Subject
+import authentication.logging.ActionType
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.routing.*
@@ -9,6 +11,7 @@ import io.ktor.util.*
 import io.ktor.util.pipeline.*
 import ui.controllers.AuthenticationController
 import ui.exception.AuthenticationMiddlewareException
+import java.util.*
 
 class AuthenticationMiddleware(config: Configuration) {
     val authController = AuthenticationController()
@@ -53,4 +56,9 @@ fun Route.authorizedRoute(role: Role?, permission: Permission?, build: Route.() 
     application.feature(AuthenticationMiddleware).interceptPipeline(authorizedRoute, role, permission)
     authorizedRoute.build()
     return authorizedRoute
+}
+
+suspend fun ApplicationCall.logAction(sessionCookie:UserSessionCookie, actionType: ActionType, subject: Subject, domainId: UUID?) {
+    val authController = AuthenticationController()
+    authController.logAction(sessionCookie, actionType, subject, domainId)
 }

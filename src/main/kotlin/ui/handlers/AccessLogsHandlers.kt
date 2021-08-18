@@ -12,6 +12,7 @@ import io.ktor.response.*
 import io.ktor.sessions.*
 import ui.controllers.AuthenticationController
 import ui.features.UserSessionCookie
+import ui.features.logAction
 import ui.util.Util
 import ui.values.EnumMaps
 import java.time.LocalDateTime
@@ -47,6 +48,8 @@ class AccessLogsHandlers {
         data["subjects"] = EnumMaps.subjects
         data["filter"] = filter
 
+        call.logAction(sessionCookie!!, ActionType.SeeLogs, Subject.UserAccount, null)
+
         call.respond(HttpStatusCode.OK, FreeMarkerContent("accessLogs.ftl", data))
     }
 
@@ -78,6 +81,8 @@ class AccessLogsHandlers {
         data["subjects"] = EnumMaps.subjects
         data["filter"] = filter
 
+        call.logAction(sessionCookie!!, ActionType.SeeLogs, Subject.UserAccount, null)
+
         call.respond(HttpStatusCode.OK, FreeMarkerContent("accessLogs.ftl", data))
     }
 
@@ -107,6 +112,8 @@ class AccessLogsHandlers {
         }
 
         data["log"] = log
+
+        call.logAction(sessionCookie!!, ActionType.SeeLog, Subject.UserAccount, log.id)
 
         call.respond(HttpStatusCode.OK, FreeMarkerContent("accessLog.ftl", data))
     }

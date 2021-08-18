@@ -1,6 +1,7 @@
 package ui.controllers
 
 import authentication.UserSession
+import authentication.handlers.AccessLogRequestBody
 import authentication.logging.AccessLog
 import authentication.logging.AccessLogSearchFilter
 import io.ktor.client.request.*
@@ -92,6 +93,14 @@ class AuthenticationClient {
             }
         } catch (ex: Exception) {
             throw ex
+        }
+    }
+
+    suspend fun logAction(request: AccessLogRequestBody) {
+        client.post<AccessLog>{
+            url("$authenticationURL/access_logs")
+            contentType(ContentType.Application.Json)
+            body = request
         }
     }
 }
