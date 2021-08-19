@@ -1,4 +1,4 @@
-package blockchain.network
+package blockchain.controllers
 
 import blockchain.Block
 import blockchain.Blockchain
@@ -11,7 +11,6 @@ import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.encodeToString
 import java.util.*
 
 /**

@@ -1,7 +1,9 @@
-@file:JvmName("BlockchainNodeService")
+@file:JvmName("NodeService")
 
-import blockchain.network.Node
-import blockchain.network.NodeService
+package blockchain.service
+
+import blockchain.controllers.Node
+import blockchain.handlers.NodeHandler
 import io.ktor.application.*
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -28,14 +30,14 @@ fun main() {
         }
     }
 
-    var node:Node
+    var node: Node
     runBlocking {
         node = client.get {
             url("$nodeManagerURL/nodes/$nodeId")
         }
     }
 
-    val nodeService = NodeService(nodeManagerURL, node)
+    val nodeService = NodeHandler(nodeManagerURL, node)
 
     embeddedServer(Netty, port = 8080) {
         install(ContentNegotiation)  {

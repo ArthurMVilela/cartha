@@ -1,6 +1,8 @@
-@file:JvmName("BlockchainNodeManagerService")
+@file:JvmName("NodeManagerService")
 
-import blockchain.network.NodeManagerService
+package blockchain.service
+
+import blockchain.handlers.NodeManagerHandler
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.http.*
@@ -12,7 +14,7 @@ import io.ktor.server.netty.*
 import serviceExceptions.BadRequestException
 
 fun main() {
-    val service = NodeManagerService()
+    val service = NodeManagerHandler()
 
     embeddedServer(Netty, port = 8080) {
         install(ContentNegotiation)  {

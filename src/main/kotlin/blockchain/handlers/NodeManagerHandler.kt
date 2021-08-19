@@ -1,18 +1,14 @@
-package blockchain.network
+package blockchain.handlers
 
-import blockchain.Block
 import blockchain.Transaction
+import blockchain.controllers.NodeManager
 import io.ktor.application.*
-import io.ktor.client.*
-import io.ktor.client.engine.cio.*
-import io.ktor.client.features.json.*
-import io.ktor.client.features.json.serializer.*
 import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import serviceExceptions.BadRequestException
 
-class NodeManagerService {
+class NodeManagerHandler {
     val nodeManager = NodeManager()
 
     suspend fun createTransaction(call:ApplicationCall) {

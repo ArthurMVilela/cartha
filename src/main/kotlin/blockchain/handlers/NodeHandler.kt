@@ -1,22 +1,19 @@
-package blockchain.network
+package blockchain.handlers
 
 import blockchain.Block
-import blockchain.Blockchain
 import blockchain.Transaction
+import blockchain.controllers.Node
 import serviceExceptions.BadRequestException
 import io.ktor.application.*
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
-import io.ktor.client.request.*
-import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
-import kotlinx.coroutines.runBlocking
 import java.time.LocalDateTime
 
-class NodeService(val nodeManagerAddress:String, val node: Node) {
+class NodeHandler(val nodeManagerAddress:String, val node: Node) {
 
     val client = HttpClient(CIO) {
         install(JsonFeature) {
