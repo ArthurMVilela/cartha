@@ -21,8 +21,8 @@ import kotlinx.coroutines.runBlocking
 import serviceExceptions.BadRequestException
 
 fun main() {
-    val nodeId = System.getenv("NODE_ID")
-    val nodeManagerURL = System.getenv("NODE_MANAGER_URL")
+    val nodeId = System.getenv("NODE_ID")?:"1"
+    val nodeManagerURL = System.getenv("NODE_MANAGER_URL")?:""
 
     val client = HttpClient(CIO) {
         install(JsonFeature) {

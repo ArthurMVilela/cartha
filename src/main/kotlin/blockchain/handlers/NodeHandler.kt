@@ -12,6 +12,7 @@ import io.ktor.client.features.json.serializer.*
 import io.ktor.request.*
 import io.ktor.response.*
 import java.time.LocalDateTime
+import java.util.*
 
 class NodeHandler(val nodeManagerAddress:String, val node: Node) {
 
@@ -22,9 +23,10 @@ class NodeHandler(val nodeManagerAddress:String, val node: Node) {
     }
 
     suspend fun getBlock(call:ApplicationCall) {
-        val id = call.parameters["id"]
-        if (id.isNullOrBlank()) {
-            throw BadRequestException("id não pode ser nula ou vázia")
+        val id = try {
+            UUID.fromString(call.parameters["id"])
+        } catch (ex: Exception) {
+            throw BadRequestException("id não válida")
         }
 
         call.respond(node.chain.getBlock(id))

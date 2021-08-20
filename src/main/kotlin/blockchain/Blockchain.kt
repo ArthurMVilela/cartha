@@ -55,7 +55,7 @@ class Blockchain(val blocks:MutableList<Block> = mutableListOf()) {
      *
      * @return bloco com a id especificada
      */
-    fun getBlock(id:String): Block {
+    fun getBlock(id:UUID): Block {
         return blocks.first { it.id == id }
     }
 
