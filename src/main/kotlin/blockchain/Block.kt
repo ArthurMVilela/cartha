@@ -45,7 +45,7 @@ class Block(
 
     companion object {
         /**
-         * Cria o identificador único para esta conta
+         * Cria o identificador único para o bloco
          *
          * @return UUID para a id do usuário
          */
@@ -53,14 +53,6 @@ class Block(
             return UUID.randomUUID()
         }
     }
-
-//    fun createId(): String {
-//        val md = MessageDigest.getInstance("SHA")
-//        val now = LocalDateTime.now(ZoneOffset.UTC)
-//        var content = now.toString().toByteArray()
-//        content = content.plus(Random(now.toEpochSecond(ZoneOffset.UTC)).nextBytes(10))
-//        return Base64.getUrlEncoder().encodeToString(md.digest(content))
-//    }
 
     fun createHash():String {
         val md = MessageDigest.getInstance("SHA-256")
