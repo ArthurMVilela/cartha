@@ -22,8 +22,8 @@ class NodeManager (
     var transactionQueue: Queue<Transaction> = LinkedList<Transaction>()
 
     init {
-        nodes.add(Node("1", Blockchain(), "1", "http://node_a:8080"))
-        nodes.add(Node("2", nodes[0].chain, "2", "http://node_b:8080"))
+        nodes.add(Node(UUID.randomUUID(), Blockchain(), "1", "http://node_a:8080"))
+        nodes.add(Node(UUID.randomUUID(), nodes[0].chain, "2", "http://node_b:8080"))
     }
 
     val client = HttpClient(CIO) {

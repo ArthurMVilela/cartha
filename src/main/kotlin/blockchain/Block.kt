@@ -23,13 +23,14 @@ class Block(
     var transactionsHash: String?,
     val previousHash: String,
     var hash: String?,
-    var nodeId: String?
+    @Serializable(with = UUIDSerializer::class)
+    var nodeId: UUID?
 ) {
     constructor(
         timestamp: LocalDateTime,
         transactions: List<Transaction>,
         previousHash: String,
-        nodeId: String?
+        nodeId: UUID
     ):this(
         createId(),
         timestamp,

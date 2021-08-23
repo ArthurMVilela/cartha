@@ -7,6 +7,7 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import serviceExceptions.BadRequestException
+import java.util.*
 
 class NodeManagerHandler {
     val nodeManager = NodeManager()
@@ -32,7 +33,7 @@ class NodeManagerHandler {
     }
 
     suspend fun getNode(call: ApplicationCall) {
-        val id = call.parameters["id"]
+        val id = UUID.fromString(call.parameters["id"])
         val node = nodeManager.nodes.first { node -> node.id == id }
         call.respond(node)
     }

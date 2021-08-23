@@ -3,35 +3,32 @@ package blockchain.controllers
 import blockchain.Blockchain
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
-import java.security.MessageDigest
-import java.time.LocalDateTime
-import java.time.ZoneOffset
+import util.serializer.UUIDSerializer
 import java.util.*
-import kotlin.random.Random
 
 /**
  * Representa um nó na rede de blockchain
  */
 @Serializable
 class Node (
-    var id:String?,
+    @Serializable(with = UUIDSerializer::class)
+    val id: UUID = createId(),
     @Transient val chain: Blockchain = Blockchain(),
     val notaryId: String,
     val address:String
 ){
-    constructor(notaryId: String, address:String):this(null, Blockchain(), notaryId, address) {
-        id = createId()
+    constructor(notaryId: String, address:String):this(createId(), Blockchain(), notaryId, address)
+    constructor(chain: Blockchain, notaryId: String, address:String):this(createId(), chain, notaryId,address)
+
+    companion object {
+        /**
+         * Cria o identificador único para este nó
+         *
+         * @return UUID para a id do nó
+         */
+        private fun createId(): UUID {
+            return UUID.randomUUID()
+        }
     }
 
-    constructor(chain: Blockchain, notaryId: String, address:String):this(null, chain, notaryId,address) {
-        id = createId()
-    }
-
-    private fun createId():String {
-        val md = MessageDigest.getInstance("SHA")
-        val now = LocalDateTime.now(ZoneOffset.UTC)
-        var content = now.toString().toByteArray()
-        content = content.plus(Random(now.toEpochSecond(ZoneOffset.UTC)).nextBytes(10))
-        return Base64.getUrlEncoder().encodeToString(md.digest(content))
-    }
 }
