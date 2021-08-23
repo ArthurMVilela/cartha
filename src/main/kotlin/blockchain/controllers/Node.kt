@@ -2,6 +2,7 @@ package blockchain.controllers
 
 import blockchain.Blockchain
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import java.security.MessageDigest
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -14,7 +15,7 @@ import kotlin.random.Random
 @Serializable
 class Node (
     var id:String?,
-    val chain: Blockchain,
+    @Transient val chain: Blockchain = Blockchain(),
     val notaryId: String,
     val address:String
 ){
