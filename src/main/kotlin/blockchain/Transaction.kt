@@ -24,7 +24,8 @@ class Transaction (
     @SerialName("document_hash")
     val documentHash:String,
     val type:TransactionType,
-    var hash:String?
+    var hash:String?,
+    var pending:Boolean = true
 ){
     constructor(
         timestamp: LocalDateTime,
