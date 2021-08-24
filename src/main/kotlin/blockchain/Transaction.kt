@@ -19,8 +19,9 @@ class Transaction (
     val id:UUID,
     @Serializable(with = LocalDateTimeSerializer::class)
     val timestamp:LocalDateTime,
+    @Serializable(with = UUIDSerializer::class)
     @SerialName("document_id")
-    val documentId:String,
+    val documentId:UUID,
     @SerialName("document_hash")
     val documentHash:String,
     val type:TransactionType,
@@ -29,7 +30,7 @@ class Transaction (
 ){
     constructor(
         timestamp: LocalDateTime,
-        documentId: String,
+        documentId: UUID,
         documentHash: String,
         type: TransactionType
     ):this(createId(), timestamp, documentId, documentHash, type, null) {
@@ -51,8 +52,7 @@ class Transaction (
         val md = MessageDigest.getInstance("SHA-256")
         var content = Base64.getUrlDecoder().decode(id.toString().toByteArray())
         content = content.plus(timestamp.toString().toByteArray())
-        content = content.plus(documentId.toByteArray())
-        content = content.plus(Base64.getUrlDecoder().decode(documentId))
+        content = content.plus(documentId.toString().toByteArray())
         content = content.plus(Base64.getUrlDecoder().decode(documentHash))
         content = content.plus(type.value.toByteArray())
         return Base64.getUrlEncoder().encodeToString(md.digest(content))

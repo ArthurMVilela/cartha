@@ -1,5 +1,6 @@
 package blockchain.handlers
 
+import blockchain.CreateTransactionRequest
 import blockchain.Transaction
 import blockchain.controllers.NodeManager
 import io.ktor.application.*
@@ -9,6 +10,7 @@ import io.ktor.request.*
 import io.ktor.request.ContentTransformationException
 import io.ktor.response.*
 import serviceExceptions.BadRequestException
+import java.time.LocalDateTime
 import java.util.*
 
 class NodeManagerHandler {
@@ -16,12 +18,12 @@ class NodeManagerHandler {
 
     suspend fun createTransaction(call:ApplicationCall) {
         val transaction = try {
-            call.receive<Transaction>()
+            call.receive<CreateTransactionRequest>()
         } catch (e:ContentTransformationException) {
             throw BadRequestException("conteudo da requisição é inválido")
         }
 
-        nodeManager.addTransactionToQueue(Transaction(transaction.timestamp, transaction.documentId, transaction.documentHash, transaction.type))
+        nodeManager.addTransactionToQueue(Transaction(LocalDateTime.now(), transaction.documentId, transaction.documentHash, transaction.type))
 
         call.respond(HttpStatusCode.Created, "Transação adicionada com sucesso")
     }
