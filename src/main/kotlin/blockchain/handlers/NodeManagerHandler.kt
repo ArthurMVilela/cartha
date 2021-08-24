@@ -3,8 +3,10 @@ package blockchain.handlers
 import blockchain.Transaction
 import blockchain.controllers.NodeManager
 import io.ktor.application.*
+import io.ktor.features.*
 import io.ktor.http.*
 import io.ktor.request.*
+import io.ktor.request.ContentTransformationException
 import io.ktor.response.*
 import serviceExceptions.BadRequestException
 import java.util.*
@@ -33,8 +35,18 @@ class NodeManagerHandler {
     }
 
     suspend fun getNode(call: ApplicationCall) {
-        val id = UUID.fromString(call.parameters["id"])
-        val node = nodeManager.nodes.first { node -> node.id == id }
+        val id = try {
+            UUID.fromString(call.parameters["id"])
+        } catch (ex: Exception) {
+            throw BadRequestException("ID inválida ou nula.")
+        }
+
+        val node = try {
+            nodeManager.nodes.first { node -> node.nodeId == id }
+        } catch (ex: Exception) {
+            throw NotFoundException("Nó não encontrado.")
+        }
+
         call.respond(node)
     }
 
