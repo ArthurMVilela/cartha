@@ -1,4 +1,4 @@
-package blockchain
+package blockchain.handlers
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

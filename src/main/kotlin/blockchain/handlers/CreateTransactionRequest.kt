@@ -1,5 +1,6 @@
-package blockchain
+package blockchain.handlers
 
+import blockchain.TransactionType
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import util.serializer.UUIDSerializer

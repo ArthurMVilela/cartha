@@ -1,7 +1,5 @@
 package blockchain.handlers
 
-import blockchain.AddNodeRequest
-import blockchain.CreateTransactionRequest
 import blockchain.NodeInfo
 import blockchain.Transaction
 import blockchain.controllers.NodeManager
