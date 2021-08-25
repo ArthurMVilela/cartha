@@ -1,6 +1,8 @@
 package blockchain.controllers
 
 import blockchain.*
+import blockchain.persistence.dao.NodeInfoDAO
+import blockchain.persistence.tables.NodeInfoTable
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.features.json.*
@@ -8,6 +10,8 @@ import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
 /**
@@ -16,11 +20,18 @@ import java.util.*
 class NodeManager (
     val nodes:MutableList<NodeInfo> = mutableListOf<NodeInfo>(),
 ) {
+    val nodeInfoDAO = NodeInfoDAO()
     var transactionQueue: Queue<Transaction> = LinkedList<Transaction>()
 
     init {
-        nodes.add(NodeInfo(UUID.randomUUID(), UUID.randomUUID(), "http://node_a:8080"))
-        nodes.add(NodeInfo(UUID.randomUUID(), UUID.randomUUID(), "http://node_b:8080"))
+        transaction {
+            SchemaUtils.create(
+                NodeInfoTable
+            )
+        }
+
+        nodes.add(nodeInfoDAO.insert(NodeInfo(UUID.randomUUID(), UUID.randomUUID(), "http://node_a:8080")))
+        nodes.add(nodeInfoDAO.insert(NodeInfo(UUID.randomUUID(), UUID.randomUUID(), "http://node_a:8080")))
     }
 
     val client = HttpClient(CIO) {
