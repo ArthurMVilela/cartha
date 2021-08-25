@@ -48,10 +48,10 @@ class NodeManagerHandler {
         }
 
         val node = try {
-            nodeManager.nodes.first { node -> node.nodeId == id }
+            nodeManager.getNode(id)
         } catch (ex: Exception) {
             throw NotFoundException("Nó não encontrado.")
-        }
+        }?:throw NotFoundException("Nó não encontrado.")
 
         call.respond(node)
     }
