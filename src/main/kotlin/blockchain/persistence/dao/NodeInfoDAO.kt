@@ -10,6 +10,8 @@ import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
+import java.util.concurrent.locks.Condition
+import kotlin.math.ceil
 
 class NodeInfoDAO:DAO<NodeInfo, UUID> {
     override fun insert(obj: NodeInfo): NodeInfo {
@@ -18,7 +20,7 @@ class NodeInfoDAO:DAO<NodeInfo, UUID> {
         transaction {
             try {
                 val insertedId = NodeInfoTable.insertAndGetId {
-                    it[id] = obj.notaryId
+                    it[id] = obj.nodeId
                     it[notaryId] = obj.notaryId
                     it[address] = obj.address
                     it[status] = obj.status
@@ -35,11 +37,43 @@ class NodeInfoDAO:DAO<NodeInfo, UUID> {
     }
 
     override fun select(id: UUID): NodeInfo? {
-        TODO("Not yet implemented")
+        var found:NodeInfo? = null
+
+        transaction {
+            try {
+                val row = NodeInfoTable.select{NodeInfoTable.id eq id}.firstOrNull()?:return@transaction
+                found = toType(row)
+            } catch (ex: Exception) {
+                rollback()
+                throw ex
+            }
+        }
+
+        return found
     }
 
     override fun selectMany(condition: Op<Boolean>, page: Int, pageLength: Int): ResultSet<NodeInfo> {
-        TODO("Not yet implemented")
+        var numberOfPages = 0
+        val results = mutableListOf<NodeInfo>()
+
+        transaction {
+            try {
+                val count = NodeInfoTable.select(condition).count()
+                numberOfPages = ceil(count/(pageLength * 1.0f)).toInt()
+
+                val rows = NodeInfoTable.select(condition)
+                    .limit((pageLength * page), ((page - 1) * pageLength).toLong())
+
+                rows.forEach {
+                    results.add(toType(it))
+                }
+            } catch (ex: Exception) {
+                rollback()
+                throw ex
+            }
+        }
+
+        return ResultSet(results, page, numberOfPages, pageLength)
     }
 
     override fun selectMany(condition: Op<Boolean>): List<NodeInfo> {
@@ -47,7 +81,7 @@ class NodeInfoDAO:DAO<NodeInfo, UUID> {
     }
 
     override fun selectAll(page: Int, pageLength: Int): ResultSet<NodeInfo> {
-        TODO("Not yet implemented")
+        return selectMany(Op.TRUE, page, pageLength)
     }
 
     override fun update(obj: NodeInfo) {

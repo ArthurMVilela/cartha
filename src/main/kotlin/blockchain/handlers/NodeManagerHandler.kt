@@ -1,6 +1,8 @@
 package blockchain.handlers
 
+import blockchain.AddNodeRequest
 import blockchain.CreateTransactionRequest
+import blockchain.NodeInfo
 import blockchain.Transaction
 import blockchain.controllers.NodeManager
 import io.ktor.application.*
@@ -33,7 +35,9 @@ class NodeManagerHandler {
     }
 
     suspend fun getNodes(call: ApplicationCall) {
-        call.respond(nodeManager.nodes)
+        val nodes = nodeManager.getNodes()
+
+        call.respond(nodes)
     }
 
     suspend fun getNode(call: ApplicationCall) {
@@ -50,6 +54,24 @@ class NodeManagerHandler {
         }
 
         call.respond(node)
+    }
+
+    suspend fun postNode(call: ApplicationCall) {
+        val request = try {
+            call.receive<AddNodeRequest>()
+        } catch (ex: Exception) {
+            throw BadRequestException("Request inválido.")
+        }
+
+        val node = NodeInfo(request.notaryId, request.address)
+
+        val created = try {
+            nodeManager.addNode(node)
+        } catch (ex: Exception) {
+            throw ex
+        }
+
+        call.respond(HttpStatusCode.Created, created)
     }
 
 //    suspend fun transmitBlock(call: ApplicationCall) {

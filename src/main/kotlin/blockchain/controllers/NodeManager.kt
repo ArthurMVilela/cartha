@@ -10,6 +10,7 @@ import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
+import newPersistence.ResultSet
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
@@ -29,9 +30,6 @@ class NodeManager (
                 NodeInfoTable
             )
         }
-
-        nodes.add(nodeInfoDAO.insert(NodeInfo(UUID.randomUUID(), UUID.randomUUID(), "http://node_a:8080")))
-        nodes.add(nodeInfoDAO.insert(NodeInfo(UUID.randomUUID(), UUID.randomUUID(), "http://node_a:8080")))
     }
 
     val client = HttpClient(CIO) {
@@ -62,8 +60,16 @@ class NodeManager (
 //        }
     }
 
-    fun addNode(node: Node) {
-        TODO("Not implemented yet")
+    fun addNode(node: NodeInfo):NodeInfo {
+        return nodeInfoDAO.insert(node)
+    }
+
+    fun getNode(id: UUID):NodeInfo? {
+        return nodeInfoDAO.select(id)
+    }
+
+    fun getNodes(page: Int = 1):ResultSet<NodeInfo> {
+        return nodeInfoDAO.selectAll(1)
     }
 
     fun transmitTransaction(transaction: Transaction) {

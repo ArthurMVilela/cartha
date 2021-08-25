@@ -61,6 +61,9 @@ fun main() {
             get("/nodes/{id}") {
                 service.getNode(call)
             }
+            post("/nodes") {
+                service.postNode(call)
+            }
         }
     }.start(true)
 }

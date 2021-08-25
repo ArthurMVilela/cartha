@@ -16,4 +16,22 @@ class NodeInfo(
     val address: String,
     val status: NodeStatus = NodeStatus.Unknown
 ) {
+
+    constructor(notaryId: UUID, address: String) : this (
+        createId(),
+        notaryId,
+        address,
+        NodeStatus.Unknown
+    )
+
+    companion object {
+        /**
+         * Cria o identificador único para o nó
+         *
+         * @return UUID para a id do nó
+         */
+        private fun createId():UUID {
+            return UUID.randomUUID()
+        }
+    }
 }
