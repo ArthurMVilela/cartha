@@ -56,6 +56,22 @@ class NodeManagerHandler {
         call.respond(node)
     }
 
+    suspend fun getNodeByNotary(call: ApplicationCall) {
+        val id = try {
+            UUID.fromString(call.parameters["id"])
+        } catch (ex: Exception) {
+            throw BadRequestException("ID inválida ou nula.")
+        }
+
+        val node = try {
+            nodeManager.getNodeByNotary(id)
+        } catch (ex: Exception) {
+            throw NotFoundException("Nó não encontrado.")
+        }?:throw NotFoundException("Nó não encontrado.")
+
+        call.respond(node)
+    }
+
     suspend fun postNode(call: ApplicationCall) {
         val request = try {
             call.receive<AddNodeRequest>()

@@ -61,6 +61,9 @@ fun main() {
             get("/nodes/{id}") {
                 service.getNode(call)
             }
+            get("/nodes/notary/{id}") {
+                service.getNodeByNotary(call)
+            }
             post("/nodes") {
                 service.postNode(call)
             }

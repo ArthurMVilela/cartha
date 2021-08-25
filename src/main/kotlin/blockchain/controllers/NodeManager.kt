@@ -11,6 +11,7 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import newPersistence.ResultSet
+import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
@@ -66,6 +67,11 @@ class NodeManager (
 
     fun getNode(id: UUID):NodeInfo? {
         return nodeInfoDAO.select(id)
+    }
+
+    fun getNodeByNotary(notaryId: UUID):NodeInfo? {
+        val result = nodeInfoDAO.selectMany(Op.build { NodeInfoTable.notaryId eq notaryId })
+        return result.firstOrNull()
     }
 
     fun getNodes(page: Int = 1):ResultSet<NodeInfo> {

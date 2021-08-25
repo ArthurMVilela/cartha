@@ -77,7 +77,22 @@ class NodeInfoDAO:DAO<NodeInfo, UUID> {
     }
 
     override fun selectMany(condition: Op<Boolean>): List<NodeInfo> {
-        TODO("Not yet implemented")
+        val result = mutableListOf<NodeInfo>()
+
+        transaction {
+            try {
+                val rows = NodeInfoTable.select(condition)
+
+                rows.forEach {
+                    result.add(toType(it))
+                }
+            } catch (ex: Exception) {
+                rollback()
+                throw ex
+            }
+        }
+
+        return result
     }
 
     override fun selectAll(page: Int, pageLength: Int): ResultSet<NodeInfo> {
