@@ -2,7 +2,9 @@ package blockchain.controllers
 
 import blockchain.*
 import blockchain.persistence.dao.NodeInfoDAO
+import blockchain.persistence.dao.TransactionDAO
 import blockchain.persistence.tables.NodeInfoTable
+import blockchain.persistence.tables.TransactionTable
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.features.json.*
@@ -23,12 +25,13 @@ class NodeManager (
     val nodes:MutableList<NodeInfo> = mutableListOf<NodeInfo>(),
 ) {
     val nodeInfoDAO = NodeInfoDAO()
-    var transactionQueue: Queue<Transaction> = LinkedList<Transaction>()
+    val transactionDAO = TransactionDAO()
 
     init {
         transaction {
             SchemaUtils.create(
-                NodeInfoTable
+                NodeInfoTable,
+                TransactionTable
             )
         }
     }
@@ -40,7 +43,8 @@ class NodeManager (
     }
 
     fun addTransactionToQueue(transaction: Transaction) {
-        transactionQueue.add(transaction)
+        //transactionQueue.add(transaction)
+        transactionDAO.insert(transaction)
         //transmitTransaction(transaction)
 //        if (transactionQueue.size >= Config.transactionAmount) {
 //            val pick = pickNodeToGenerateNextBlock()
@@ -59,6 +63,10 @@ class NodeManager (
 //                transmitBlock(block)
 //            }
 //        }
+    }
+
+    fun getPendingTransactions():ResultSet<Transaction> {
+        return transactionDAO.selectMany(Op.build { TransactionTable.pending eq true }, page = 1)
     }
 
     fun addNode(node: NodeInfo):NodeInfo {

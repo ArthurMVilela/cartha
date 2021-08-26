@@ -29,7 +29,7 @@ class NodeManagerHandler {
     }
 
     suspend fun getTransactions(call: ApplicationCall) {
-        call.respond(nodeManager.transactionQueue.toList())
+        call.respond(nodeManager.getPendingTransactions())
     }
 
     suspend fun getNodes(call: ApplicationCall) {
