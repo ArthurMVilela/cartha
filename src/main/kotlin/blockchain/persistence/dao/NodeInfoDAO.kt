@@ -4,10 +4,7 @@ import blockchain.NodeInfo
 import blockchain.persistence.tables.NodeInfoTable
 import newPersistence.DAO
 import newPersistence.ResultSet
-import org.jetbrains.exposed.sql.Op
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.insertAndGetId
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 import java.util.concurrent.locks.Condition
@@ -24,6 +21,7 @@ class NodeInfoDAO:DAO<NodeInfo, UUID> {
                     it[notaryId] = obj.notaryId
                     it[address] = obj.address
                     it[status] = obj.status
+                    it[lastHealthCheck] = obj.lastHealthCheck
                 }
 
                 inserted = toType(NodeInfoTable.select(Op.build { NodeInfoTable.id eq insertedId }).first())
@@ -100,7 +98,22 @@ class NodeInfoDAO:DAO<NodeInfo, UUID> {
     }
 
     override fun update(obj: NodeInfo) {
-        TODO("Not yet implemented")
+        transaction {
+            try {
+                NodeInfoTable.update({ NodeInfoTable.id eq obj.nodeId}) {
+                    with(SqlExpressionBuilder) {
+                        it[id] = obj.nodeId
+                        it[notaryId] = obj.notaryId
+                        it[address] = obj.address
+                        it[status] = obj.status
+                        it[lastHealthCheck] = obj.lastHealthCheck
+                    }
+                }
+            } catch (ex: Exception) {
+                rollback()
+                throw ex
+            }
+        }
     }
 
     override fun remove(id: UUID) {
@@ -116,7 +129,8 @@ class NodeInfoDAO:DAO<NodeInfo, UUID> {
         val notaryId = row[NodeInfoTable.notaryId]
         val address = row[NodeInfoTable.address]
         val status = row[NodeInfoTable.status]
+        val lastHealthCheck = row[NodeInfoTable.lastHealthCheck]
 
-        return NodeInfo(nodeId, notaryId, address, status)
+        return NodeInfo(nodeId, notaryId, address, status, lastHealthCheck)
     }
 }

@@ -1,7 +1,9 @@
 package blockchain
 
 import kotlinx.serialization.Serializable
+import util.serializer.LocalDateTimeSerializer
 import util.serializer.UUIDSerializer
+import java.time.LocalDateTime
 import java.util.*
 
 /**
@@ -14,14 +16,17 @@ class NodeInfo(
     @Serializable(with = UUIDSerializer::class)
     val notaryId: UUID,
     val address: String,
-    val status: NodeStatus = NodeStatus.Unknown
+    var status: NodeStatus = NodeStatus.Unknown,
+    @Serializable(with = LocalDateTimeSerializer::class)
+    var lastHealthCheck: LocalDateTime? = null
 ) {
 
-    constructor(notaryId: UUID, address: String) : this (
+    constructor(notaryId: UUID, address: String, lastHealthCheck: LocalDateTime?) : this (
         createId(),
         notaryId,
         address,
-        NodeStatus.Unknown
+        NodeStatus.Unknown,
+        lastHealthCheck
     )
 
     companion object {

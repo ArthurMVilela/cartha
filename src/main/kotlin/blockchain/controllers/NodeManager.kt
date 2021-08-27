@@ -16,6 +16,7 @@ import newPersistence.ResultSet
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.time.LocalDateTime
 import java.util.*
 
 /**
@@ -26,6 +27,7 @@ class NodeManager (
 ) {
     val nodeInfoDAO = NodeInfoDAO()
     val transactionDAO = TransactionDAO()
+    private val client = NodeClient()
 
     init {
         transaction {
@@ -33,12 +35,6 @@ class NodeManager (
                 NodeInfoTable,
                 TransactionTable
             )
-        }
-    }
-
-    val client = HttpClient(CIO) {
-        install(JsonFeature) {
-            serializer = KotlinxSerializer()
         }
     }
 
@@ -84,6 +80,13 @@ class NodeManager (
 
     fun getNodes(page: Int = 1):ResultSet<NodeInfo> {
         return nodeInfoDAO.selectAll(1)
+    }
+
+    suspend fun checkNodeStatus(node: NodeInfo) {
+        node.status = client.healthCheck(node)
+        node.lastHealthCheck = LocalDateTime.now()
+
+        nodeInfoDAO.update(node)
     }
 
     fun transmitTransaction(transaction: Transaction) {
