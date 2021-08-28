@@ -61,8 +61,8 @@ class NodeManager (
 //        }
     }
 
-    fun getPendingTransactions():ResultSet<Transaction> {
-        return transactionDAO.selectMany(Op.build { TransactionTable.pending eq true }, page = 1)
+    fun getPendingTransactions(page: Int = 1):ResultSet<Transaction> {
+        return transactionDAO.selectMany(Op.build { TransactionTable.pending eq true }, page)
     }
 
     fun addNode(node: NodeInfo):NodeInfo {
@@ -78,8 +78,15 @@ class NodeManager (
         return result.firstOrNull()
     }
 
+    /**
+     * Busca os registros de nós cadastrados
+     *
+     * @param page      pagina da busca (para paginação)
+     *
+     * @return ResultSet com os nós
+     */
     fun getNodes(page: Int = 1):ResultSet<NodeInfo> {
-        return nodeInfoDAO.selectAll(1)
+        return nodeInfoDAO.selectAll(page)
     }
 
     suspend fun checkNodeStatus(node: NodeInfo) {

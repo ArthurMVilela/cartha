@@ -47,10 +47,17 @@ fun main() {
             exception<BadRequestException> { cause ->
                 call.respond(HttpStatusCode.BadRequest, cause.message!!)
             }
+            exception<NotFoundException> { cause ->
+                call.respond(HttpStatusCode.NotFound, cause.message!!)
+            }
+            exception<Exception> { cause ->
+                cause.printStackTrace()
+                call.respond(HttpStatusCode.InternalServerError)
+            }
         }
         routing {
-            get("/transactions") {
-                service.getTransactions(call)
+            get("/transactions/pending") {
+                service.getPendingTransactions(call)
             }
             post("/transactions") {
                 service.createTransaction(call)

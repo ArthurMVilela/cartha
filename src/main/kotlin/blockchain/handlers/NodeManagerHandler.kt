@@ -45,12 +45,41 @@ class NodeManagerHandler {
         call.respond(HttpStatusCode.Created, "Transação adicionada com sucesso")
     }
 
-    suspend fun getTransactions(call: ApplicationCall) {
-        call.respond(nodeManager.getPendingTransactions())
+    suspend fun getPendingTransactions(call: ApplicationCall) {
+        val page = try {
+            call.request.queryParameters["page"]?.toInt()?:1
+        } catch (ex: Exception) {
+            throw BadRequestException("Página inválida")
+        }
+
+        if (page < 1) {
+            throw BadRequestException("Página inválida")
+        }
+
+        val transactions = nodeManager.getPendingTransactions(page)
+
+        if (transactions.currentPage > transactions.numberOfPages) {
+            throw NotFoundException("Página não encontrada.")
+        }
+
+        call.respond(transactions)
     }
 
     suspend fun getNodes(call: ApplicationCall) {
-        val nodes = nodeManager.getNodes()
+        val page = try {
+            call.request.queryParameters["page"]?.toInt()?:1
+        } catch (ex: Exception) {
+            throw BadRequestException("Página inválida")
+        }
+
+        if (page < 1) {
+            throw BadRequestException("Página inválida")
+        }
+
+        val nodes = nodeManager.getNodes(page)
+        if (nodes.currentPage > nodes.numberOfPages) {
+            throw NotFoundException("Página não encontrada.")
+        }
 
         call.respond(nodes)
     }
@@ -104,12 +133,4 @@ class NodeManagerHandler {
 
         call.respond(HttpStatusCode.Created, created)
     }
-
-//    suspend fun transmitBlock(call: ApplicationCall) {
-//        val block = call.receive<Block>()
-//
-//        nodeManager.transmitBlock(block)
-//
-//        call.respond("ok")
-//    }
 }
