@@ -73,11 +73,41 @@ services:
       NODE_ID: "2"
       NODE_MANAGER_URL: "http://node_manager:8080"
 
+  node-manager-db:
+    container_name: "node-manager-db"
+    image: mysql:latest
+
+    restart: always
+    ports:
+      - "3002:3306"
+    environment:
+      MYSQL_USER: "node-manager"
+      MYSQL_PASSWORD: "node-manager"
+      MYSQL_DATABASE: "node_manager_db"
+      MYSQL_ROOT_PASSWORD: "root"
+    networks:
+      - net
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 20s
+      retries: 10
+
   node-manager:
     container_name: "node_manager"
+    restart: on-failure:20
     build:
       context: .
       dockerfile: nodeManager.Dockerfile
+    environment:
+      DATABASE_HOST: "node-manager-db"
+      DATABASE_PORT: "3306"
+      DATABASE_NAME: "node_manager_db"
+      DATABASE_USER: "node-manager"
+      DATABASE_PASSWORD: "node-manager"
+    depends_on:
+      - node-manager-db
+    links:
+      - node-manager-db
     ports:
       - "5003:8080"
     networks:

@@ -19,11 +19,11 @@ fun main() {
 
 
     try {
-        val host = System.getenv("DATABASE_HOST")?:"localhost"//throw IllegalArgumentException("Necessário expecificar host do DB")
-        val port = System.getenv("DATABASE_PORT")?:"3306"//throw IllegalArgumentException("Necessário expecificar porta do DB")
-        val database = System.getenv("DATABASE_NAME")?:"node_manager_db"//throw IllegalArgumentException("Necessário expecificar nome do DB")
-        val user = System.getenv("DATABASE_USER")?:"root"//throw IllegalArgumentException("Necessário expecificar usuário do DB")
-        val password = System.getenv("DATABASE_PASSWORD")?:"test"//throw IllegalArgumentException("Necessário expecificar senha do DB")
+        val host = System.getenv("DATABASE_HOST")?:throw IllegalArgumentException("Necessário expecificar host do DB")
+        val port = System.getenv("DATABASE_PORT")?:throw IllegalArgumentException("Necessário expecificar porta do DB")
+        val database = System.getenv("DATABASE_NAME")?:throw IllegalArgumentException("Necessário expecificar nome do DB")
+        val user = System.getenv("DATABASE_USER")?:throw IllegalArgumentException("Necessário expecificar usuário do DB")
+        val password = System.getenv("DATABASE_PASSWORD")?:throw IllegalArgumentException("Necessário expecificar senha do DB")
         val url = "jdbc:mysql://$host:$port/$database?verifyServerCertificate=false&useSSL=false&allowPublicKeyRetrieval=true"
         val db = Database.connect(
             url = url,
@@ -34,7 +34,7 @@ fun main() {
 
         TransactionManager.defaultDatabase = db
     } catch (e:Exception) {
-        println(e.message)
+        e.printStackTrace()
     }
 
     val service = NodeManagerHandler()
