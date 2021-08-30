@@ -14,11 +14,10 @@ class Node (
     @Serializable(with = UUIDSerializer::class)
     val id: UUID = createId(),
     @Transient val chain: Blockchain = Blockchain(),
-    val notaryId: String,
-    val address:String
+    val notaryId: String
 ){
-    constructor(notaryId: String, address:String):this(createId(), Blockchain(), notaryId, address)
-    constructor(chain: Blockchain, notaryId: String, address:String):this(createId(), chain, notaryId,address)
+    constructor(notaryId: String):this(createId(), Blockchain(), notaryId)
+    constructor(chain: Blockchain, notaryId: String):this(createId(), chain, notaryId)
 
     companion object {
         /**
