@@ -53,7 +53,7 @@ services:
     networks:
       - net
     environment:
-      NODE_ID: "1"
+#      NODE_ID: "1"
       NODE_MANAGER_URL: "http://node_manager:8080"
 
   node-b:
@@ -70,7 +70,7 @@ services:
     networks:
       - net
     environment:
-      NODE_ID: "2"
+#      NODE_ID: "2"
       NODE_MANAGER_URL: "http://node_manager:8080"
 
   node-manager-db:

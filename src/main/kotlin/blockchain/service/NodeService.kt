@@ -2,14 +2,10 @@
 
 package blockchain.service
 
+import blockchain.Blockchain
 import blockchain.controllers.Node
 import blockchain.handlers.NodeHandler
 import io.ktor.application.*
-import io.ktor.client.*
-import io.ktor.client.engine.cio.*
-import io.ktor.client.features.json.*
-import io.ktor.client.features.json.serializer.*
-import io.ktor.client.request.*
 import io.ktor.features.*
 import io.ktor.http.*
 import io.ktor.response.*
@@ -17,25 +13,36 @@ import io.ktor.routing.*
 import io.ktor.serialization.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import kotlinx.coroutines.runBlocking
 import serviceExceptions.BadRequestException
+import java.util.*
 
 fun main() {
-    val nodeId = System.getenv("NODE_ID")?:"1"
+    val nodeId = try {
+        UUID.fromString(System.getenv("NODE_ID"))
+    } catch (ex: Exception) {
+        UUID.randomUUID()
+    }
+    val notaryId = try {
+        UUID.fromString(System.getenv("NOTARY_ID"))
+    } catch (ex: Exception) {
+        UUID.randomUUID()
+    }
     val nodeManagerURL = System.getenv("NODE_MANAGER_URL")?:""
 
-    val client = HttpClient(CIO) {
-        install(JsonFeature) {
-            serializer = KotlinxSerializer()
-        }
-    }
+//    val client = HttpClient(CIO) {
+//        install(JsonFeature) {
+//            serializer = KotlinxSerializer()
+//        }
+//    }
+//
+//    var node: Node
+//    runBlocking {
+//        node = client.get {
+//            url("$nodeManagerURL/nodes/$nodeId")
+//        }
+//    }
 
-    var node: Node
-    runBlocking {
-        node = client.get {
-            url("$nodeManagerURL/nodes/$nodeId")
-        }
-    }
+    val node = Node(nodeId, Blockchain(), notaryId)
 
     val nodeService = NodeHandler(nodeManagerURL, node)
 
