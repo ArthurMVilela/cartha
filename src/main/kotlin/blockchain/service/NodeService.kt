@@ -29,19 +29,6 @@ fun main() {
     }
     val nodeManagerURL = System.getenv("NODE_MANAGER_URL")?:""
 
-//    val client = HttpClient(CIO) {
-//        install(JsonFeature) {
-//            serializer = KotlinxSerializer()
-//        }
-//    }
-//
-//    var node: Node
-//    runBlocking {
-//        node = client.get {
-//            url("$nodeManagerURL/nodes/$nodeId")
-//        }
-//    }
-
     val node = Node(nodeId, Blockchain(), notaryId)
 
     val nodeService = NodeHandler(nodeManagerURL, node)
@@ -56,6 +43,9 @@ fun main() {
             }
         }
         routing {
+            get("/health") {
+                nodeService.getHealthCheck(call)
+            }
             get("/blocks/{id}") {
                 nodeService.getBlock(call)
             }

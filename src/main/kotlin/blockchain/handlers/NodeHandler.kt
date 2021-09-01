@@ -9,6 +9,7 @@ import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
+import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import java.time.LocalDateTime
@@ -20,6 +21,17 @@ class NodeHandler(val nodeManagerAddress:String, val node: Node) {
         install(JsonFeature) {
             serializer = KotlinxSerializer()
         }
+    }
+
+    /**
+     * Endpoint da aplicação para verificar saude do servidor, no momento
+     * só retorna OK, caso haja problema ira retornar erro por cause do middleware
+     * no futuro implementarei check mais complexo
+     *
+     * @param call      chamada de aplicação
+     */
+    suspend fun getHealthCheck(call: ApplicationCall) {
+        call.respond(HttpStatusCode.OK)
     }
 
     suspend fun getBlock(call:ApplicationCall) {
