@@ -9,6 +9,7 @@ import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
+import io.ktor.features.*
 import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
@@ -41,11 +42,13 @@ class NodeHandler(val nodeManagerAddress:String, val node: Node) {
             throw BadRequestException("id não válida")
         }
 
-        call.respond(node.chain.getBlock(id))
+        val block = node.chain.getBlock(id)?:throw NotFoundException()
+
+        call.respond(block)
     }
 
     suspend fun getLast(call:ApplicationCall) {
-        val block = node.chain.getLast()
+        val block = node.chain.getLast()?:throw NotFoundException()
 
         call.respond(block)
     }
@@ -61,7 +64,8 @@ class NodeHandler(val nodeManagerAddress:String, val node: Node) {
         }
 
         node.chain.addBlock(LocalDateTime.now(), transactions, node.id!!)
-        call.respond(node.chain.getLast())
+        val last = node.chain.getLast()?:throw NotFoundException()
+        call.respond(last)
     }
 
     suspend fun addBlock(call: ApplicationCall) {

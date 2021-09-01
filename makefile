@@ -40,3 +40,5 @@ restart-nodes-services: build-node-service
 build-and-run-node-manager: build-node-manager-service
 	java -jar build/libs/NodeManagerService.jar
 
+build-and-run-node: build-node-service
+	java -jar build/libs/NodeService.jar

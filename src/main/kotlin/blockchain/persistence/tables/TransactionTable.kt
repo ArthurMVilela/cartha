@@ -7,8 +7,9 @@ import org.jetbrains.exposed.sql.`java-time`.datetime
 object TransactionTable:UUIDTable("transaction") {
     val timestamp = datetime("timestamp")
     val documentId = uuid("document_id")
-    val documentHash = char("document_hash", 64) //TODO: descobrir tamanho da hash
+    val documentHash = char("document_hash", 44)
     val type = enumeration("type", TransactionType::class)
-    val hash = char("hash", 64) //TODO: descobrir tamanho da hash
+    val hash = char("hash", 44)
     val pending = bool("pending")
+    val blockId = optReference("block_id", BlockTable.id)
 }
