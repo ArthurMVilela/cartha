@@ -1,5 +1,6 @@
 package blockchain.controllers
 
+import blockchain.Block
 import blockchain.Blockchain
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
@@ -29,6 +30,14 @@ class Node (
         private fun createId(): UUID {
             return UUID.randomUUID()
         }
+    }
+
+    fun getBlock(id: UUID): Block? {
+        return chain.getBlock(id)
+    }
+
+    fun getLastBlock(): Block? {
+        return chain.getLast()
     }
 
 }

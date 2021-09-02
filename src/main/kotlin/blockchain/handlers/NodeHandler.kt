@@ -42,13 +42,13 @@ class NodeHandler(val nodeManagerAddress:String, val node: Node) {
             throw BadRequestException("id não válida")
         }
 
-        val block = node.chain.getBlock(id)?:throw NotFoundException()
+        val block = node.getBlock(id)?:throw NotFoundException()
 
         call.respond(block)
     }
 
     suspend fun getLast(call:ApplicationCall) {
-        val block = node.chain.getLast()?:throw NotFoundException()
+        val block = node.getLastBlock()?:throw NotFoundException()
 
         call.respond(block)
     }

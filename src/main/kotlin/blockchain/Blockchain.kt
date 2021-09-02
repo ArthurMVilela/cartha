@@ -2,13 +2,7 @@ package blockchain
 
 import blockchain.persistence.dao.BlockDAO
 import blockchain.persistence.dao.TransactionDAO
-import blockchain.persistence.tables.BlockTable
-import kotlinx.serialization.Serializable
-import org.jetbrains.exposed.sql.Op
-import org.jetbrains.exposed.sql.max
 import java.time.LocalDateTime
-import java.time.Month
-import java.time.Year
 import java.util.*
 
 /**
@@ -46,7 +40,7 @@ class Blockchain(val blocks:MutableList<Block> = mutableListOf()) {
      * @return Último bloco da blockchain
      */
     fun getLast():Block? {
-        return blocksDAO.selectMany(Op.build { BlockTable.timestamp eq BlockTable.timestamp.max() }).firstOrNull()
+        return blocksDAO.selectLastBlock()
     }
 
     /**
@@ -87,8 +81,8 @@ class Blockchain(val blocks:MutableList<Block> = mutableListOf()) {
      *
      * @return bloco genesys
      */
-    private fun createGenesys():Block {
-        val timestamp = LocalDateTime.of(Year.MIN_VALUE, Month.JANUARY, 1, 0, 0,0,0)
-        return Block(timestamp, listOf(), "", UUID.randomUUID())
+    fun createGenesys(nodeId: UUID):Block {
+        val timestamp = LocalDateTime.now()
+        return Block(timestamp, listOf(), "", nodeId)
     }
 }
