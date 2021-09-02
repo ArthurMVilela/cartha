@@ -11,7 +11,8 @@ class BlockInfo(
     @Serializable(with = UUIDSerializer::class)
     val id: UUID,
     @Serializable(with = LocalDateTimeSerializer::class)
-    val timestamp: LocalDateTime
-) {
-
-}
+    val timestamp: LocalDateTime,
+    val hash: String,
+    @Serializable(with = UUIDSerializer::class)
+    val nodeId: UUID
+)

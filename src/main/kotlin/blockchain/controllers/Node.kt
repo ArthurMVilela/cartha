@@ -1,9 +1,11 @@
 package blockchain.controllers
 
 import blockchain.Block
+import blockchain.BlockInfo
 import blockchain.Blockchain
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import newPersistence.ResultSet
 import util.serializer.UUIDSerializer
 import java.util.*
 
@@ -38,6 +40,10 @@ class Node (
 
     fun getLastBlock(): Block? {
         return chain.getLast()
+    }
+
+    fun getBlocks(page: Int): ResultSet<BlockInfo> {
+        return chain.getBlocks(page)
     }
 
 }

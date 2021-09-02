@@ -47,6 +47,26 @@ class NodeHandler(val nodeManagerAddress:String, val node: Node) {
         call.respond(block)
     }
 
+    suspend fun getBlocks(call: ApplicationCall) {
+        val page = try {
+            call.request.queryParameters["page"]?.toInt()?:1
+        } catch (ex: Exception) {
+            throw BadRequestException("Página inválida")
+        }
+
+        if (page < 1) {
+            throw BadRequestException("Página inválida")
+        }
+
+        val blocks = node.getBlocks(page)
+
+        if (blocks.numberOfPages < page) {
+            throw NotFoundException("Página não encontrada.")
+        }
+
+        call.respond(blocks)
+    }
+
     suspend fun getLast(call:ApplicationCall) {
         val block = node.getLastBlock()?:throw NotFoundException()
 

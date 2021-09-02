@@ -59,7 +59,7 @@ fun main() {
 
     val node = Node(nodeId, Blockchain(), notaryId)
 
-    val nodeService = NodeHandler(nodeManagerURL, node)
+    val handler = NodeHandler(nodeManagerURL, node)
 
     embeddedServer(Netty, port = 8080) {
         install(ContentNegotiation)  {
@@ -72,22 +72,25 @@ fun main() {
         }
         routing {
             get("/health") {
-                nodeService.getHealthCheck(call)
+                handler.getHealthCheck(call)
             }
             get("/blocks/{id}") {
-                nodeService.getBlock(call)
+                handler.getBlock(call)
             }
             get("/blocks/last") {
-                nodeService.getLast(call)
+                handler.getLast(call)
             }
             get("/blockchain") {
-                nodeService.getBlockchain(call)
+                handler.getBlockchain(call)
             }
             post("/blocks/new") {
-                nodeService.createBlock(call)
+                handler.createBlock(call)
+            }
+            get("/blocks") {
+                handler.getBlocks(call)
             }
             post("/blocks") {
-                nodeService.addBlock(call)
+                handler.addBlock(call)
             }
         }
     }.start(true)

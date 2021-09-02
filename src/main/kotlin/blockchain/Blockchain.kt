@@ -1,7 +1,9 @@
 package blockchain
 
 import blockchain.persistence.dao.BlockDAO
+import blockchain.persistence.dao.BlockInfoDAO
 import blockchain.persistence.dao.TransactionDAO
+import newPersistence.ResultSet
 import java.time.LocalDateTime
 import java.util.*
 
@@ -12,6 +14,7 @@ import java.util.*
  */
 class Blockchain(val blocks:MutableList<Block> = mutableListOf()) {
     private val blocksDAO = BlockDAO()
+    private val blocksInfoDAO = BlockInfoDAO()
     private val transactions = TransactionDAO()
 
     /**
@@ -52,6 +55,10 @@ class Blockchain(val blocks:MutableList<Block> = mutableListOf()) {
      */
     fun getBlock(id:UUID): Block? {
         return blocksDAO.select(id)
+    }
+
+    fun getBlocks(page: Int): ResultSet<BlockInfo> {
+        return blocksInfoDAO.selectAll(page)
     }
 
     /**
