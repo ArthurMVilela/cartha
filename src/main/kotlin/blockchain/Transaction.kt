@@ -26,7 +26,9 @@ class Transaction (
     val documentHash:String,
     val type:TransactionType,
     var hash:String?,
-    var pending:Boolean = true
+    var pending:Boolean = true,
+    @Serializable(with = UUIDSerializer::class)
+    var blockId:UUID? = null
 ){
     constructor(
         timestamp: LocalDateTime,

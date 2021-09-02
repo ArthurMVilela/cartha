@@ -11,5 +11,5 @@ object TransactionTable:UUIDTable("transaction") {
     val type = enumeration("type", TransactionType::class)
     val hash = char("hash", 44)
     val pending = bool("pending")
-    val blockId = optReference("block_id", BlockTable.id)
+    val blockId = reference("block_id", BlockTable.id)
 }

@@ -1,6 +1,7 @@
 package blockchain
 
 import blockchain.persistence.dao.BlockDAO
+import blockchain.persistence.dao.TransactionDAO
 import blockchain.persistence.tables.BlockTable
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.Op
@@ -17,6 +18,7 @@ import java.util.*
  */
 class Blockchain(val blocks:MutableList<Block> = mutableListOf()) {
     private val blocksDAO = BlockDAO()
+    private val transactions = TransactionDAO()
 
     /**
      * Adiciona um bloco à blockchain

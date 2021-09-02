@@ -25,11 +25,11 @@ import java.util.*
 fun main() {
     try {
         val host = System.getenv("DATABASE_HOST")?:"localhost"
-        val port = System.getenv("DATABASE_PORT")?:"8080"
+        val port = System.getenv("DATABASE_PORT")?:"3306"
         val database = System.getenv("DATABASE_NAME")?:"node_db"
         val user = System.getenv("DATABASE_USER")?:"root"
         val password = System.getenv("DATABASE_PASSWORD")?:"test"
-        val url = "jdbc:mysql://$host:$port/$database?verifyServerCertificate=false&useSSL=true"
+        val url = "jdbc:mysql://$host:$port/$database?verifyServerCertificate=false&useSSL=false"
         val db = Database.connect(
             url = url,
             driver = "com.mysql.jdbc.Driver",
