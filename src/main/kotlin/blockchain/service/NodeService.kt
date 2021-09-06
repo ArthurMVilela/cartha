@@ -24,12 +24,12 @@ import java.util.*
 
 fun main() {
     try {
-        val host = System.getenv("DATABASE_HOST")?:"localhost"
-        val port = System.getenv("DATABASE_PORT")?:"3306"
-        val database = System.getenv("DATABASE_NAME")?:"node_db"
-        val user = System.getenv("DATABASE_USER")?:"root"
-        val password = System.getenv("DATABASE_PASSWORD")?:"test"
-        val url = "jdbc:mysql://$host:$port/$database?verifyServerCertificate=false&useSSL=false"
+        val host = System.getenv("DATABASE_HOST")?:throw IllegalArgumentException("Necessário expecificar host do DB")
+        val port = System.getenv("DATABASE_PORT")?:throw IllegalArgumentException("Necessário expecificar porta do DB")
+        val database = System.getenv("DATABASE_NAME")?:throw IllegalArgumentException("Necessário expecificar nome do DB")
+        val user = System.getenv("DATABASE_USER")?:throw IllegalArgumentException("Necessário expecificar usuário do DB")
+        val password = System.getenv("DATABASE_PASSWORD")?:throw IllegalArgumentException("Necessário expecificar senha do DB")
+        val url = "jdbc:mysql://$host:$port/$database?verifyServerCertificate=false&useSSL=false&allowPublicKeyRetrieval=true"
         val db = Database.connect(
             url = url,
             driver = "com.mysql.jdbc.Driver",
@@ -66,8 +66,14 @@ fun main() {
             json()
         }
         install(StatusPages) {
+            exception<NotFoundException> { cause ->
+                call.respond(HttpStatusCode.NotFound, cause.message?:"")
+            }
             exception<BadRequestException> { cause ->
-                call.respond(HttpStatusCode.BadRequest, cause.message!!)
+                call.respond(HttpStatusCode.BadRequest, cause.message?:"")
+            }
+            exception<Exception> { cause ->
+                call.respond(HttpStatusCode.InternalServerError)
             }
         }
         routing {

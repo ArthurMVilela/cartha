@@ -39,44 +39,53 @@ services:
     networks:
       - net
 
+
+
+  node-a-db:
+    container_name: "node-a-db"
+    image: mysql:latest
+    restart: always
+    ports:
+      - "3003:3306"
+    environment:
+      MYSQL_USER: "node-a"
+      MYSQL_PASSWORD: "node-a"
+      MYSQL_DATABASE: "node_a_db"
+      MYSQL_ROOT_PASSWORD: "root"
+    networks:
+      - net
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 20s
+      retries: 10
+
   node-a:
     container_name: "node_a"
+    restart: on-failure:20
     build:
       context: .
       dockerfile: node.Dockerfile
-    depends_on:
-      - node-manager
-    links:
-      - node-manager
     ports:
       - "5001:8080"
     networks:
       - net
-    environment:
-#      NODE_ID: "1"
-      NODE_MANAGER_URL: "http://node_manager:8080"
-
-  node-b:
-    container_name: "node_b"
-    build:
-      context: .
-      dockerfile: node.Dockerfile
     depends_on:
-      - node-manager
+      - node-a-db
     links:
-      - node-manager
-    ports:
-      - "5002:8080"
-    networks:
-      - net
+      - node-a-db
     environment:
-#      NODE_ID: "2"
+      #      NODE_ID: "1"
       NODE_MANAGER_URL: "http://node_manager:8080"
+      DATABASE_HOST: "node-a-db"
+      DATABASE_PORT: "3306"
+      DATABASE_NAME: "node_a_db"
+      DATABASE_USER: "node-a"
+      DATABASE_PASSWORD: "node-a"
+
 
   node-manager-db:
     container_name: "node-manager-db"
     image: mysql:latest
-
     restart: always
     ports:
       - "3002:3306"

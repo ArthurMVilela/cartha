@@ -35,7 +35,7 @@ restart-authentication-db:
 	docker-compose up --force-recreate authentication-db
 
 restart-nodes-services: build-node-service
-	docker-compose up --build --force-recreate node-a node-b
+	docker-compose up --build --force-recreate node-a
 
 build-and-run-node-manager: build-node-manager-service
 	java -jar build/libs/NodeManagerService.jar
