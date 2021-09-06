@@ -74,7 +74,8 @@ services:
     links:
       - node-a-db
     environment:
-      #      NODE_ID: "1"
+      NODE_ID: "f4e4c32a-f0d2-4290-9f48-04664c25729b"
+      NOTARY_ID: "27f09ea6-afb3-4332-a2ed-fce16d80141c"
       NODE_MANAGER_URL: "http://node_manager:8080"
       DATABASE_HOST: "node-a-db"
       DATABASE_PORT: "3306"
