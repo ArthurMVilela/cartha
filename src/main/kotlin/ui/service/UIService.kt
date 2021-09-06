@@ -20,16 +20,14 @@ import io.ktor.sessions.*
 import ui.features.AuthenticationMiddleware
 import ui.features.UserSessionCookie
 import ui.features.authorizedRoute
-import ui.handlers.AccessLogsHandlers
-import ui.handlers.ErrorPagesHandlers
-import ui.handlers.MainPageHandler
-import ui.handlers.UserAccountHandler
+import ui.handlers.*
 
 fun main() {
     val mainPageHandler = MainPageHandler()
     val userAccountHandler = UserAccountHandler()
     val accessLogsHandlers = AccessLogsHandlers()
     val errorPageHandler = ErrorPagesHandlers()
+    val blockchainHandlers = BlockchainHandlers()
 
     embeddedServer(Netty, port = 8080, watchPaths = listOf("templates", "js")) {
         install(StatusPages) {
@@ -99,6 +97,9 @@ fun main() {
                     }
                     get("/blockchain") {
                         call.respond("Hello")
+                    }
+                    get("/blockchain/nodes") {
+                        blockchainHandlers.getNodesPage(call)
                     }
                 }
 
