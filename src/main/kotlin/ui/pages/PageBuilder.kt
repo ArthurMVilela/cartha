@@ -10,6 +10,7 @@ open class PageBuilder {
     protected val authController = AuthenticationController()
 
     fun setupMenu(role:Role?) {
+        page.data["role"] = role
         when(role) {
             null -> page.data["menu"] = Menus.anonimous
             Role.Manager -> page.data["menu"] = Menus.manager

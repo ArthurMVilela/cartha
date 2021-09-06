@@ -96,7 +96,7 @@ fun main() {
                         accessLogsHandlers.getLog(call)
                     }
                     get("/blockchain") {
-                        call.respond("Hello")
+                        blockchainHandlers.getBlockchainPage(call)
                     }
                     get("/blockchain/nodes") {
                         blockchainHandlers.getNodesPage(call)
