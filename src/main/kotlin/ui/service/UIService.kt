@@ -95,12 +95,18 @@ fun main() {
                     get("/logs/{id}") {
                         accessLogsHandlers.getLog(call)
                     }
-                    get("/blockchain") {
-                        blockchainHandlers.getBlockchainPage(call)
+                    route("/blockchain") {
+                        get("") {
+                            blockchainHandlers.getBlockchainPage(call)
+                        }
+                        get("/nodes") {
+                            blockchainHandlers.getNodesPage(call)
+                        }
+                        get("/blocks") {
+                            blockchainHandlers.getBlocksPage(call)
+                        }
                     }
-                    get("/blockchain/nodes") {
-                        blockchainHandlers.getNodesPage(call)
-                    }
+
                 }
 
             }
