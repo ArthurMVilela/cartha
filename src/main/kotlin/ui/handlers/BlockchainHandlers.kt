@@ -3,12 +3,15 @@ package ui.handlers
 import blockchain.BlockInfo
 import blockchain.NodeInfo
 import io.ktor.application.*
+import io.ktor.features.*
 import io.ktor.freemarker.*
 import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.sessions.*
 import newPersistence.ResultSet
+import serviceExceptions.BadRequestException
 import ui.controllers.AuthenticationController
+import ui.controllers.BlockchainController
 import ui.features.UserSessionCookie
 import ui.pages.BlockchainChainPageBuilder
 import ui.pages.BlockchainNodesPageBuilder
@@ -19,6 +22,7 @@ import java.util.*
 
 class BlockchainHandlers {
     private val authController = AuthenticationController()
+    private val blockchainController = BlockchainController()
 
     suspend fun getBlockchainPage(call: ApplicationCall) {
         val pageBuilder = BlockchainPageBuilder()
@@ -34,6 +38,22 @@ class BlockchainHandlers {
     }
 
     suspend fun getNodesPage(call: ApplicationCall) {
+        val pageNumber = try {
+            call.request.queryParameters["page"]?.toInt()?:1
+        } catch (ex: Exception) {
+            throw BadRequestException("Página inválida")
+        }
+
+        if (pageNumber < 1) {
+            throw BadRequestException("Página inválida")
+        }
+
+        val nodes = try {
+            blockchainController.getNodes(pageNumber)
+        } catch (ex: Exception) {
+            throw NotFoundException("Página não encontrada.")
+        }
+
         val pageBuilder = BlockchainNodesPageBuilder()
         val role = try {
             authController.getUserRole(call.sessions.get<UserSessionCookie>()!!)
@@ -41,9 +61,7 @@ class BlockchainHandlers {
             null
         }
         pageBuilder.setupMenu(role)
-        pageBuilder.setResultSet(ResultSet(listOf(
-            NodeInfo(UUID.randomUUID(), "http://test.com", null)
-        ),1,1,20))
+        pageBuilder.setResultSet(nodes)
 
         val page = pageBuilder.build()
         call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
