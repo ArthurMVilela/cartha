@@ -9,25 +9,33 @@
 <div class="container" style="margin-top:80px">
     <div class="row justify-content-center">
         <div class="col">
-
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" value="${node.nodeId}">
+                <button class="btn btn-outline-secondary" type="button" id="button-addon2">Buscar</button>
+            </div>
         </div>
     </div>
     <div class="row justify-content-center">
-        <#list blocks as block>
-            <div class="col ">
-                <div class="card m-3">
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item">ID: ${block.id}</li>
-                        <li class="list-group-item">Timestamp: ${block.timestamp}</li>
-                        <li class="list-group-item">Hash: ${block.hash}</li>
-                        <li class="list-group-item">ID do nó criador: ${block.nodeId}</li>
-                    </ul>
-                    <div class="card-body">
-                        <a href="/blockchain/${block.id}" class="card-link">Ver Bloco</a>
+        <#if blocks??>
+            <#list blocks as block>
+                <div class="col ">
+                    <div class="card m-3">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">ID: ${block.id}</li>
+                            <li class="list-group-item">Timestamp: ${block.timestamp}</li>
+                            <li class="list-group-item">Hash: ${block.hash}</li>
+                            <li class="list-group-item">ID do nó criador: ${block.nodeId}</li>
+                        </ul>
+                        <div class="card-body">
+                            <a href="/blockchain/blocks/${node.nodeId}/${block.id}" class="card-link">Ver Bloco</a>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </#list>
+            </#list>
+        <#else >
+
+        </#if>
+
     </div>
     <div class="row justify-content-center">
         <div class="col">

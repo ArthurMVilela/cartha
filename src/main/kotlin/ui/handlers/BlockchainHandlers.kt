@@ -13,10 +13,9 @@ import serviceExceptions.BadRequestException
 import ui.controllers.AuthenticationController
 import ui.controllers.BlockchainController
 import ui.features.UserSessionCookie
-import ui.pages.BlockchainChainPageBuilder
+import ui.pages.BlockchainBlocksPageBuilder
 import ui.pages.BlockchainNodesPageBuilder
 import ui.pages.BlockchainPageBuilder
-import ui.pages.PageBuilder
 import java.time.LocalDateTime
 import java.util.*
 
@@ -68,13 +67,14 @@ class BlockchainHandlers {
     }
 
     suspend fun getBlocksPage(call: ApplicationCall) {
-        val pageBuilder = BlockchainChainPageBuilder()
+        val pageBuilder = BlockchainBlocksPageBuilder()
         val role = try {
             authController.getUserRole(call.sessions.get<UserSessionCookie>()!!)
         } catch (ex: Exception) {
             null
         }
         pageBuilder.setupMenu(role)
+        pageBuilder.setSetNodeInfo(NodeInfo(UUID.randomUUID(), "", LocalDateTime.now()))
         pageBuilder.setResultSet(
             ResultSet(
                 listOf(

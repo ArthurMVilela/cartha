@@ -10,7 +10,7 @@
     <div class="row justify-content-center">
         <div class="col">
             <a href="/blockchain/nodes">Nós</a>
-            <a href="/blockchain/chain">Blockchain</a>
+            <a href="/blockchain/blocks">Blockchain</a>
         </div>
     </div>
 </div>
