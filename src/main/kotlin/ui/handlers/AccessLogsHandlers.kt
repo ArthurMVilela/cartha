@@ -12,7 +12,10 @@ import io.ktor.response.*
 import io.ktor.sessions.*
 import ui.controllers.AuthenticationController
 import ui.features.UserSessionCookie
+import ui.features.getUserRole
 import ui.features.logAction
+import ui.pages.AccessLogPageBuilder
+import ui.pages.AccessLogsPageBuilder
 import ui.util.Util
 import ui.values.EnumMaps
 import java.time.LocalDateTime
@@ -23,99 +26,77 @@ class AccessLogsHandlers {
     private val authController = AuthenticationController()
 
     suspend fun getLogs(call:ApplicationCall) {
-        val data = mutableMapOf<String, Any?>()
-        val page = call.request.queryParameters["page"]?.toInt()?:1
+        val pageNumber = call.request.queryParameters["page"]?.toInt()?:1
         val filter = call.sessions.get<AccessLogSearchFilter>()
         val sessionCookie = call.sessions.get<UserSessionCookie>()
-        if (sessionCookie != null && authController.isSessionValid(sessionCookie)) {
-            try {
-                Util.addMenuToLayoutMap(data, authController.getUserRole(sessionCookie))
-            }catch (ex: Exception) {
-                Util.addMenuToLayoutMap(data, null)
-            }
-        } else {
-            Util.addMenuToLayoutMap(data, null)
-        }
-
 
         val searchResult = authController.getAccessLogs(
             filter?:AccessLogSearchFilter(null, null, null, null, null, null),
-            page
+            pageNumber
         )
 
-        data["searchResult"] = searchResult
-        data["actionTypes"] = EnumMaps.actionTypes
-        data["subjects"] = EnumMaps.subjects
-        data["filter"] = filter
+        val pageBuilder = AccessLogsPageBuilder()
+
+        pageBuilder.setupMenu(call.getUserRole())
+        pageBuilder.setResultSet(searchResult)
+        pageBuilder.setFilter(filter)
 
         call.logAction(sessionCookie!!, ActionType.SeeLogs, Subject.UserAccount, null)
 
-        call.respond(HttpStatusCode.OK, FreeMarkerContent("accessLogs.ftl", data))
+        val page = pageBuilder.build()
+        call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
     }
 
     suspend fun postGetLogs(call: ApplicationCall) {
-        val data = mutableMapOf<String, Any?>()
         val parameters = call.receiveParameters()
-        val page = call.request.queryParameters["page"]?.toInt()?:1
+        val pageNumber = call.request.queryParameters["page"]?.toInt()?:1
 
         val sessionCookie = call.sessions.get<UserSessionCookie>()
-        if (sessionCookie != null && authController.isSessionValid(sessionCookie)) {
-            try {
-                Util.addMenuToLayoutMap(data, authController.getUserRole(sessionCookie))
-            }catch (ex: Exception) {
-                Util.addMenuToLayoutMap(data, null)
-            }
-        } else {
-            Util.addMenuToLayoutMap(data, null)
-        }
 
         val filter = parseFilterForm(parameters)
         call.sessions.set("accessLogSearchFilter", filter)
         val searchResult = authController.getAccessLogs(
             filter,
-            page
+            pageNumber
         )
 
-        data["searchResult"] = searchResult
-        data["actionTypes"] = EnumMaps.actionTypes
-        data["subjects"] = EnumMaps.subjects
-        data["filter"] = filter
+        val pageBuilder = AccessLogsPageBuilder()
+
+        pageBuilder.setupMenu(call.getUserRole())
+        pageBuilder.setResultSet(searchResult)
+        pageBuilder.setFilter(filter)
 
         call.logAction(sessionCookie!!, ActionType.SeeLogs, Subject.UserAccount, null)
 
-        call.respond(HttpStatusCode.OK, FreeMarkerContent("accessLogs.ftl", data))
+        val page = pageBuilder.build()
+        call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
     }
 
     suspend fun getLog(call: ApplicationCall) {
+
         val logId = try {
             UUID.fromString(call.parameters["id"])
         } catch (ex: Exception) {
             throw BadRequestException("Id não válida", ex)
         }
 
-        val data = mutableMapOf<String, Any?>()
         val log = try {
             authController.getAccessLog(logId)
         } catch (ex: Exception) {
             throw NotFoundException()
         }
 
-        val sessionCookie = call.sessions.get<UserSessionCookie>()
-        if (sessionCookie != null && authController.isSessionValid(sessionCookie)) {
-            try {
-                Util.addMenuToLayoutMap(data, authController.getUserRole(sessionCookie))
-            }catch (ex: Exception) {
-                Util.addMenuToLayoutMap(data, null)
-            }
-        } else {
-            Util.addMenuToLayoutMap(data, null)
-        }
+        val pageBuilder = AccessLogPageBuilder()
 
-        data["log"] = log
+        pageBuilder.setupMenu(call.getUserRole())
+        pageBuilder.setLog(log)
+
+        val sessionCookie = call.sessions.get<UserSessionCookie>()
 
         call.logAction(sessionCookie!!, ActionType.SeeLog, Subject.UserAccount, log.id)
 
-        call.respond(HttpStatusCode.OK, FreeMarkerContent("accessLog.ftl", data))
+        val page = pageBuilder.build()
+        call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
     }
 
     private fun parseFilterForm(parameters: Parameters):AccessLogSearchFilter {
