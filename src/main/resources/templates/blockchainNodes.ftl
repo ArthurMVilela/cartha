@@ -7,8 +7,8 @@
 <body>
 <#include "./partials/_topbarMenu.ftl">
 <div class="container" style="margin-top:80px">
-    <div class="row justify-content-center">
-        <#list nodes as node>
+    <#list nodes as node>
+        <div class="row justify-content-center">
             <div class="col ">
                 <div class="card m-3">
                     <div class="card-body">
@@ -27,11 +27,9 @@
                         </ul>
                     </div>
                 </div>
-
             </div>
-        </#list>
-
-    </div>
+        </div>
+    </#list>
     <div class="row justify-content-center">
         <div class="col">
             <div class="input-group mb-3">
