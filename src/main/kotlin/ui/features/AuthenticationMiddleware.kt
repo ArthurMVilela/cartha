@@ -7,6 +7,7 @@ import authentication.logging.ActionType
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.routing.*
+import io.ktor.sessions.*
 import io.ktor.util.*
 import io.ktor.util.pipeline.*
 import ui.controllers.AuthenticationController
@@ -61,4 +62,13 @@ fun Route.authorizedRoute(role: Role?, permission: Permission?, build: Route.() 
 suspend fun ApplicationCall.logAction(sessionCookie:UserSessionCookie, actionType: ActionType, subject: Subject, domainId: UUID?) {
     val authController = AuthenticationController()
     authController.logAction(sessionCookie, actionType, subject, domainId)
+}
+
+suspend fun ApplicationCall.getUserRole(): Role? {
+    val authController = AuthenticationController()
+    return try {
+        authController.getUserRole(sessions.get<UserSessionCookie>()!!)
+    } catch (ex: Exception) {
+        null
+    }
 }
