@@ -105,6 +105,12 @@ fun main() {
                         get("/blocks") {
                             blockchainHandlers.getBlocksPage(call)
                         }
+                        get("/blocks/{nodeId}") {
+                            blockchainHandlers.getBlocksPage(call)
+                        }
+                        get("/blocks/{nodeId}/{blockId}") {
+                            blockchainHandlers.getBlockPage(call)
+                        }
                     }
 
                 }

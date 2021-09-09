@@ -1,5 +1,6 @@
 package ui.handlers
 
+import blockchain.Block
 import blockchain.BlockInfo
 import blockchain.NodeInfo
 import io.ktor.application.*
@@ -13,6 +14,7 @@ import serviceExceptions.BadRequestException
 import ui.controllers.AuthenticationController
 import ui.controllers.BlockchainController
 import ui.features.UserSessionCookie
+import ui.pages.BlockchainBlockPageBuilder
 import ui.pages.BlockchainBlocksPageBuilder
 import ui.pages.BlockchainNodesPageBuilder
 import ui.pages.BlockchainPageBuilder
@@ -83,6 +85,20 @@ class BlockchainHandlers {
                 1, 1, 20
             )
         )
+
+        val page = pageBuilder.build()
+        call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
+    }
+
+    suspend fun getBlockPage(call: ApplicationCall) {
+        val pageBuilder = BlockchainBlockPageBuilder()
+        val role = try {
+            authController.getUserRole(call.sessions.get<UserSessionCookie>()!!)
+        } catch (ex: Exception) {
+            null
+        }
+        pageBuilder.setupMenu(role)
+        pageBuilder.setBlock(Block(LocalDateTime.now(), listOf(), "BleBle", UUID.randomUUID()))
 
         val page = pageBuilder.build()
         call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
