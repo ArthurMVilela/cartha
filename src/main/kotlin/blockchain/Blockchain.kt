@@ -1,9 +1,10 @@
 package blockchain
 
-import kotlinx.serialization.Serializable
+import blockchain.persistence.dao.BlockDAO
+import blockchain.persistence.dao.BlockInfoDAO
+import blockchain.persistence.dao.TransactionDAO
+import newPersistence.ResultSet
 import java.time.LocalDateTime
-import java.time.Month
-import java.time.Year
 import java.util.*
 
 /**
@@ -11,14 +12,10 @@ import java.util.*
  *
  *  @property blocks        Lista de blocos da blockchain, caso vázia, a blockchain cria um bloco genesys
  */
-@Serializable
 class Blockchain(val blocks:MutableList<Block> = mutableListOf()) {
-    init {
-        if (blocks.isEmpty()) {
-            val genesys = createGenesys()
-            blocks.add(genesys)
-        }
-    }
+    private val blocksDAO = BlockDAO()
+    private val blocksInfoDAO = BlockInfoDAO()
+    private val transactions = TransactionDAO()
 
     /**
      * Adiciona um bloco à blockchain
@@ -26,7 +23,7 @@ class Blockchain(val blocks:MutableList<Block> = mutableListOf()) {
      * @param block         bloco a ser adicionado
      */
     fun addBlock(block: Block) {
-        blocks.add(block)
+        blocksDAO.insert(block)
     }
 
     /**
@@ -35,8 +32,9 @@ class Blockchain(val blocks:MutableList<Block> = mutableListOf()) {
      * @param timestamp             timestamp do bloco
      * @param transactions          lista das transações do bloco
      */
-    fun addBlock(timestamp: LocalDateTime, transactions: List<Transaction>, nodeId:String) {
-        this.addBlock(Block(timestamp, transactions, getLast().hash!!,nodeId))
+    fun addBlock(timestamp: LocalDateTime, transactions: List<Transaction>, nodeId:UUID) {
+        val lastBlockHash = getLast()?.hash?:""
+        this.addBlock(Block(timestamp, transactions, lastBlockHash, nodeId))
     }
 
     /**
@@ -44,8 +42,8 @@ class Blockchain(val blocks:MutableList<Block> = mutableListOf()) {
      *
      * @return Último bloco da blockchain
      */
-    fun getLast():Block {
-        return blocks.last()
+    fun getLast():Block? {
+        return blocksDAO.selectLastBlock()
     }
 
     /**
@@ -55,8 +53,12 @@ class Blockchain(val blocks:MutableList<Block> = mutableListOf()) {
      *
      * @return bloco com a id especificada
      */
-    fun getBlock(id:String): Block {
-        return blocks.first { it.id == id }
+    fun getBlock(id:UUID): Block? {
+        return blocksDAO.select(id)
+    }
+
+    fun getBlocks(page: Int): ResultSet<BlockInfo> {
+        return blocksInfoDAO.selectAll(page)
     }
 
     /**
@@ -65,18 +67,18 @@ class Blockchain(val blocks:MutableList<Block> = mutableListOf()) {
      * @return se a blockchain é válida
      */
     fun validateChain():Boolean {
-        blocks.forEachIndexed { index, block ->
-
-            if (block.hash != block.createHash()) return false
-            if (index > 0) {
-                val previous = blocks[index - 1]
-                if (previous.hash != block.previousHash) return false
-            } else {
-                if (createGenesys().timestamp != block.timestamp) return false
-                if (createGenesys().previousHash != block.previousHash) return false
-                if (createGenesys().transactions != block.transactions) return false
-            }
-        }
+//        blocks.forEachIndexed { index, block ->
+//
+//            if (block.hash != block.createHash()) return false
+//            if (index > 0) {
+//                val previous = blocks[index - 1]
+//                if (previous.hash != block.previousHash) return false
+//            } else {
+//                if (createGenesys().timestamp != block.timestamp) return false
+//                if (createGenesys().previousHash != block.previousHash) return false
+//                if (createGenesys().transactions != block.transactions) return false
+//            }
+//        }
 
         return true
     }
@@ -86,8 +88,8 @@ class Blockchain(val blocks:MutableList<Block> = mutableListOf()) {
      *
      * @return bloco genesys
      */
-    private fun createGenesys():Block {
-        val timestamp = LocalDateTime.of(Year.MIN_VALUE, Month.JANUARY, 1, 0, 0,0,0)
-        return Block(timestamp, listOf(), "", null)
+    fun createGenesys(nodeId: UUID):Block {
+        val timestamp = LocalDateTime.now()
+        return Block(timestamp, listOf(), "", nodeId)
     }
 }

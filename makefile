@@ -8,10 +8,10 @@ build-authentication-service:
 	gradle shadowJar -PMainClassName="authentication.service.AuthenticationService" -PBaseName="AuthenticationService"
 
 build-node-service:
-	gradle shadowJar -PMainClassName="BlockchainNodeService" -PBaseName="NodeService"
+	gradle shadowJar -PMainClassName="blockchain.service.NodeService" -PBaseName="NodeService"
 
 build-node-manager-service:
-	gradle shadowJar -PMainClassName="BlockchainNodeManagerService" -PBaseName="NodeManagerService"
+	gradle shadowJar -PMainClassName="blockchain.service.NodeManagerService" -PBaseName="NodeManagerService"
 
 up-containers: build-ui-service build-document-service build-authentication-service build-node-service build-node-manager-service
 	docker-compose up --build --force-recreate
@@ -29,7 +29,16 @@ restart-authentication-service: build-authentication-service
 	docker-compose up --build --force-recreate authentication
 
 restart-node-manager-service: build-node-manager-service
-	docker-compose up --build --force-recreate node_manager
+	docker-compose up --build --force-recreate node-manager
 
 restart-authentication-db:
 	docker-compose up --force-recreate authentication-db
+
+restart-nodes-services: build-node-service
+	docker-compose up --build --force-recreate node-a
+
+build-and-run-node-manager: build-node-manager-service
+	java -jar build/libs/NodeManagerService.jar
+
+build-and-run-node: build-node-service
+	java -jar build/libs/NodeService.jar
