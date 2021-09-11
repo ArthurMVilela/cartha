@@ -28,7 +28,6 @@ class AccessLogsHandlers {
     suspend fun getLogs(call:ApplicationCall) {
         val pageNumber = call.request.queryParameters["page"]?.toInt()?:1
         val filter = call.sessions.get<AccessLogSearchFilter>()
-        val sessionCookie = call.sessions.get<UserSessionCookie>()
 
         val searchResult = authController.getAccessLogs(
             filter?:AccessLogSearchFilter(null, null, null, null, null, null),
@@ -41,7 +40,7 @@ class AccessLogsHandlers {
         pageBuilder.setResultSet(searchResult)
         pageBuilder.setFilter(filter)
 
-        call.logAction(sessionCookie!!, ActionType.SeeLogs, Subject.UserAccount, null)
+        call.logAction(ActionType.SeeLogs, Subject.UserAccount, null)
 
         val page = pageBuilder.build()
         call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
@@ -50,8 +49,6 @@ class AccessLogsHandlers {
     suspend fun postGetLogs(call: ApplicationCall) {
         val parameters = call.receiveParameters()
         val pageNumber = call.request.queryParameters["page"]?.toInt()?:1
-
-        val sessionCookie = call.sessions.get<UserSessionCookie>()
 
         val filter = parseFilterForm(parameters)
         call.sessions.set("accessLogSearchFilter", filter)
@@ -66,7 +63,7 @@ class AccessLogsHandlers {
         pageBuilder.setResultSet(searchResult)
         pageBuilder.setFilter(filter)
 
-        call.logAction(sessionCookie!!, ActionType.SeeLogs, Subject.UserAccount, null)
+        call.logAction(ActionType.SeeLogs, Subject.UserAccount, null)
 
         val page = pageBuilder.build()
         call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
@@ -91,9 +88,7 @@ class AccessLogsHandlers {
         pageBuilder.setupMenu(call.getUserRole())
         pageBuilder.setLog(log)
 
-        val sessionCookie = call.sessions.get<UserSessionCookie>()
-
-        call.logAction(sessionCookie!!, ActionType.SeeLog, Subject.UserAccount, log.id)
+        call.logAction( ActionType.SeeLog, Subject.UserAccount, log.id)
 
         val page = pageBuilder.build()
         call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))

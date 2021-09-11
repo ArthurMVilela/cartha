@@ -3,6 +3,7 @@ package ui.features
 import authentication.Permission
 import authentication.Role
 import authentication.Subject
+import authentication.exception.UserSessionNotFound
 import authentication.logging.ActionType
 import io.ktor.application.*
 import io.ktor.auth.*
@@ -59,8 +60,9 @@ fun Route.authorizedRoute(role: Role?, permission: Permission?, build: Route.() 
     return authorizedRoute
 }
 
-suspend fun ApplicationCall.logAction(sessionCookie:UserSessionCookie, actionType: ActionType, subject: Subject, domainId: UUID?) {
+suspend fun ApplicationCall.logAction(actionType: ActionType, subject: Subject, domainId: UUID?) {
     val authController = AuthenticationController()
+    val sessionCookie = sessions.get<UserSessionCookie>()?:throw UserSessionNotFound("Usuário não logado.")
     authController.logAction(sessionCookie, actionType, subject, domainId)
 }
 
