@@ -26,7 +26,7 @@ fun main() {
     val mainPageHandler = MainPageHandler()
     val userAccountHandler = UserAccountHandler()
     val accessLogsHandlers = AccessLogsHandlers()
-    val errorPageHandler = ErrorPagesHandlers()
+    val errorPageHandler = ErrorPageHandler()
     val blockchainHandlers = BlockchainHandlers()
 
     embeddedServer(Netty, port = 8080, watchPaths = listOf("templates", "js")) {

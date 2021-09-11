@@ -9,14 +9,14 @@
 <div class="container" style="margin-top:80px">
     <div class="row justify-content-center">
         <div class="col">
-            <h2>Log de acesso: ${log.id}</h2>
+            <h2>Log de acesso: ${accessLog.id}</h2>
             <ul class="list-group">
-                <li class="list-group-item">ID do log: ${log.id}</li>
-                <li class="list-group-item">ID da sessão de usuário: ${log.sessionId}</li>
-                <li class="list-group-item">ID de usuário: ${log.userId}</li>
-                <li class="list-group-item">Data e hora: ${log.timestamp}</li>
+                <li class="list-group-item">ID do log: ${accessLog.id}</li>
+                <li class="list-group-item">ID da sessão de usuário: ${accessLog.sessionId}</li>
+                <li class="list-group-item">ID de usuário: ${accessLog.userId}</li>
+                <li class="list-group-item">Data e hora: ${accessLog.timestamp}</li>
                 <li class="list-group-item">
-                    Ação: ${log.action.type.value} | ${log.action.subject.value} | <#if log.action.domainId??>${log.action.domainId}<#else>NA</#if>
+                    Ação: ${accessLog.action.type.value} | ${accessLog.action.subject.value} | <#if accessLog.action.domainId??>${accessLog.action.domainId}<#else>NA</#if>
                 </li>
             </ul>
         </div>

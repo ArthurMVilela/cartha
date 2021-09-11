@@ -14,6 +14,7 @@ import serviceExceptions.BadRequestException
 import ui.controllers.AuthenticationController
 import ui.controllers.BlockchainController
 import ui.features.UserSessionCookie
+import ui.features.getUserRole
 import ui.pages.BlockchainBlockPageBuilder
 import ui.pages.BlockchainBlocksPageBuilder
 import ui.pages.BlockchainNodesPageBuilder
@@ -27,12 +28,8 @@ class BlockchainHandlers {
 
     suspend fun getBlockchainPage(call: ApplicationCall) {
         val pageBuilder = BlockchainPageBuilder()
-        val role = try {
-            authController.getUserRole(call.sessions.get<UserSessionCookie>()!!)
-        } catch (ex: Exception) {
-            null
-        }
-        pageBuilder.setupMenu(role)
+
+        pageBuilder.setupMenu(call.getUserRole())
 
         val page = pageBuilder.build()
         call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
@@ -56,12 +53,8 @@ class BlockchainHandlers {
         }
 
         val pageBuilder = BlockchainNodesPageBuilder()
-        val role = try {
-            authController.getUserRole(call.sessions.get<UserSessionCookie>()!!)
-        } catch (ex: Exception) {
-            null
-        }
-        pageBuilder.setupMenu(role)
+
+        pageBuilder.setupMenu(call.getUserRole())
         pageBuilder.setResultSet(nodes)
 
         val page = pageBuilder.build()
@@ -70,12 +63,8 @@ class BlockchainHandlers {
 
     suspend fun getBlocksPage(call: ApplicationCall) {
         val pageBuilder = BlockchainBlocksPageBuilder()
-        val role = try {
-            authController.getUserRole(call.sessions.get<UserSessionCookie>()!!)
-        } catch (ex: Exception) {
-            null
-        }
-        pageBuilder.setupMenu(role)
+
+        pageBuilder.setupMenu(call.getUserRole())
         pageBuilder.setSetNodeInfo(NodeInfo(UUID.randomUUID(), "", LocalDateTime.now()))
         pageBuilder.setResultSet(
             ResultSet(
@@ -92,12 +81,8 @@ class BlockchainHandlers {
 
     suspend fun getBlockPage(call: ApplicationCall) {
         val pageBuilder = BlockchainBlockPageBuilder()
-        val role = try {
-            authController.getUserRole(call.sessions.get<UserSessionCookie>()!!)
-        } catch (ex: Exception) {
-            null
-        }
-        pageBuilder.setupMenu(role)
+
+        pageBuilder.setupMenu(call.getUserRole())
         pageBuilder.setBlock(Block(LocalDateTime.now(), listOf(), "BleBle", UUID.randomUUID()))
 
         val page = pageBuilder.build()

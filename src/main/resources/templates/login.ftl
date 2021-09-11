@@ -11,7 +11,7 @@
             <div class="col col-md-6 col-lg-4">
                 <#if errorMessage??>
                     <div class="alert alert-danger" role="alert">
-                        errorMessage
+                        ${errorMessage}
                     </div>
                 </#if>
 
