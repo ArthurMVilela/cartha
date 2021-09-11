@@ -9,6 +9,8 @@ import io.ktor.sessions.*
 import io.ktor.utils.io.*
 import ui.controllers.AuthenticationController
 import ui.features.UserSessionCookie
+import ui.features.getUserRole
+import ui.pages.LoginPageBuilder
 import ui.util.Util
 
 class UserAccountHandler {
@@ -19,8 +21,9 @@ class UserAccountHandler {
      * @param call          chamada de aplicação
      */
     suspend fun loginPage(call: ApplicationCall) {
-        val data = mutableMapOf<String, Any?>()
-        Util.addMenuToLayoutMap(data, null)
+        val pageBuilder = LoginPageBuilder()
+        pageBuilder.setupMenu(call.getUserRole())
+
         val sessionCookie = call.sessions.get<UserSessionCookie>()
         if (sessionCookie != null) {
             if (authController.isSessionValid(sessionCookie)) {
@@ -28,7 +31,9 @@ class UserAccountHandler {
                 return
             }
         }
-        call.respond(HttpStatusCode.OK, FreeMarkerContent("login.ftl", data))
+
+        val page = pageBuilder.build()
+        call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
     }
 
     /**
@@ -45,7 +50,6 @@ class UserAccountHandler {
                 call.respondRedirect("/")
                 return
             }
-
         }
 
         try {
@@ -54,11 +58,14 @@ class UserAccountHandler {
             val cnpj = if(form["cnpj"].isNullOrEmpty()) null else form["cnpj"]
             val userSession = authController.login(email, cpf, cnpj, form["password"]!!)
             call.sessions.set(UserSessionCookie(userSession.id.toString()))
-            println(call.sessions.get<UserSessionCookie>())
             call.respondRedirect("/")
         } catch (ex: Exception) {
-            ex.printStack()
-            call.respond(FreeMarkerContent("login.ftl", mapOf("errorMessage" to ex.message)))
+            val pageBuilder = LoginPageBuilder()
+            pageBuilder.setupMenu(call.getUserRole())
+            pageBuilder.setErrorMessage(ex.message?:"Erro inesperado")
+
+            val page = pageBuilder.build()
+            call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
         }
     }
 
