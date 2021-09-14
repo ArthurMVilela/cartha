@@ -12,4 +12,9 @@ class Notary(
     val cnpj:String,
     val cns:String
 ){
+    companion object {
+        fun createId():UUID {
+            return UUID.randomUUID()
+        }
+    }
 }
