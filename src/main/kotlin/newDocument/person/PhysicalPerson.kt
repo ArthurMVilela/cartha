@@ -21,6 +21,7 @@ class PhysicalPerson(
     @Serializable(with = UUIDSerializer::class)
     override val id: UUID = createId(),
     @Serializable(with = UUIDSerializer::class)
+    @SerialName("account_id")
     override var accountId: UUID? = null,
     override val name: String,
     val cpf: String,

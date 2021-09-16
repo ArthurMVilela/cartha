@@ -11,6 +11,7 @@ import io.ktor.serialization.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import newDocument.handlers.notary.NotaryHandler
+import newDocument.handlers.person.PersonHandler
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 
@@ -35,6 +36,7 @@ fun main() {
     }
 
     val notaryHandler = NotaryHandler()
+    val personHandler = PersonHandler()
 
     embeddedServer(Netty, port = 8080) {
         install(ContentNegotiation) {
@@ -61,6 +63,19 @@ fun main() {
                 }
                 get("/cnpj/{cnpj}") {
                     notaryHandler.getNotary(call)
+                }
+            }
+            route("/person") {
+                route("/physical_person") {
+                    post("") {
+                        personHandler.createPhysicalPerson(call)
+                    }
+                    get("/{id}") {
+                        personHandler.getPhysicalPerson(call)
+                    }
+                    get("/cpf/{cpf}") {
+                        personHandler.getPhysicalPerson(call)
+                    }
                 }
             }
         }
