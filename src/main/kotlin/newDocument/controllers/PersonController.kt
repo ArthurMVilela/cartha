@@ -1,9 +1,8 @@
 package newDocument.controllers
 
-import newDocument.persistence.dao.OfficialDAO
-import newDocument.persistence.dao.PhysicalPersonDAO
+import newDocument.persistence.dao.person.OfficialDAO
+import newDocument.persistence.dao.person.PhysicalPersonDAO
 import newDocument.person.*
-import java.time.LocalDate
 import java.util.*
 
 class PersonController {

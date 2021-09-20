@@ -1,11 +1,10 @@
-package newDocument.persistence.tables
+package newDocument.persistence.tables.person
 
 import newDocument.person.CivilStatus
 import newDocument.person.Color
 import newDocument.person.Sex
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IdTable
-import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.`java-time`.date
 import java.util.*

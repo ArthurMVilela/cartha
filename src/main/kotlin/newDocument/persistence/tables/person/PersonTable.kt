@@ -1,4 +1,4 @@
-package newDocument.persistence.tables
+package newDocument.persistence.tables.person
 
 import org.jetbrains.exposed.dao.id.UUIDTable
 

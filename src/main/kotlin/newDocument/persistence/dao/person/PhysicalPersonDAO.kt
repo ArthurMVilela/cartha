@@ -1,7 +1,7 @@
-package newDocument.persistence.dao
+package newDocument.persistence.dao.person
 
-import newDocument.persistence.tables.PersonTable
-import newDocument.persistence.tables.PhysicalPersonTable
+import newDocument.persistence.tables.person.PersonTable
+import newDocument.persistence.tables.person.PhysicalPersonTable
 import newDocument.person.PhysicalPerson
 import newPersistence.DAO
 import newPersistence.ResultSet
@@ -15,7 +15,7 @@ class PhysicalPersonDAO:DAO<PhysicalPerson,UUID> {
 
     init {
         transaction {
-            table = PhysicalPersonTable.join(PersonTable, JoinType.INNER, additionalConstraint = {PhysicalPersonTable.id eq PersonTable.id})
+            table = PhysicalPersonTable.join(PersonTable, JoinType.INNER, additionalConstraint = { PhysicalPersonTable.id eq PersonTable.id})
         }
     }
 

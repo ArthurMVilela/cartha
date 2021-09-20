@@ -1,13 +1,11 @@
-package newDocument.persistence.dao
+package newDocument.persistence.dao.person
 
-import newDocument.persistence.tables.OfficialTable
-import newDocument.persistence.tables.PersonTable
-import newDocument.persistence.tables.PhysicalPersonTable
+import newDocument.persistence.tables.person.OfficialTable
+import newDocument.persistence.tables.person.PersonTable
 import newDocument.person.Official
 import newPersistence.DAO
 import newPersistence.ResultSet
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
