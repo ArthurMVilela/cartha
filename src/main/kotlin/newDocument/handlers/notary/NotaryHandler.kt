@@ -74,4 +74,20 @@ class NotaryHandler {
         }
 
     }
+
+    suspend fun getNotaries(call: ApplicationCall) {
+        val page = try {
+            call.request.queryParameters["page"]?.toInt()?:1
+        } catch (ex: Exception) {
+            throw serviceExceptions.BadRequestException("Página inválida")
+        }
+
+        if (page < 1) {
+            throw serviceExceptions.BadRequestException("Página inválida")
+        }
+
+        val notaries = controller.getNotaries(page)
+
+        call.respond(HttpStatusCode.OK, notaries)
+    }
 }

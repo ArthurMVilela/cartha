@@ -1,5 +1,6 @@
 package newDocument
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import util.serializer.UUIDSerializer
 import java.util.*
@@ -10,7 +11,7 @@ class Notary(
     val id:UUID,
     val name:String,
     val cnpj:String,
-    val cns:String
+    val cns:String,
 ){
     companion object {
         fun createId():UUID {

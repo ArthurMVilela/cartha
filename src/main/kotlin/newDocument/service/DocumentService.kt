@@ -12,6 +12,7 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import newDocument.handlers.notary.NotaryHandler
 import newDocument.handlers.person.PersonHandler
+import newDocument.persistence.DatabaseInitializer
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 
@@ -35,6 +36,8 @@ fun main() {
         println(e.message)
     }
 
+    DatabaseInitializer.initialize()
+
     val notaryHandler = NotaryHandler()
     val personHandler = PersonHandler()
 
@@ -57,6 +60,9 @@ fun main() {
             route("/notary") {
                 post("") {
                     notaryHandler.createNotary(call)
+                }
+                get("") {
+                    notaryHandler.getNotaries(call)
                 }
                 get("/{id}") {
                     notaryHandler.getNotary(call)
