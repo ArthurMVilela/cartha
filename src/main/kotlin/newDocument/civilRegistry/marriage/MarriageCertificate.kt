@@ -25,11 +25,12 @@ class MarriageCertificate(
     override var registrationNumber:String?,
     override val registering: MutableList<Registering>,
 
+    val spouses: List<Spouse>,
     @Serializable(with = LocalDateSerializer::class)
     @SerialName("date_of_registry")
     val dateOfRegistry: LocalDate,
-
-    val spouses: List<Spouse>
+    @SerialName("matrimonial_regime")
+    val matrimonialRegime: MatrimonialRegime
 ):CivilRegistryDocument() {
     override fun createHash(): String {
         return ""

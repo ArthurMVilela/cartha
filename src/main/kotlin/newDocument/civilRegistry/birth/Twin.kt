@@ -8,11 +8,11 @@ import java.util.*
 @Serializable
 class Twin(
     @Serializable(with = UUIDSerializer::class)
+    val id: UUID,
+    @Serializable(with = UUIDSerializer::class)
     @SerialName("birth_certificate_id")
     val birthCertificateId: UUID,
     val name: String,
     @SerialName("registration_number")
     val registrationNumber: String
-) {
-
-}
+)
