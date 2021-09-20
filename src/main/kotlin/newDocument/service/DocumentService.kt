@@ -83,6 +83,17 @@ fun main() {
                         personHandler.getPhysicalPerson(call)
                     }
                 }
+                route("/official") {
+                    post("") {
+                        personHandler.createOfficial(call)
+                    }
+                    get("/{id}") {
+                        personHandler.getOfficial(call)
+                    }
+                    get("/cpf/{cpf}") {
+                        personHandler.getOfficial(call)
+                    }
+                }
             }
         }
     }.start(true)

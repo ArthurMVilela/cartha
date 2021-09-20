@@ -14,31 +14,23 @@ class PersonController {
         return physicalPersonDAO.insert(p)
     }
 
-    fun getPhysicalPerson(id: UUID): PhysicalPerson {
-        return PhysicalPerson(
-            id,
-            null,
-            "Fulano",
-            "11122233344",
-            LocalDate.now(),
-            Sex.Male,
-            Color.Black,
-            CivilStatus.Single,
-            "Brasileiro"
-        )
+    fun getPhysicalPerson(id: UUID): PhysicalPerson? {
+        return physicalPersonDAO.select(id)
     }
 
-    fun getPhysicalPerson(cpf: String): PhysicalPerson {
-        return PhysicalPerson(
-            Person.createId(),
-            null,
-            "Fulano",
-            cpf,
-            LocalDate.now(),
-            Sex.Male,
-            Color.Black,
-            CivilStatus.Single,
-            "Brasileiro"
-        )
+    fun getPhysicalPerson(cpf: String): PhysicalPerson? {
+        return physicalPersonDAO.select(cpf)
+    }
+
+    fun createOfficial(o: Official): Official {
+        return officialDAO.insert(o)
+    }
+
+    fun getOfficial(id: UUID): Official? {
+        return officialDAO.select(id)
+    }
+
+    fun getOfficial(cpf: String): Official? {
+        return officialDAO.select(cpf)
     }
 }

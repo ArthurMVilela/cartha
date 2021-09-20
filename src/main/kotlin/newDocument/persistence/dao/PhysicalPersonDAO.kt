@@ -50,7 +50,35 @@ class PhysicalPersonDAO:DAO<PhysicalPerson,UUID> {
     }
 
     override fun select(id: UUID): PhysicalPerson? {
-        TODO("Not yet implemented")
+        var found:PhysicalPerson? = null
+
+        transaction {
+            try {
+                val row = PhysicalPersonTable.select(Op.build { PhysicalPersonTable.id eq id }).firstOrNull()?:return@transaction
+                found = toType(row)
+            } catch (ex: Exception) {
+                rollback()
+                throw ex
+            }
+        }
+
+        return found
+    }
+
+    fun select(cpf: String): PhysicalPerson? {
+        var found:PhysicalPerson? = null
+
+        transaction {
+            try {
+                val row = PhysicalPersonTable.select(Op.build { PhysicalPersonTable.cpf eq cpf }).firstOrNull()?:return@transaction
+                found = toType(row)
+            } catch (ex: Exception) {
+                rollback()
+                throw ex
+            }
+        }
+
+        return found
     }
 
     override fun selectMany(condition: Op<Boolean>, page: Int, pageLength: Int): ResultSet<PhysicalPerson> {

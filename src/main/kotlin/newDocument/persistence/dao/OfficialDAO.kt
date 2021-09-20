@@ -16,7 +16,7 @@ class OfficialDAO:DAO<Official, UUID> {
 
     init {
         transaction {
-            table = PhysicalPersonTable.join(PersonTable, JoinType.INNER, additionalConstraint = { PhysicalPersonTable.id eq PersonTable.id})
+            table = OfficialTable.join(PersonTable, JoinType.INNER, additionalConstraint = { OfficialTable.id eq PersonTable.id})
         }
     }
 
@@ -48,7 +48,35 @@ class OfficialDAO:DAO<Official, UUID> {
     }
 
     override fun select(id: UUID): Official? {
-        TODO("Not yet implemented")
+        var found:Official? = null
+
+        transaction {
+            try {
+                val row = table.select(Op.build { OfficialTable.id eq id }).firstOrNull()?:return@transaction
+                found = toType(row)
+            } catch (ex: Exception) {
+                rollback()
+                throw ex
+            }
+        }
+
+        return found
+    }
+
+    fun select(cpf: String): Official? {
+        var found:Official? = null
+
+        transaction {
+            try {
+                val row = table.select(Op.build { OfficialTable.cpf eq cpf }).firstOrNull()?:return@transaction
+                found = toType(row)
+            } catch (ex: Exception) {
+                rollback()
+                throw ex
+            }
+        }
+
+        return found
     }
 
     override fun selectMany(condition: Op<Boolean>, page: Int, pageLength: Int): ResultSet<Official> {
