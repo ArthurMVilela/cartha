@@ -4,10 +4,9 @@ import authentication.logging.AccessLog
 import authentication.logging.Action
 import authentication.logging.persistence.AccessLogTable
 import authentication.logging.persistence.ActionTable
-import newPersistence.DAO
-import newPersistence.ResultSet
+import persistence.DAO
+import persistence.ResultSet
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 import kotlin.math.ceil
 import java.util.*

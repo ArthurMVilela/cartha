@@ -2,8 +2,8 @@ package document.persistence.dao
 
 import document.Notary
 import document.persistence.tables.NotaryTable
-import newPersistence.DAO
-import newPersistence.ResultSet
+import persistence.DAO
+import persistence.ResultSet
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insertAndGetId

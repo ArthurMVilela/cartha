@@ -2,12 +2,11 @@ package blockchain.persistence.dao
 
 import blockchain.NodeInfo
 import blockchain.persistence.tables.NodeInfoTable
-import newPersistence.DAO
-import newPersistence.ResultSet
+import persistence.DAO
+import persistence.ResultSet
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
-import java.util.concurrent.locks.Condition
 import kotlin.math.ceil
 
 class NodeInfoDAO:DAO<NodeInfo, UUID> {

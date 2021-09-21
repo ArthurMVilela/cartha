@@ -5,14 +5,7 @@ import blockchain.persistence.dao.NodeInfoDAO
 import blockchain.persistence.dao.TransactionDAO
 import blockchain.persistence.tables.NodeInfoTable
 import blockchain.persistence.tables.TransactionTable
-import io.ktor.client.*
-import io.ktor.client.engine.cio.*
-import io.ktor.client.features.json.*
-import io.ktor.client.features.json.serializer.*
-import io.ktor.client.request.*
-import io.ktor.http.*
-import kotlinx.coroutines.runBlocking
-import newPersistence.ResultSet
+import persistence.ResultSet
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction

@@ -1,14 +1,12 @@
 package blockchain.persistence.dao
 
 import blockchain.Block
-import blockchain.Transaction
 import blockchain.persistence.tables.BlockTable
 import blockchain.persistence.tables.TransactionTable
-import newPersistence.DAO
-import newPersistence.ResultSet
+import persistence.DAO
+import persistence.ResultSet
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.time.LocalDateTime
 import java.util.*
 
 class BlockDAO:DAO<Block, UUID> {

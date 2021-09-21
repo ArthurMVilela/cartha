@@ -2,7 +2,7 @@ package document.controllers
 
 import document.Notary
 import document.persistence.dao.NotaryDAO
-import newPersistence.ResultSet
+import persistence.ResultSet
 import java.util.*
 
 class NotaryController {

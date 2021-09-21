@@ -8,7 +8,7 @@ import authentication.logging.AccessLog
 import authentication.logging.AccessLogSearchFilter
 import authentication.logging.Action
 import authentication.logging.ActionType
-import newPersistence.ResultSet
+import persistence.ResultSet
 import ui.exception.InvalidUserSessionException
 import ui.features.UserSessionCookie
 import java.time.LocalDateTime

@@ -1,11 +1,9 @@
 package blockchain.persistence.dao
 
 import blockchain.BlockInfo
-import blockchain.NodeInfo
 import blockchain.persistence.tables.BlockTable
-import blockchain.persistence.tables.NodeInfoTable
-import newPersistence.DAO
-import newPersistence.ResultSet
+import persistence.DAO
+import persistence.ResultSet
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.select

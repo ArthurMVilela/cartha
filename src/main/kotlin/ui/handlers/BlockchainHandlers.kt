@@ -8,12 +8,10 @@ import io.ktor.features.*
 import io.ktor.freemarker.*
 import io.ktor.http.*
 import io.ktor.response.*
-import io.ktor.sessions.*
-import newPersistence.ResultSet
+import persistence.ResultSet
 import serviceExceptions.BadRequestException
 import ui.controllers.AuthenticationController
 import ui.controllers.BlockchainController
-import ui.features.UserSessionCookie
 import ui.features.getUserRole
 import ui.pages.BlockchainBlockPageBuilder
 import ui.pages.BlockchainBlocksPageBuilder

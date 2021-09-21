@@ -3,7 +3,7 @@ package blockchain
 import blockchain.persistence.dao.BlockDAO
 import blockchain.persistence.dao.BlockInfoDAO
 import blockchain.persistence.dao.TransactionDAO
-import newPersistence.ResultSet
+import persistence.ResultSet
 import java.time.LocalDateTime
 import java.util.*
 

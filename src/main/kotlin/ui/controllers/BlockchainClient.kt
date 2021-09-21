@@ -1,19 +1,17 @@
 package ui.controllers
 
-import authentication.logging.AccessLog
 import blockchain.NodeInfo
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.features.*
-import io.ktor.client.features.get
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.features.*
 import io.ktor.http.*
-import newPersistence.ResultSet
+import persistence.ResultSet
 
 class BlockchainClient(
     val nodeManagerURL:String

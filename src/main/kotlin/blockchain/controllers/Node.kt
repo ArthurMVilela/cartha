@@ -5,7 +5,7 @@ import blockchain.BlockInfo
 import blockchain.Blockchain
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
-import newPersistence.ResultSet
+import persistence.ResultSet
 import util.serializer.UUIDSerializer
 import java.util.*
 
