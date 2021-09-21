@@ -2,9 +2,7 @@ package document
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import java.security.MessageDigest
-import java.time.LocalDateTime
-import java.time.ZoneOffset
+import util.serializer.UUIDSerializer
 import java.util.*
 
 /**
@@ -17,16 +15,23 @@ import java.util.*
  */
 @Serializable
 abstract class Document() {
-    abstract val id: String?
-    abstract val status: DocumentStatus
+    @Serializable(with = UUIDSerializer::class)
+    abstract val id: UUID
+    abstract var status: DocumentStatus
     @SerialName("official_id")
     abstract val officialId: String
     @SerialName("notary_id")
     abstract val notaryId: String
+    abstract var hash: String?
 
-    fun createId(): String {
-        val md = MessageDigest.getInstance("SHA-256")
-        val now = LocalDateTime.now(ZoneOffset.UTC)
-        return Base64.getUrlEncoder().encodeToString(md.digest(now.toString().toByteArray()))
+    companion object {
+        fun createId():UUID {
+            return UUID.randomUUID()
+        }
     }
+
+    /**
+     * Cria a hash (SHA-256) do documento
+     */
+    abstract fun createHash():String
 }

@@ -1,12 +1,14 @@
-package document.persistence.tables.civilRegistry
+package document.persistence.tables.civilRegistry.birth
 
 import document.persistence.tables.person.PhysicalPersonTable
+import document.civilRegistry.birth.GrandparentType
 import document.persistence.tables.address.MunicipalityTable
 import org.jetbrains.exposed.dao.id.UUIDTable
 
-object AffiliationTable:UUIDTable("affiliation") {
+object Grandparent:UUIDTable("grandparent") {
     val personId = optReference("person_id", PhysicalPersonTable.id)
-    val documentId = reference("document_id", CivilRegistryDocumentTable.id)
+    val birthCertificateId = reference("birth_certificate_id", BirthCertificateTable.id)
     val name = varchar("name", 140)
+    val type = enumeration("type", GrandparentType::class)
     val municipalityId = reference("municipality_id", MunicipalityTable.id)
 }

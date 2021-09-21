@@ -2,28 +2,28 @@ package document.civilRegistry
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import java.security.MessageDigest
+import util.serializer.LocalDateTimeSerializer
+import util.serializer.UUIDSerializer
 import java.time.LocalDateTime
-import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 import java.util.*
 
+/**
+ * Representa uma observação abverbação de um documento de registro civil
+ */
 @Serializable
-class Registering (
-    var id:String?,
+class Registering(
+    @Serializable(with = UUIDSerializer::class)
+    val id: UUID,
+    @Serializable(with = UUIDSerializer::class)
     @SerialName("document_id")
-    val documentID:String,
-    val text:String
-){
-    fun createId(): String {
-        val md = MessageDigest.getInstance("SHA")
-        val now = LocalDateTime.now(ZoneOffset.UTC)
-        return Base64.getUrlEncoder().encodeToString(md.digest(now.toString().toByteArray()))
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (other?.javaClass != javaClass) return false
-        other as Registering
-        if (other.id !== id || other.documentID !== documentID || other.text !== text) return false
-        return true
+    val documentId: UUID,
+    @Serializable(with = LocalDateTimeSerializer::class)
+    val timestamp: LocalDateTime,
+    val text: String
+) {
+    override fun toString(): String {
+        val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy (HH:mm)")
+        return "${formatter.format(timestamp)} - $text"
     }
 }

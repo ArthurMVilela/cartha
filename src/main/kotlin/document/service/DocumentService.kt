@@ -2,8 +2,6 @@
 
 package document.service
 
-import serviceExceptions.BadRequestException
-import document.handlers.DocumentHandler
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.http.*
@@ -12,90 +10,76 @@ import io.ktor.routing.*
 import io.ktor.serialization.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.transactions.TransactionManager
+import document.handlers.notary.NotaryHandler
+import document.handlers.person.PersonHandler
+import document.persistence.DatabaseInitializer
+import kotlin.system.exitProcess
 
 fun main() {
     try {
-        val host = System.getenv("DATABASE_HOST")
-        val port = System.getenv("DATABASE_PORT")
-        val database = System.getenv("DATABASE_NAME")
-        val user = System.getenv("DATABASE_USER")
-        val password = System.getenv("DATABASE_PASSWORD")
-        val url = "jdbc:mysql://$host:$port/$database?verifyServerCertificate=false&useSSL=true"
-        val db = Database.connect(
-            url = url,
-            driver = "com.mysql.jdbc.Driver",
-            user = user,
-            password = password,
-        )
-
-        TransactionManager.defaultDatabase = db
+        DatabaseInitializer.loadConfigurations()
+        DatabaseInitializer.initialize()
     } catch (e:Exception) {
-        println(e.message)
+        e.printStackTrace()
+        exitProcess(1)
     }
 
-    val service = DocumentHandler()
+    val notaryHandler = NotaryHandler()
+    val personHandler = PersonHandler()
+
     embeddedServer(Netty, port = 8080) {
-        install(ContentNegotiation)  {
+        install(ContentNegotiation) {
             json()
         }
         install(StatusPages) {
+            exception<Throwable> { cause ->
+                call.respond(HttpStatusCode.InternalServerError, "Erro inexperado ocorreu.")
+            }
             exception<BadRequestException> { cause ->
-                call.respond(HttpStatusCode.BadRequest, cause.message!!)
+                call.respond(HttpStatusCode.BadRequest, cause.message?:"Erro inexperado ocorreu.")
+            }
+            exception<NotFoundException> { cause ->
+                call.respond(HttpStatusCode.NotFound, cause.message?:"Erro inexperado ocorreu.")
             }
         }
         routing {
-            get("/person/physical_person/{id}") {
-                service.getPhysicalPerson(call)
+            route("/notary") {
+                post("") {
+                    notaryHandler.createNotary(call)
+                }
+                get("") {
+                    notaryHandler.getNotaries(call)
+                }
+                get("/{id}") {
+                    notaryHandler.getNotary(call)
+                }
+                get("/cnpj/{cnpj}") {
+                    notaryHandler.getNotary(call)
+                }
             }
-            post("/person/physical_person") {
-                service.createPhysicalPerson(call)
-            }
-            patch("/person/physical_person/{id}") {
-                service.updatePhysicalPerson(call)
-            }
-            delete("/person/physical_person/{id}") {
-                service.deletePhysicalPerson(call)
-            }
-
-            get("/person/official/{id}") {
-                service.getOfficial(call)
-            }
-            post("/person/official") {
-                service.createOfficial(call)
-            }
-            patch("/person/official/{id}") {
-                service.updateOfficial(call)
-            }
-            delete("/person/official/{id}") {
-                service.deleteOfficial(call)
-            }
-
-            get("/notary/{id}") {
-                service.getNotary(call)
-            }
-            post("/notary") {
-                service.createNotary(call)
-            }
-            patch("/notary/{id}") {
-                service.updateNotary(call)
-            }
-            delete("/notary/{id}") {
-                service.deleteNotary(call)
-            }
-
-            get("/civil_registry/death_certificate/{id}") {
-                service.getDeathCertificate(call)
-            }
-            post("/civil_registry/death_certificate") {
-                service.createDeathCertificate(call)
-            }
-            patch("/civil_registry/death_certificate/{id}") {
-                service.updateDeathCertificate(call)
-            }
-            delete("/civil_registry/death_certificate/{id}") {
-                service.deleteDeathCertificate(call)
+            route("/person") {
+                route("/physical_person") {
+                    post("") {
+                        personHandler.createPhysicalPerson(call)
+                    }
+                    get("/{id}") {
+                        personHandler.getPhysicalPerson(call)
+                    }
+                    get("/cpf/{cpf}") {
+                        personHandler.getPhysicalPerson(call)
+                    }
+                }
+                route("/official") {
+                    post("") {
+                        personHandler.createOfficial(call)
+                    }
+                    get("/{id}") {
+                        personHandler.getOfficial(call)
+                    }
+                    get("/cpf/{cpf}") {
+                        personHandler.getOfficial(call)
+                    }
+                }
             }
         }
     }.start(true)
