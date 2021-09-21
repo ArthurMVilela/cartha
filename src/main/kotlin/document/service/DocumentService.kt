@@ -2,6 +2,7 @@
 
 package document.service
 
+import document.handlers.civilRegistry.birth.BirthCertificateHandler
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.http.*
@@ -26,6 +27,7 @@ fun main() {
 
     val notaryHandler = NotaryHandler()
     val personHandler = PersonHandler()
+    val birthCertificateHandler = BirthCertificateHandler()
 
     embeddedServer(Netty, port = 8080) {
         install(ContentNegotiation) {
@@ -78,6 +80,15 @@ fun main() {
                     }
                     get("/cpf/{cpf}") {
                         personHandler.getOfficial(call)
+                    }
+                }
+            }
+            route("/document") {
+                route("/civil_registry") {
+                    route("/birth") {
+                        post(""){
+                            birthCertificateHandler.createBirthCertificate(call)
+                        }
                     }
                 }
             }
