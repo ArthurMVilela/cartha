@@ -18,10 +18,12 @@ abstract class Document() {
     @Serializable(with = UUIDSerializer::class)
     abstract val id: UUID
     abstract var status: DocumentStatus
+    @Serializable(with = UUIDSerializer::class)
     @SerialName("official_id")
-    abstract val officialId: String
+    abstract val officialId: UUID
+    @Serializable(with = UUIDSerializer::class)
     @SerialName("notary_id")
-    abstract val notaryId: String
+    abstract val notaryId: UUID
     abstract var hash: String?
 
     companion object {

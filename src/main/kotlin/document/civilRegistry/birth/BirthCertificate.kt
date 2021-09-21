@@ -20,10 +20,12 @@ class BirthCertificate(
     @Serializable(with = UUIDSerializer::class)
     override val id: UUID,
     override var status: DocumentStatus,
+    @Serializable(with = UUIDSerializer::class)
     @SerialName("official_id")
-    override val officialId: String,
+    override val officialId: UUID,
+    @Serializable(with = UUIDSerializer::class)
     @SerialName("notary_id")
-    override val notaryId: String,
+    override val notaryId: UUID,
     override var hash: String?,
     @SerialName("registration_number")
     override var registrationNumber:String?,
