@@ -1,6 +1,8 @@
 package newDocument.address
 
 import kotlinx.serialization.Serializable
+import util.serializer.UUIDSerializer
+import java.util.*
 
 /**
  * Representa um município
@@ -11,7 +13,8 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 class Municipality(
-    var id: Int? = null,
+    @Serializable(with = UUIDSerializer::class)
+    val id: UUID,
     val name: String,
     val uf: UF
 )
