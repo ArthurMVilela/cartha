@@ -49,9 +49,15 @@ class BirthCertificateHandler {
             grandparents.add(
                 Grandparent(
                     UUID.randomUUID(),
+                    it.personId,
                     id,
                     it.name,
-                    it.type
+                    it.type,
+                    Municipality(
+                        UUID.randomUUID(),
+                        it.municipality.name,
+                        it.municipality.uf
+                    )
                 )
             )
         }

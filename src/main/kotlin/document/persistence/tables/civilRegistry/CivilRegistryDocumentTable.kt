@@ -8,4 +8,6 @@ import java.util.*
 
 object CivilRegistryDocumentTable:IdTable<UUID>("civil_registry_document") {
     override val id: Column<EntityID<UUID>> = reference("id", DocumentTable.id)
+
+    val registrationNumber = char("registration_number", 120)
 }

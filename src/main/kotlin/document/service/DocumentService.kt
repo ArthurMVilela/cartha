@@ -35,6 +35,7 @@ fun main() {
         }
         install(StatusPages) {
             exception<Throwable> { cause ->
+                cause.printStackTrace()
                 call.respond(HttpStatusCode.InternalServerError, "Erro inexperado ocorreu.")
             }
             exception<BadRequestException> { cause ->

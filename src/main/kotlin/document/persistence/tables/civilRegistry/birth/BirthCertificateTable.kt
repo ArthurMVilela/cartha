@@ -21,5 +21,5 @@ object BirthCertificateTable:IdTable<UUID>("birth_certificate") {
     val placeOfBirth = varchar("place_of_birth", 120)
     val dateTimeOfBirth = datetime("date_time_if_birth")
     val dateOfRegistry = date("date_of_registry")
-    val dnnNumber = char("dnn_number")
+    val dnNumber = char("dn_number", 11)
 }

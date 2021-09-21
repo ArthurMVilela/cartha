@@ -1,6 +1,12 @@
 package document.persistence
 
+import document.persistence.tables.DocumentTable
 import document.persistence.tables.NotaryTable
+import document.persistence.tables.address.MunicipalityTable
+import document.persistence.tables.civilRegistry.AffiliationTable
+import document.persistence.tables.civilRegistry.CivilRegistryDocumentTable
+import document.persistence.tables.civilRegistry.birth.BirthCertificateTable
+import document.persistence.tables.civilRegistry.birth.GrandparentTable
 import document.persistence.tables.person.OfficialTable
 import document.persistence.tables.person.PersonTable
 import document.persistence.tables.person.PhysicalPersonTable
@@ -31,7 +37,11 @@ class DatabaseInitializer {
             transaction {
                 SchemaUtils.create(
                     NotaryTable,
-                    PersonTable, PhysicalPersonTable, OfficialTable
+                    PersonTable, PhysicalPersonTable, OfficialTable,
+                    MunicipalityTable,
+                    DocumentTable, CivilRegistryDocumentTable,
+                    AffiliationTable,
+                    BirthCertificateTable, GrandparentTable
                 )
             }
         }

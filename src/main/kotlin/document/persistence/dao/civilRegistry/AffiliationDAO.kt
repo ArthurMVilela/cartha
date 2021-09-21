@@ -28,6 +28,8 @@ class AffiliationDAO:DAO<Affiliation, UUID> {
                     it[name] = obj.name
                     it[municipalityId] = m.id
                 }
+
+                inserted = toType(AffiliationTable.select(Op.build { AffiliationTable.id eq insertedId }).first())
             } catch (ex: Exception) {
                 rollback()
                 throw ex
@@ -93,6 +95,13 @@ class AffiliationDAO:DAO<Affiliation, UUID> {
     }
 
     override fun toType(row: ResultRow): Affiliation {
-        TODO("Not yet implemented")
+        val id = row[AffiliationTable.id].value
+        val personId = row[AffiliationTable.personId]?.value
+        val documentId = row[AffiliationTable.documentId].value
+        val name = row[AffiliationTable.name]
+
+        val municipality = municipalityDAO.select(row[AffiliationTable.municipalityId].value)!!
+
+        return Affiliation(id, personId, documentId, name, municipality)
     }
 }

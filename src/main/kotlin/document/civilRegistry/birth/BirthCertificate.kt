@@ -1,12 +1,10 @@
 package document.civilRegistry.birth
 
-import document.civilRegistry.CivilRegistryDocument
-import document.civilRegistry.Registering
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import document.DocumentStatus
 import document.address.Municipality
-import document.civilRegistry.Affiliation
+import document.civilRegistry.*
 import document.person.Sex
 import util.serializer.LocalDateSerializer
 import util.serializer.LocalDateTimeSerializer
@@ -52,8 +50,18 @@ class BirthCertificate(
     val dateOfRegistry: LocalDate,
     val twins:MutableSet<Twin>,
     @SerialName("dnn_number")
-    val dnnNumber: String,
+    val dnNumber: String,
 ):CivilRegistryDocument() {
+    init {
+        hash = createHash()
+        registrationNumber = createRegistrationNumber(
+            "123456",
+            StorageCode.IncorporatedStorage,
+            RegistryBookType.A,
+            dateOfRegistry,
+            "00001"
+        )
+    }
     override fun createHash(): String {
         return ""
     }

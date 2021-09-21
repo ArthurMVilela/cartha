@@ -26,7 +26,7 @@ abstract class CivilRegistryDocument(
             date: LocalDate,
             book: String
         ):String {
-            return "$cns${storageCode.value} 55 ${date.year} ${bookType.value} $book 001 0000000 11"
+            return "$cns${storageCode.value}55${date.year}${bookType.value}${book}001000000011"
         }
     }
 
