@@ -3,6 +3,7 @@
 package document.service
 
 import document.handlers.civilRegistry.birth.BirthCertificateHandler
+import document.handlers.civilRegistry.marriage.MarriageCertificateHandler
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.http.*
@@ -28,6 +29,7 @@ fun main() {
     val notaryHandler = NotaryHandler()
     val personHandler = PersonHandler()
     val birthCertificateHandler = BirthCertificateHandler()
+    val marriageCertificateHandler = MarriageCertificateHandler()
 
     embeddedServer(Netty, port = 8080) {
         install(ContentNegotiation) {
@@ -92,6 +94,11 @@ fun main() {
                         }
                         get("/{id}") {
                             birthCertificateHandler.getBirthCertificate(call)
+                        }
+                    }
+                    route("/marriage") {
+                        post("") {
+                            marriageCertificateHandler.createMarriageCertificate(call)
                         }
                     }
                 }

@@ -25,6 +25,7 @@ class SpouseDAO:DAO<Spouse, UUID> {
             try {
                 val insertedId = SpouseTable.insertAndGetId {
                     it[id] = obj.id
+                    it[marriageCertificateId] = obj.marriageCertificateId
                     it[personId] = if (obj.personId != null) {
                         EntityID(obj.personId, PhysicalPersonTable)
                     } else {
@@ -36,11 +37,11 @@ class SpouseDAO:DAO<Spouse, UUID> {
                     it[nationality] = obj.nationality
                 }
                 obj.affiliation.forEach {
+                    affiliationDAO.insert(it)
                     SpouseAffiliationTable.insert { saTable ->
                         saTable[spouseId] = insertedId
                         saTable[affiliationId] = it.id
                     }
-                    affiliationDAO.insert(it)
                 }
 
                 inserted = toType(SpouseTable.select(Op.build { SpouseTable.id eq insertedId }).first())

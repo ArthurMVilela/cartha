@@ -5,6 +5,8 @@ import kotlinx.serialization.Serializable
 import document.DocumentStatus
 import document.civilRegistry.CivilRegistryDocument
 import document.civilRegistry.Registering
+import document.civilRegistry.RegistryBookType
+import document.civilRegistry.StorageCode
 import util.serializer.LocalDateSerializer
 import util.serializer.UUIDSerializer
 import java.time.LocalDate
@@ -33,6 +35,16 @@ class MarriageCertificate(
     @SerialName("matrimonial_regime")
     val matrimonialRegime: MatrimonialRegime
 ):CivilRegistryDocument() {
+    init {
+        hash = createHash()
+        registrationNumber = createRegistrationNumber(
+            "123456",
+            StorageCode.IncorporatedStorage,
+            RegistryBookType.A,
+            dateOfRegistry,
+            "00001"
+        )
+    }
     override fun createHash(): String {
         return ""
     }
