@@ -2,11 +2,7 @@ package authentication.persistence.tables
 
 import authentication.Role
 import authentication.UserStatus
-import document.persistence.tables.PersonTable
-import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.dao.id.IdTable
 import org.jetbrains.exposed.dao.id.UUIDTable
-import org.jetbrains.exposed.sql.Column
 
 object UserTable:UUIDTable("user") {
     val name = varchar("name", 120)

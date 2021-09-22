@@ -1,7 +1,7 @@
 package ui.pages
 
 import blockchain.NodeInfo
-import newPersistence.ResultSet
+import persistence.ResultSet
 
 class BlockchainNodesPageBuilder:PageBuilder() {
     override val page: Page = Page("blockchainNodes.ftl", mutableMapOf())

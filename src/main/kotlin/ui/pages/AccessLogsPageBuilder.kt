@@ -2,7 +2,7 @@ package ui.pages
 
 import authentication.logging.AccessLog
 import authentication.logging.AccessLogSearchFilter
-import newPersistence.ResultSet
+import persistence.ResultSet
 import ui.values.EnumMaps
 
 class AccessLogsPageBuilder:PageBuilder() {

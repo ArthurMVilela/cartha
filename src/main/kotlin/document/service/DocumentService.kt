@@ -1,212 +1,111 @@
+@file:JvmName("DocumentService")
+
 package document.service
 
-import document.Notary
-import document.Official
-import document.PhysicalPerson
-import document.civilRegistry.DeathCertificate
-import document.controllers.ControllersFacade
+import document.handlers.civilRegistry.birth.BirthCertificateHandler
+import document.handlers.civilRegistry.marriage.MarriageCertificateHandler
 import io.ktor.application.*
+import io.ktor.features.*
 import io.ktor.http.*
-import io.ktor.request.*
 import io.ktor.response.*
-import serviceExceptions.BadRequestException
+import io.ktor.routing.*
+import io.ktor.serialization.*
+import io.ktor.server.engine.*
+import io.ktor.server.netty.*
+import document.handlers.notary.NotaryHandler
+import document.handlers.person.PersonHandler
+import document.persistence.DatabaseInitializer
+import kotlin.system.exitProcess
 
-class DocumentService {
-    val controller = ControllersFacade()
-
-    suspend fun createPhysicalPerson(call: ApplicationCall) {
-        val person: PhysicalPerson
-        try {
-             person = call.receive<PhysicalPerson>()
-        } catch (e:ContentTransformationException) {
-            throw BadRequestException("conteudo da requisição é inválido")
-        }
-
-        val inserted = controller.createPhysicalPerson(person)
-        call.respond(HttpStatusCode.Created, inserted)
+fun main() {
+    try {
+        DatabaseInitializer.loadConfigurations()
+        DatabaseInitializer.initialize()
+    } catch (e:Exception) {
+        e.printStackTrace()
+        exitProcess(1)
     }
 
-    suspend fun getPhysicalPerson(call: ApplicationCall) {
-        val id = call.parameters["id"]
-        if (id.isNullOrBlank()) {
-            throw BadRequestException("id não pode ser nula ou vázia")
-        }
-        val found = controller.getPhysicalPerson(id)
-        if (found == null) {
-            call.respond(HttpStatusCode.NotFound, "não encontrado")
-            return
-        }
-        call.respond(HttpStatusCode.OK, found)
-    }
+    val notaryHandler = NotaryHandler()
+    val personHandler = PersonHandler()
+    val birthCertificateHandler = BirthCertificateHandler()
+    val marriageCertificateHandler = MarriageCertificateHandler()
 
-    suspend fun updatePhysicalPerson(call: ApplicationCall){
-        val id = call.parameters["id"]
-        if (id.isNullOrBlank()) {
-            throw BadRequestException("id não pode ser nula ou vázia")
+    embeddedServer(Netty, port = 8080) {
+        install(ContentNegotiation) {
+            json()
         }
-        val person: PhysicalPerson
-        try {
-            person = call.receive<PhysicalPerson>()
-        } catch (e:ContentTransformationException) {
-            throw BadRequestException("conteudo da requisição é inválido")
+        install(StatusPages) {
+            exception<Throwable> { cause ->
+                cause.printStackTrace()
+                call.respond(HttpStatusCode.InternalServerError, "Erro inexperado ocorreu.")
+            }
+            exception<BadRequestException> { cause ->
+                call.respond(HttpStatusCode.BadRequest, cause.message?:"Erro inexperado ocorreu.")
+            }
+            exception<NotFoundException> { cause ->
+                call.respond(HttpStatusCode.NotFound, cause.message?:"Erro inexperado ocorreu.")
+            }
         }
-        val updated = controller.updatePhysicalPerson(id, person)
-        call.respond(HttpStatusCode.OK, updated)
-    }
-
-    suspend fun deletePhysicalPerson(call: ApplicationCall) {
-        val id = call.parameters["id"]
-        if (id.isNullOrBlank()) {
-            throw BadRequestException("id não pode ser nula ou vázia")
+        routing {
+            route("/notary") {
+                post("") {
+                    notaryHandler.createNotary(call)
+                }
+                get("") {
+                    notaryHandler.getNotaries(call)
+                }
+                get("/{id}") {
+                    notaryHandler.getNotary(call)
+                }
+                get("/cnpj/{cnpj}") {
+                    notaryHandler.getNotary(call)
+                }
+            }
+            route("/person") {
+                route("/physical_person") {
+                    post("") {
+                        personHandler.createPhysicalPerson(call)
+                    }
+                    get("/{id}") {
+                        personHandler.getPhysicalPerson(call)
+                    }
+                    get("/cpf/{cpf}") {
+                        personHandler.getPhysicalPerson(call)
+                    }
+                }
+                route("/official") {
+                    post("") {
+                        personHandler.createOfficial(call)
+                    }
+                    get("/{id}") {
+                        personHandler.getOfficial(call)
+                    }
+                    get("/cpf/{cpf}") {
+                        personHandler.getOfficial(call)
+                    }
+                }
+            }
+            route("/document") {
+                route("/civil_registry") {
+                    route("/birth") {
+                        post(""){
+                            birthCertificateHandler.createBirthCertificate(call)
+                        }
+                        get("/{id}") {
+                            birthCertificateHandler.getBirthCertificate(call)
+                        }
+                    }
+                    route("/marriage") {
+                        post("") {
+                            marriageCertificateHandler.createMarriageCertificate(call)
+                        }
+                        get("/{id}") {
+                            marriageCertificateHandler.getMarriageCertificate(call)
+                        }
+                    }
+                }
+            }
         }
-        controller.deletePhysicalPerson(id)
-        call.respond(HttpStatusCode.OK, "Deletado com sucesso")
-    }
-
-    suspend fun createOfficial(call: ApplicationCall) {
-        val person: Official
-        try {
-            person = call.receive<Official>()
-        } catch (e:ContentTransformationException) {
-            throw BadRequestException("conteudo da requisição é inválido")
-        }
-
-        val inserted = controller.createOfficial(person)
-        call.respond(HttpStatusCode.Created, inserted)
-    }
-
-    suspend fun getOfficial(call: ApplicationCall) {
-        val id = call.parameters["id"]
-        if (id.isNullOrBlank()) {
-            throw BadRequestException("id não pode ser nula ou vázia")
-        }
-        val found = controller.getOfficial(id)
-        if (found == null) {
-            call.respond(HttpStatusCode.NotFound, "não encontrado")
-            return
-        }
-        call.respond(HttpStatusCode.OK, found)
-    }
-
-    suspend fun updateOfficial(call: ApplicationCall){
-        val id = call.parameters["id"]
-        if (id.isNullOrBlank()) {
-            throw BadRequestException("id não pode ser nula ou vázia")
-        }
-        val person: Official
-        try {
-            person = call.receive<Official>()
-        } catch (e:ContentTransformationException) {
-            throw BadRequestException("conteudo da requisição é inválido")
-        }
-        val updated = controller.updateOfficial(id, person)
-        call.respond(HttpStatusCode.OK, updated)
-    }
-
-    suspend fun deleteOfficial(call: ApplicationCall) {
-        val id = call.parameters["id"]
-        if (id.isNullOrBlank()) {
-            throw BadRequestException("id não pode ser nula ou vázia")
-        }
-        controller.deleteOfficial(id)
-        call.respond(HttpStatusCode.OK, "Deletado com sucesso")
-    }
-
-    suspend fun createNotary(call: ApplicationCall) {
-        val notary: Notary
-        try {
-            notary = call.receive<Notary>()
-        } catch (e:ContentTransformationException) {
-            throw BadRequestException("conteudo da requisição é inválido")
-        }
-
-        val inserted = controller.createNotary(notary)
-        call.respond(HttpStatusCode.Created, inserted)
-    }
-
-    suspend fun getNotary(call: ApplicationCall) {
-        val id = call.parameters["id"]
-        if (id.isNullOrBlank()) {
-            throw BadRequestException("id não pode ser nula ou vázia")
-        }
-        val found = controller.getNotary(id)
-        if (found == null) {
-            call.respond(HttpStatusCode.NotFound, "não encontrado")
-            return
-        }
-        call.respond(HttpStatusCode.OK, found)
-    }
-
-    suspend fun updateNotary(call: ApplicationCall){
-        val id = call.parameters["id"]
-        if (id.isNullOrBlank()) {
-            throw BadRequestException("id não pode ser nula ou vázia")
-        }
-        val notary: Notary
-        try {
-            notary = call.receive<Notary>()
-        } catch (e:ContentTransformationException) {
-            throw BadRequestException("conteudo da requisição é inválido")
-        }
-        val updated = controller.updateNotary(id, notary)
-        call.respond(HttpStatusCode.OK, updated)
-    }
-
-    suspend fun deleteNotary(call: ApplicationCall) {
-        val id = call.parameters["id"]
-        if (id.isNullOrBlank()) {
-            throw BadRequestException("id não pode ser nula ou vázia")
-        }
-        controller.deleteNotary(id)
-        call.respond(HttpStatusCode.OK, "Deletado com sucesso")
-    }
-
-    suspend fun createDeathCertificate(call: ApplicationCall) {
-        val deathCertificate: DeathCertificate
-        try {
-            deathCertificate = call.receive<DeathCertificate>()
-        } catch (e:ContentTransformationException) {
-            throw BadRequestException("conteudo da requisição é inválido")
-        }
-
-        val inserted = controller.createDeathCertificate(deathCertificate)
-        call.respond(HttpStatusCode.Created, inserted)
-    }
-
-    suspend fun getDeathCertificate(call: ApplicationCall) {
-        val id = call.parameters["id"]
-        if (id.isNullOrBlank()) {
-            throw BadRequestException("id não pode ser nula ou vázia")
-        }
-        val found = controller.getDeathCertificate(id)
-        if (found == null) {
-            call.respond(HttpStatusCode.NotFound, "não encontrado")
-            return
-        }
-        call.respond(HttpStatusCode.OK, found)
-    }
-
-    suspend fun updateDeathCertificate(call: ApplicationCall){
-        val id = call.parameters["id"]
-        if (id.isNullOrBlank()) {
-            throw BadRequestException("id não pode ser nula ou vázia")
-        }
-        val deathCertificate: DeathCertificate
-        try {
-            deathCertificate = call.receive<DeathCertificate>()
-        } catch (e:ContentTransformationException) {
-            throw BadRequestException("conteudo da requisição é inválido")
-        }
-        val updated = controller.updateDeathCertificate(id, deathCertificate)
-        call.respond(HttpStatusCode.OK, updated)
-    }
-
-    suspend fun deleteDeathCertificate(call: ApplicationCall) {
-        val id = call.parameters["id"]
-        if (id.isNullOrBlank()) {
-            throw BadRequestException("id não pode ser nula ou vázia")
-        }
-        controller.deleteDeathCertificate(id)
-        call.respond(HttpStatusCode.OK, "Deletado com sucesso")
-    }
+    }.start(true)
 }

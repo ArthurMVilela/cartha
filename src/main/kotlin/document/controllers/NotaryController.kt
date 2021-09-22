@@ -2,41 +2,22 @@ package document.controllers
 
 import document.Notary
 import document.persistence.dao.NotaryDAO
-import java.lang.Exception
+import persistence.ResultSet
+import java.util.*
 
-class NotaryController:CRUDController<Notary, String> {
-    override fun create(new: Notary): Notary {
-        try {
-            new.id = new.createId()
-            return NotaryDAO.insert(new).toType()!!
-        } catch (e: Exception){
-            throw e
-        }
+class NotaryController {
+    private val notaryDAO = NotaryDAO()
+
+    fun createNotary(notary: Notary): Notary {
+        return notaryDAO.insert(notary)
     }
-
-    override fun get(id: String): Notary? {
-        try {
-            return NotaryDAO.select(id)?.toType()
-        } catch (e:Exception){
-            throw e
-        }
+    fun getNotary(id: UUID): Notary? {
+        return notaryDAO.select(id)
     }
-
-    override fun update(id: String, new: Notary): Notary {
-        try {
-            new.id = id
-            NotaryDAO.update(new)
-            return NotaryDAO.select(id)!!.toType()!!
-        } catch (e:Exception) {
-            throw e
-        }
+    fun getNotary(cnpj: String): Notary? {
+        return notaryDAO.select(cnpj)
     }
-
-    override fun delete(id: String) {
-        try {
-            NotaryDAO.remove(id)
-        } catch (e:Exception) {
-            throw e
-        }
+    fun getNotaries(page:Int):ResultSet<Notary> {
+        return notaryDAO.selectAll(page)
     }
 }

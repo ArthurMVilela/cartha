@@ -1,10 +1,9 @@
 package authentication.persistence.dao
 
 import authentication.Permission
-import authentication.User
 import authentication.persistence.tables.PermissionTable
-import newPersistence.DAO
-import newPersistence.ResultSet
+import persistence.DAO
+import persistence.ResultSet
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insertAndGetId

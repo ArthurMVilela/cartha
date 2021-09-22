@@ -14,7 +14,7 @@ import io.ktor.client.features.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.forms.*
-import newPersistence.ResultSet
+import persistence.ResultSet
 import java.util.*
 
 class AuthenticationClient {

@@ -9,7 +9,7 @@ import authentication.logging.exceptions.AccessLogNotFoundException
 import authentication.logging.persistence.AccessLogTable
 import authentication.logging.persistence.ActionTable
 import authentication.logging.persistence.dao.AccessLogDAO
-import newPersistence.ResultSet
+import persistence.ResultSet
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime

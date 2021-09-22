@@ -1,13 +1,10 @@
 package document.persistence.tables.civilRegistry
 
-import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.dao.id.IdTable
-import org.jetbrains.exposed.sql.Column
+import org.jetbrains.exposed.dao.id.UUIDTable
+import org.jetbrains.exposed.sql.`java-time`.datetime
 
-object RegisteringTable:IdTable<String>("registering") {
-    override val id: Column<EntityID<String>> = char("id", 32).entityId()
-    val documentID = reference("document_id", CivilRegistryDocumentTable.id)
+object RegisteringTable:UUIDTable("registering") {
+    val documentId = reference("document_id", CivilRegistryDocumentTable.id)
+    val timestamp = datetime("timestamp")
     val text = text("text")
-
-    override val primaryKey: PrimaryKey? = PrimaryKey(id, name = "pk_registering_id")
 }

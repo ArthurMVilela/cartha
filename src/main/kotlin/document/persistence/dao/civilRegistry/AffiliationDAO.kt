@@ -1,135 +1,114 @@
 package document.persistence.dao.civilRegistry
 
 import document.civilRegistry.Affiliation
-import document.persistence.dao.DocumentDAO
-import persistence.CompanionDAO
-import persistence.DAO
-import document.persistence.dao.PhysicalPersonDAO
+import document.persistence.dao.address.MunicipalityDAO
 import document.persistence.tables.civilRegistry.AffiliationTable
-import org.jetbrains.exposed.dao.Entity
+import document.persistence.tables.civilRegistry.birth.BirthCertificateTable
+import document.persistence.tables.person.PhysicalPersonTable
 import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.dao.id.IdTable
 import org.jetbrains.exposed.sql.Op
-import org.jetbrains.exposed.sql.SizedIterable
-import org.jetbrains.exposed.sql.emptySized
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.insertAndGetId
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.lang.Exception
+import persistence.DAO
+import persistence.ResultSet
+import java.util.*
 
-class AffiliationDAO(id:EntityID<String>): Entity<String>(id), DAO<Affiliation> {
-    companion object : CompanionDAO<Affiliation, AffiliationDAO, String, IdTable<String>>(AffiliationTable) {
-        override fun insert(obj: Affiliation): AffiliationDAO {
-            var r: AffiliationDAO? = null
-            transaction {
-                try {
-                    r = new(obj.id!!) {
-                        documentId = CivilRegistryDocumentDAO.select(obj.documentId!!)!!.id
-                        personId = PhysicalPersonDAO.select(obj.personId)!!.id
-                        name = obj.name
-                        uf = obj.uf
-                        municipality = obj.municipality
+class AffiliationDAO:DAO<Affiliation, UUID> {
+    private val municipalityDAO = MunicipalityDAO()
+
+    override fun insert(obj: Affiliation): Affiliation {
+        var inserted: Affiliation? = null
+
+        transaction {
+            try {
+                val m = municipalityDAO.insert(obj.municipality)
+                val insertedId = AffiliationTable.insertAndGetId {
+                    it[id] = obj.id
+                    it[personId] = if (obj.personId != null) {
+                        EntityID(obj.personId!!, PhysicalPersonTable)
+                    } else {
+                        null
                     }
-                } catch (e: Exception) {
-                    rollback()
-                    throw e
+                    it[documentId] = obj.documentId
+                    it[name] = obj.name
+                    it[municipalityId] = m.id
                 }
-            }
-            return r!!
-        }
 
-        override fun select(id: String): AffiliationDAO? {
-            var r:AffiliationDAO? = null
-            transaction {
-                try {
-                    r = findById(id)
-                } catch (e:Exception){
-                    rollback()
-                    throw e
-                }
-            }
-            return r
-        }
-
-        override fun selectMany(condition: Op<Boolean>): SizedIterable<AffiliationDAO> {
-            var r:SizedIterable<AffiliationDAO> = emptySized()
-            transaction {
-                try {
-                    r = find(condition)
-                } catch (e:Exception){
-                    rollback()
-                    throw e
-                }
-            }
-            return r
-        }
-
-        override fun selectAll(): SizedIterable<AffiliationDAO> {
-            var r:SizedIterable<AffiliationDAO> = emptySized()
-            transaction {
-                try {
-                    r = all()
-                } catch (e:Exception){
-                    rollback()
-                    throw e
-                }
-            }
-            return r
-        }
-
-        override fun update(obj: Affiliation) {
-            transaction {
-                try {
-                    val found = findById(obj.id!!)!!
-                    found.documentId = CivilRegistryDocumentDAO.select(obj.documentId!!)!!.id
-                    found.personId = PhysicalPersonDAO.select(obj.personId)!!.id
-                    found.name = obj.name
-                    found.uf = obj.uf
-                    found.municipality = obj.municipality
-                } catch (e: Exception) {
-                    rollback()
-                    throw e
-                }
+                inserted = toType(AffiliationTable.select(Op.build { AffiliationTable.id eq insertedId }).first())
+            } catch (ex: Exception) {
+                rollback()
+                throw ex
             }
         }
 
-        override fun remove(id: String) {
-            transaction {
-                try {
-                    findById(id)?.delete()
-                } catch (e: Exception) {
-                    rollback()
-                    throw e
-                }
-            }
-        }
-
-        override fun removeWhere(condition: Op<Boolean>) {
-            transaction {
-                try {
-                    find(condition).forEach {
-                        it.delete()
-                    }
-                } catch (e: Exception) {
-                    rollback()
-                    throw e
-                }
-            }
-        }
+        return inserted!!
     }
 
-    var documentId by AffiliationTable.documentId
-    var personId by AffiliationTable.personId
-    var name by AffiliationTable.name
-    var uf by AffiliationTable.uf
-    var municipality by AffiliationTable.municipality
+    override fun select(id: UUID): Affiliation? {
+        var found:Affiliation? = null
 
-    override fun toType(): Affiliation? {
-        return Affiliation(
-            id.value,
-            documentId.value,
-            personId.value,
-            name,
-            uf,
-            municipality
-        )
+        transaction {
+            try {
+                val row = AffiliationTable.select(Op.build { AffiliationTable.id eq id }).firstOrNull()?:return@transaction
+                found = toType(row)
+            } catch (ex: Exception) {
+                rollback()
+                throw ex
+            }
+        }
+
+        return found
+    }
+
+    override fun selectMany(condition: Op<Boolean>, page: Int, pageLength: Int): ResultSet<Affiliation> {
+        TODO("Not yet implemented")
+    }
+
+    override fun selectMany(condition: Op<Boolean>): List<Affiliation> {
+        val results = mutableListOf<Affiliation>()
+
+        transaction {
+            try{
+                val rows = AffiliationTable.select(condition)
+
+                rows.forEach {
+                    results.add(toType(it))
+                }
+            } catch (ex: Exception) {
+                rollback()
+                throw ex
+            }
+        }
+
+        return results
+    }
+
+    override fun selectAll(page: Int, pageLength: Int): ResultSet<Affiliation> {
+        TODO("Not yet implemented")
+    }
+
+    override fun update(obj: Affiliation) {
+        TODO("Not yet implemented")
+    }
+
+    override fun remove(id: UUID) {
+        TODO("Not yet implemented")
+    }
+
+    override fun removeWhere(condition: Op<Boolean>) {
+        TODO("Not yet implemented")
+    }
+
+    override fun toType(row: ResultRow): Affiliation {
+        val id = row[AffiliationTable.id].value
+        val personId = row[AffiliationTable.personId]?.value
+        val documentId = row[AffiliationTable.documentId].value
+        val name = row[AffiliationTable.name]
+
+        val municipality = municipalityDAO.select(row[AffiliationTable.municipalityId].value)!!
+
+        return Affiliation(id, personId, documentId, name, municipality)
     }
 }

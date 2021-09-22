@@ -2,124 +2,120 @@ package document.persistence.dao
 
 import document.Notary
 import document.persistence.tables.NotaryTable
-import org.jetbrains.exposed.dao.Entity
-import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.dao.id.IdTable
-import org.jetbrains.exposed.sql.Op
-import org.jetbrains.exposed.sql.SizedIterable
-import org.jetbrains.exposed.sql.emptySized
-import org.jetbrains.exposed.sql.transactions.transaction
-import persistence.CompanionDAO
 import persistence.DAO
-import java.lang.Exception
+import persistence.ResultSet
+import org.jetbrains.exposed.sql.Op
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.insertAndGetId
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
+import java.util.*
+import kotlin.math.ceil
 
-class NotaryDAO(id:EntityID<String>):Entity<String>(id), DAO<Notary> {
-    companion object : CompanionDAO<Notary, NotaryDAO, String, IdTable<String>>(NotaryTable) {
-        override fun insert(obj: Notary): NotaryDAO {
-            var r:NotaryDAO? = null
-            transaction {
-                try {
-                    r = new(obj.id!!) {
-                        name = obj.name
-                        cnpj = obj.cnpj
-                        cns = obj.cns
-                    }
-                } catch (e: Exception) {
-                    rollback()
-                    throw e
-                }
-            }
-            return r!!
-        }
+class NotaryDAO:DAO<Notary, UUID> {
+    override fun insert(obj: Notary): Notary {
+        var inserted: Notary? = null
 
-        override fun select(id: String): NotaryDAO? {
-            var r:NotaryDAO? = null
-            transaction {
-                try {
-                    r = findById(id)
-                } catch (e:Exception){
-                    rollback()
-                    throw e
+        transaction {
+            try {
+                val insertedId = NotaryTable.insertAndGetId {
+                    it[id] = obj.id
+                    it[name] = obj.name
+                    it[cnpj] = obj.cnpj
+                    it[cns] = obj.cns
                 }
-            }
-            return r
-        }
 
-        override fun selectMany(condition: Op<Boolean>): SizedIterable<NotaryDAO> {
-            var r:SizedIterable<NotaryDAO> = emptySized()
-            transaction {
-                try {
-                    r = find(condition)
-                } catch (e:Exception){
-                    rollback()
-                    throw e
-                }
-            }
-            return r
-        }
-
-        override fun selectAll(): SizedIterable<NotaryDAO> {
-            var r:SizedIterable<NotaryDAO> = emptySized()
-            transaction {
-                try {
-                    r = all()
-                } catch (e:Exception){
-                    rollback()
-                    throw e
-                }
-            }
-            return r
-        }
-
-        override fun update(obj: Notary) {
-            transaction {
-                try {
-                    val found = findById(obj.id!!)!!
-                    found.name = obj.name
-                    found.cnpj = obj.cnpj
-                    found.cns = obj.cns
-                } catch (e: Exception) {
-                    rollback()
-                    throw e
-                }
+                inserted = toType(NotaryTable.select(Op.build { NotaryTable.id eq insertedId }).first())
+            } catch (ex: Exception) {
+                rollback()
+                throw ex
             }
         }
 
-        override fun remove(id: String) {
-            transaction {
-                try {
-                    findById(id)?.delete()
-                } catch (e: Exception) {
-                    rollback()
-                    throw e
-                }
-            }
-        }
-
-        override fun removeWhere(condition: Op<Boolean>) {
-            transaction {
-                try {
-                    find(condition).forEach {
-                        it.delete()
-                    }
-                } catch (e: Exception) {
-                    rollback()
-                    throw e
-                }
-            }
-        }
+        return inserted!!
     }
 
-    var name by NotaryTable.name
-    var cnpj by NotaryTable.cnpj
-    var cns by NotaryTable.cns
+    override fun select(id: UUID): Notary? {
+        var found:Notary? = null
 
-    override fun toType(): Notary? {
-        return Notary(
-            id.value,
-            name,
-            cnpj,
-            cns
-        )
+        transaction {
+            try {
+                val row = NotaryTable.select(Op.build { NotaryTable.id eq id }).firstOrNull()?:return@transaction
+                found = toType(row)
+            } catch (ex: Exception) {
+                rollback()
+                throw ex
+            }
+        }
+
+        return found
+    }
+
+    fun select(cnpj: String): Notary? {
+        var found:Notary? = null
+
+        transaction {
+            try {
+                val row = NotaryTable.select(Op.build { NotaryTable.cnpj eq cnpj }).firstOrNull()?:return@transaction
+                found = toType(row)
+            } catch (ex: Exception) {
+                rollback()
+                throw ex
+            }
+        }
+
+        return found
+    }
+
+    override fun selectMany(condition: Op<Boolean>, page: Int, pageLength: Int): ResultSet<Notary> {
+        var numberOfPages = 0
+        val results = mutableListOf<Notary>()
+
+        transaction {
+            try {
+                val count = NotaryTable.select(condition).count()
+                numberOfPages = ceil(count/(pageLength * 1.0f)).toInt()
+
+                val rows = NotaryTable.select(condition).limit((pageLength * page), ((page - 1) * pageLength).toLong())
+
+                rows.forEach {
+                    results.add(toType(it))
+                }
+            } catch (ex: Exception) {
+                rollback()
+                throw ex
+            }
+        }
+
+        return ResultSet(results, page, numberOfPages, pageLength)
+    }
+
+    override fun selectMany(condition: Op<Boolean>): List<Notary> {
+        TODO("Not yet implemented")
+    }
+
+    override fun selectAll(page: Int, pageLength: Int): ResultSet<Notary> {
+        return selectMany(Op.TRUE, page, pageLength)
+    }
+
+    override fun update(obj: Notary) {
+        TODO("Not yet implemented")
+    }
+
+    override fun remove(id: UUID) {
+        TODO("Not yet implemented")
+    }
+
+    override fun removeWhere(condition: Op<Boolean>) {
+        TODO("Not yet implemented")
+    }
+
+    override fun toType(row: ResultRow): Notary {
+        val id = row[NotaryTable.id].value
+        val name = row[NotaryTable.name]
+        val cnpj = row[NotaryTable.cnpj]
+        val cns = row[NotaryTable.cns]
+
+        return Notary(id, name, cnpj, cns)
     }
 }

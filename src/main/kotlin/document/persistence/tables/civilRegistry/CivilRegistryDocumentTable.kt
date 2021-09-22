@@ -4,10 +4,10 @@ import document.persistence.tables.DocumentTable
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IdTable
 import org.jetbrains.exposed.sql.Column
+import java.util.*
 
-object CivilRegistryDocumentTable:IdTable<String>("civil_registry_document") {
-    override val id: Column<EntityID<String>> = char("id", 44).entityId().references(DocumentTable.id)
-    val registration = char("registering", 32)
+object CivilRegistryDocumentTable:IdTable<UUID>("civil_registry_document") {
+    override val id: Column<EntityID<UUID>> = reference("id", DocumentTable.id)
 
-    override val primaryKey: PrimaryKey? = PrimaryKey(id, name = "pk_civil_registry_document_id")
+    val registrationNumber = char("registration_number", 120)
 }

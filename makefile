@@ -2,7 +2,7 @@ build-ui-service:
 	gradle shadowJar -PMainClassName="ui.service.UIService" -PBaseName="UIService"
 
 build-document-service:
-	gradle shadowJar -PMainClassName="DocumentService" -PBaseName="DocumentService"
+	gradle shadowJar -PMainClassName="document.service.DocumentService" -PBaseName="DocumentService"
 
 build-authentication-service:
 	gradle shadowJar -PMainClassName="authentication.service.AuthenticationService" -PBaseName="AuthenticationService"

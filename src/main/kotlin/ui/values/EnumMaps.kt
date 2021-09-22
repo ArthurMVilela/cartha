@@ -2,10 +2,10 @@ package ui.values
 
 import authentication.Subject
 import authentication.logging.ActionType
-import document.CivilStatus
-import document.Color
-import document.Sex
-import document.UF
+import document.person.CivilStatus
+import document.person.Color
+import document.person.Sex
+import document.address.UF
 import java.time.Month
 
 object EnumMaps {

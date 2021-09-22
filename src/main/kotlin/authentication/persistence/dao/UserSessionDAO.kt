@@ -2,8 +2,8 @@ package authentication.persistence.dao
 
 import authentication.UserSession
 import authentication.persistence.tables.UserSessionTable
-import newPersistence.DAO
-import newPersistence.ResultSet
+import persistence.DAO
+import persistence.ResultSet
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*

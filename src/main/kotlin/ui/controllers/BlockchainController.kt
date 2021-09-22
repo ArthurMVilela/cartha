@@ -1,7 +1,7 @@
 package ui.controllers
 
 import blockchain.NodeInfo
-import newPersistence.ResultSet
+import persistence.ResultSet
 
 class BlockchainController {
     val nodeManagerURL = System.getenv("NODE_MANAGER_URL")?:throw Exception()

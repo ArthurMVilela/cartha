@@ -11,7 +11,7 @@ import authentication.logging.AccessLogSearchFilter
 import authentication.logging.Action
 import authentication.logging.ActionType
 import authentication.logging.controllers.AccessLogController
-import newPersistence.ResultSet
+import persistence.ResultSet
 import java.time.LocalDateTime
 import java.util.*
 import kotlin.Exception

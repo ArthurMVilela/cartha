@@ -1,18 +1,12 @@
 package document.persistence.tables.civilRegistry
 
-import document.UF
-import document.persistence.tables.PhysicalPersonTable
-import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.dao.id.IdTable
-import org.jetbrains.exposed.sql.Column
+import document.persistence.tables.person.PhysicalPersonTable
+import document.persistence.tables.address.MunicipalityTable
+import org.jetbrains.exposed.dao.id.UUIDTable
 
-object AffiliationTable : IdTable<String>("affiliation") {
-    override val id: Column<EntityID<String>> = char("id", 32).entityId()
+object AffiliationTable:UUIDTable("affiliation") {
+    val personId = optReference("person_id", PhysicalPersonTable.id)
     val documentId = reference("document_id", CivilRegistryDocumentTable.id)
-    val personId = reference("person_id", PhysicalPersonTable.id)
-    val name = varchar("name", 120)
-    val uf = enumeration("uf", UF::class).nullable()
-    val municipality = varchar("municipality", 80).nullable()
-
-    override val primaryKey: PrimaryKey? = PrimaryKey(id, name = "pk_affiliation_id")
+    val name = varchar("name", 140)
+    val municipalityId = reference("municipality_id", MunicipalityTable.id)
 }
