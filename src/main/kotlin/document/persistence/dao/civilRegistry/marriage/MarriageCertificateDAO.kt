@@ -63,7 +63,19 @@ class MarriageCertificateDAO:DAO<MarriageCertificate, UUID> {
     }
 
     override fun select(id: UUID): MarriageCertificate? {
-        TODO("Not yet implemented")
+        var found:MarriageCertificate? = null
+
+        transaction {
+            try {
+                val row = table.select(Op.build { MarriageCertificateTable.id eq id }).firstOrNull()?:return@transaction
+                found = toType(row)
+            } catch (ex: Exception) {
+                rollback()
+                throw ex
+            }
+        }
+
+        return found
     }
 
     override fun selectMany(condition: Op<Boolean>, page: Int, pageLength: Int): ResultSet<MarriageCertificate> {

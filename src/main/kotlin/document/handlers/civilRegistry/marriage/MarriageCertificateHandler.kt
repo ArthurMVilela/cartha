@@ -17,6 +17,7 @@ import java.util.*
 
 class MarriageCertificateHandler {
     private val controller = MarriageCertificateController()
+
     suspend fun createMarriageCertificate(call: ApplicationCall) {
         val requestBody = try {
             call.receive<CreateMarriageCertificateRequest>()
@@ -80,6 +81,18 @@ class MarriageCertificateHandler {
         } catch (ex: Exception) {
             throw ex
         }
+
+        call.respond(HttpStatusCode.OK, mc)
+    }
+
+    suspend fun getMarriageCertificate(call: ApplicationCall) {
+        val id = try {
+            UUID.fromString(call.parameters["id"])
+        } catch (ex: Exception) {
+            throw serviceExceptions.BadRequestException("id não válida")
+        }
+
+        val mc = controller.getMarriageCertificate(id)?:throw NotFoundException("Certidão de casamento não encontrada")
 
         call.respond(HttpStatusCode.OK, mc)
     }

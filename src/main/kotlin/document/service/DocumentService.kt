@@ -100,6 +100,9 @@ fun main() {
                         post("") {
                             marriageCertificateHandler.createMarriageCertificate(call)
                         }
+                        get("/{id}") {
+                            marriageCertificateHandler.getMarriageCertificate(call)
+                        }
                     }
                 }
             }
