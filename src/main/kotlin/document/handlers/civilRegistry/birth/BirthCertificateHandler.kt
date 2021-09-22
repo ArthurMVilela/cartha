@@ -25,6 +25,30 @@ class BirthCertificateHandler {
             throw BadRequestException("Corpo de requesição inválido")
         }
 
+        val bc = try {
+            birthCertificateController.createBirthCertificate(
+                buildBirthCertificate(requestBody)
+            )
+        } catch (ex: Exception) {
+            throw ex
+        }
+
+        call.respond(HttpStatusCode.OK, bc)
+    }
+
+    suspend fun getBirthCertificate(call: ApplicationCall) {
+        val id = try {
+            UUID.fromString(call.parameters["id"])
+        } catch (ex: Exception) {
+            throw serviceExceptions.BadRequestException("id não válida")
+        }
+
+        val bc = birthCertificateController.getBirthCertificate(id)?:throw NotFoundException("Certidão de nascimento não encontrada")
+
+        call.respond(HttpStatusCode.OK, bc)
+    }
+
+    private fun buildBirthCertificate(requestBody: CreateBirthCertificateRequest):BirthCertificate {
         val id = Document.createId()
 
         val affiliation = mutableListOf<Affiliation>()
@@ -62,54 +86,34 @@ class BirthCertificateHandler {
             )
         }
 
-        val bc = try {
-            birthCertificateController.createBirthCertificate(
-                BirthCertificate(
-                    id,
-                    DocumentStatus.WaitingValidation,
-                    requestBody.officialId,
-                    requestBody.notaryId,
-                    null,
-                    null,
-                    mutableListOf(),
-                    requestBody.personId,
-                    requestBody.name,
-                    requestBody.sex,
-                    Municipality(
-                        UUID.randomUUID(),
-                        requestBody.municipalityOfBirth.name,
-                        requestBody.municipalityOfBirth.uf
-                    ),
-                    Municipality(
-                        UUID.randomUUID(),
-                        requestBody.municipalityOfRegistry.name,
-                        requestBody.municipalityOfRegistry.uf
-                    ),
-                    requestBody.placeOfBirth,
-                    affiliation,
-                    grandparents,
-                    requestBody.dateTimeOfBirth,
-                    requestBody.dateOfRegistry,
-                    mutableSetOf(),
-                    requestBody.dnnNumber
-                )
-            )
-        } catch (ex: Exception) {
-            throw ex
-        }
-
-        call.respond(HttpStatusCode.OK, bc)
-    }
-
-    suspend fun getBirthCertificate(call: ApplicationCall) {
-        val id = try {
-            UUID.fromString(call.parameters["id"])
-        } catch (ex: Exception) {
-            throw serviceExceptions.BadRequestException("id não válida")
-        }
-
-        val bc = birthCertificateController.getBirthCertificate(id)?:throw NotFoundException("Certidão de nascimento não encontrada")
-
-        call.respond(HttpStatusCode.OK, bc)
+        return BirthCertificate(
+            id,
+            DocumentStatus.WaitingValidation,
+            requestBody.officialId,
+            requestBody.notaryId,
+            null,
+            null,
+            mutableListOf(),
+            requestBody.personId,
+            requestBody.name,
+            requestBody.sex,
+            Municipality(
+                UUID.randomUUID(),
+                requestBody.municipalityOfBirth.name,
+                requestBody.municipalityOfBirth.uf
+            ),
+            Municipality(
+                UUID.randomUUID(),
+                requestBody.municipalityOfRegistry.name,
+                requestBody.municipalityOfRegistry.uf
+            ),
+            requestBody.placeOfBirth,
+            affiliation,
+            grandparents,
+            requestBody.dateTimeOfBirth,
+            requestBody.dateOfRegistry,
+            mutableSetOf(),
+            requestBody.dnnNumber
+        )
     }
 }
