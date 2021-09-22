@@ -2,7 +2,10 @@ package document.persistence.dao.civilRegistry.birth
 
 import document.civilRegistry.birth.Grandparent
 import document.persistence.dao.address.MunicipalityDAO
+import document.persistence.tables.civilRegistry.AffiliationTable
 import document.persistence.tables.civilRegistry.birth.GrandparentTable
+import document.persistence.tables.person.PhysicalPersonTable
+import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insertAndGetId
@@ -23,7 +26,11 @@ class GrandparentDAO:DAO<Grandparent, UUID> {
                 municipalityDAO.insert(obj.municipality)
 
                 val insertedId = GrandparentTable.insertAndGetId {
-                    it[personId] = null
+                    it[personId] = if (obj.personId != null) {
+                        EntityID(obj.personId, PhysicalPersonTable)
+                    } else {
+                        null
+                    }
                     it[birthCertificateId] = obj.birthCertificateId
                     it[name] = obj.name
                     it[type] = obj.type

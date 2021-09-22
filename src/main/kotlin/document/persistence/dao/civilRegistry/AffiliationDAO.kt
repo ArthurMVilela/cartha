@@ -3,6 +3,9 @@ package document.persistence.dao.civilRegistry
 import document.civilRegistry.Affiliation
 import document.persistence.dao.address.MunicipalityDAO
 import document.persistence.tables.civilRegistry.AffiliationTable
+import document.persistence.tables.civilRegistry.birth.BirthCertificateTable
+import document.persistence.tables.person.PhysicalPersonTable
+import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insertAndGetId
@@ -23,7 +26,11 @@ class AffiliationDAO:DAO<Affiliation, UUID> {
                 val m = municipalityDAO.insert(obj.municipality)
                 val insertedId = AffiliationTable.insertAndGetId {
                     it[id] = obj.id
-                    it[personId] = null
+                    it[personId] = if (obj.personId != null) {
+                        EntityID(obj.personId!!, PhysicalPersonTable)
+                    } else {
+                        null
+                    }
                     it[documentId] = obj.documentId
                     it[name] = obj.name
                     it[municipalityId] = m.id

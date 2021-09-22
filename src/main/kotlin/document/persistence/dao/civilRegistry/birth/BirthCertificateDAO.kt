@@ -11,6 +11,8 @@ import document.persistence.tables.civilRegistry.AffiliationTable
 import document.persistence.tables.civilRegistry.CivilRegistryDocumentTable
 import document.persistence.tables.civilRegistry.birth.BirthCertificateTable
 import document.persistence.tables.civilRegistry.birth.GrandparentTable
+import document.persistence.tables.person.PhysicalPersonTable
+import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import persistence.DAO
@@ -58,7 +60,11 @@ class BirthCertificateDAO:DAO<BirthCertificate, UUID> {
                 }
                 BirthCertificateTable.insert {
                     it[id] = obj.id
-                    it[personId] = null
+                    it[personId] = if (obj.personId != null) {
+                        EntityID(obj.personId, PhysicalPersonTable)
+                    } else {
+                        null
+                    }
                     it[name] = obj.name
                     it[sex] = obj.sex
                     it[municipalityOfBirthId] = municipalityOfBirth.id
