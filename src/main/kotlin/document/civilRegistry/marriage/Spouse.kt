@@ -12,14 +12,18 @@ import java.util.*
 class Spouse(
     @Serializable(with = UUIDSerializer::class)
     val id: UUID,
+    @Serializable(with = UUIDSerializer::class)
+    @SerialName("marriage_certificate_id")
+    val marriageCertificateId: UUID,
+    @Serializable(with = UUIDSerializer::class)
+    @SerialName("person_id")
+    val personId: UUID?,
     @SerialName("single_name")
     val singleName: String,
     @SerialName("married_name")
     val marriedName: String,
     @Serializable(with = LocalDateSerializer::class)
     val birthday: LocalDate,
-    @SerialName("local_of_birth")
-    val localOfBirth: String,
     val nationality: String,
     val affiliation: List<Affiliation>
 ){

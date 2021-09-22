@@ -7,6 +7,9 @@ import document.persistence.tables.civilRegistry.AffiliationTable
 import document.persistence.tables.civilRegistry.CivilRegistryDocumentTable
 import document.persistence.tables.civilRegistry.birth.BirthCertificateTable
 import document.persistence.tables.civilRegistry.birth.GrandparentTable
+import document.persistence.tables.civilRegistry.marriage.MarriageCertificateTable
+import document.persistence.tables.civilRegistry.marriage.SpouseAffiliationTable
+import document.persistence.tables.civilRegistry.marriage.SpouseTable
 import document.persistence.tables.person.OfficialTable
 import document.persistence.tables.person.PersonTable
 import document.persistence.tables.person.PhysicalPersonTable
@@ -41,7 +44,8 @@ class DatabaseInitializer {
                     MunicipalityTable,
                     DocumentTable, CivilRegistryDocumentTable,
                     AffiliationTable,
-                    BirthCertificateTable, GrandparentTable
+                    BirthCertificateTable, GrandparentTable,
+                    MarriageCertificateTable, SpouseTable, SpouseAffiliationTable
                 )
             }
         }
