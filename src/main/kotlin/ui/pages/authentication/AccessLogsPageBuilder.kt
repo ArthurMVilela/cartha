@@ -1,11 +1,13 @@
-package ui.pages
+package ui.pages.authentication
 
 import authentication.logging.AccessLog
 import authentication.logging.AccessLogSearchFilter
 import persistence.ResultSet
+import ui.pages.Page
+import ui.pages.PageBuilder
 import ui.values.EnumMaps
 
-class AccessLogsPageBuilder:PageBuilder() {
+class AccessLogsPageBuilder: PageBuilder() {
     override val page: Page = Page("accessLogs.ftl", mutableMapOf())
 
     init {

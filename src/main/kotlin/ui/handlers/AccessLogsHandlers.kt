@@ -11,13 +11,10 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.sessions.*
 import ui.controllers.AuthenticationController
-import ui.features.UserSessionCookie
 import ui.features.getUserRole
 import ui.features.logAction
-import ui.pages.AccessLogPageBuilder
-import ui.pages.AccessLogsPageBuilder
-import ui.util.Util
-import ui.values.EnumMaps
+import ui.pages.authentication.AccessLogPageBuilder
+import ui.pages.authentication.AccessLogsPageBuilder
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
