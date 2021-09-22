@@ -100,4 +100,16 @@ class BirthCertificateHandler {
 
         call.respond(HttpStatusCode.OK, bc)
     }
+
+    suspend fun getBirthCertificate(call: ApplicationCall) {
+        val id = try {
+            UUID.fromString(call.parameters["id"])
+        } catch (ex: Exception) {
+            throw serviceExceptions.BadRequestException("id não válida")
+        }
+
+        val bc = birthCertificateController.getBirthCertificate(id)?:throw NotFoundException("Certidão de nascimento não encontrada")
+
+        call.respond(HttpStatusCode.OK, bc)
+    }
 }

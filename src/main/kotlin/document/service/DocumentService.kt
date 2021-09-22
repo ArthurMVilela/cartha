@@ -90,6 +90,9 @@ fun main() {
                         post(""){
                             birthCertificateHandler.createBirthCertificate(call)
                         }
+                        get("/{id}") {
+                            birthCertificateHandler.getBirthCertificate(call)
+                        }
                     }
                 }
             }
