@@ -1,5 +1,7 @@
 package ui.handlers
 
+import authentication.Subject
+import authentication.logging.ActionType
 import document.handlers.notary.CreateNotaryRequest
 import io.ktor.application.*
 import io.ktor.features.*
@@ -11,6 +13,7 @@ import org.jetbrains.exposed.sql.not
 import serviceExceptions.BadRequestException
 import ui.controllers.DocumentController
 import ui.features.getUserRole
+import ui.features.logAction
 import ui.pages.document.CreateNotaryPageBuilder
 import ui.pages.document.NotariesPageBuilder
 import ui.pages.document.NotaryPageBuilder
@@ -42,6 +45,9 @@ class NotaryHandler {
         pageBuilder.setupMenu(call.getUserRole())
         pageBuilder.setResultSet(notaries)
 
+
+        call.logAction(ActionType.SeeNotaries, Subject.Notaries, null)
+
         val page = pageBuilder.build()
         call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
     }
@@ -57,6 +63,8 @@ class NotaryHandler {
 
     suspend fun createNotary(call: ApplicationCall) {
         val notary = documentController.createNotary(parseCreateNotaryForm(call.receiveParameters()))
+
+        call.logAction(ActionType.AddNotary, Subject.Notary, notary.id)
 
         call.respondRedirect("/notary/${notary.id}")
     }
@@ -85,6 +93,8 @@ class NotaryHandler {
         pageBuilder.setupMenu(call.getUserRole())
         pageBuilder.setUpNotary(notary)
         pageBuilder.setOfficials(officials)
+
+        call.logAction(ActionType.SeeNotary, Subject.Notary, notary.id)
 
         val page = pageBuilder.build()
         call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))

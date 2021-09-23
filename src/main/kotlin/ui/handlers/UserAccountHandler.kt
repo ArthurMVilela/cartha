@@ -1,6 +1,8 @@
 package ui.handlers
 
 import authentication.Role
+import authentication.Subject
+import authentication.logging.ActionType
 import document.handlers.person.CreateOfficialRequest
 import document.person.Sex
 import io.ktor.application.*
@@ -14,6 +16,7 @@ import ui.controllers.AuthenticationController
 import ui.controllers.DocumentController
 import ui.features.UserSessionCookie
 import ui.features.getUserRole
+import ui.features.logAction
 import ui.pages.CreateManagerPageBuilder
 import ui.pages.CreateOfficialPageBuilder
 import ui.pages.LoginPageBuilder
@@ -168,6 +171,9 @@ class UserAccountHandler {
             throw ex
         }
 
+        call.logAction(ActionType.CreateAccount, Subject.UserAccount, user.id)
+        call.logAction(ActionType.AddOfficialToNotary, Subject.Notary, id)
+
         call.respondRedirect("/notary/$id")
     }
 
@@ -205,6 +211,9 @@ class UserAccountHandler {
         } catch (ex: Exception) {
             throw ex
         }
+
+        call.logAction(ActionType.CreateAccount, Subject.UserAccount, user.id)
+        call.logAction(ActionType.AddManagerToNotary, Subject.Notary, id)
 
         call.respondRedirect("/notary/$id")
     }

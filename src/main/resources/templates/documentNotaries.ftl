@@ -7,6 +7,11 @@
 <body>
 <#include "./partials/_topbarMenu.ftl">
 <div class="container" style="margin-top:80px">
+    <div class="row justify-content-start">
+        <div class="col">
+            <a class="btn btn-primary" href="/notary/create" role="button">Adicionar Cartório</a>
+        </div>
+    </div>
     <#if notaries??>
         <#list notaries as notary>
             <div class="row justify-content-center">
