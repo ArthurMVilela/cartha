@@ -172,6 +172,7 @@ services:
     environment:
       NODE_MANAGER_URL: "http://node_manager:8080"
       AUTHENTICATION_URL: "http://authentication:8080"
+      DOCUMENT_URL: "http://document:8080"
     networks:
       - net
 

@@ -28,6 +28,7 @@ fun main() {
     val accessLogsHandlers = AccessLogsHandlers()
     val errorPageHandler = ErrorPageHandler()
     val blockchainHandlers = BlockchainHandlers()
+    val notaryHandler = NotaryHandler()
 
     embeddedServer(Netty, port = 8080, watchPaths = listOf("templates", "js")) {
         install(StatusPages) {
@@ -112,7 +113,11 @@ fun main() {
                             blockchainHandlers.getBlockPage(call)
                         }
                     }
-
+                    route("/notary") {
+                        get("") {
+                            notaryHandler.getNotariesPage(call)
+                        }
+                    }
                 }
 
             }
