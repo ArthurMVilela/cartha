@@ -1,10 +1,13 @@
 package ui.handlers
 
+import document.handlers.notary.CreateNotaryRequest
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.freemarker.*
 import io.ktor.http.*
+import io.ktor.request.*
 import io.ktor.response.*
+import org.jetbrains.exposed.sql.not
 import serviceExceptions.BadRequestException
 import ui.controllers.DocumentController
 import ui.features.getUserRole
@@ -48,5 +51,19 @@ class NotaryHandler {
 
         val page = pageBuilder.build()
         call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
+    }
+
+    suspend fun createNotary(call: ApplicationCall) {
+        val notary = documentController.createNotary(parseCreateNotaryForm(call.receiveParameters()))
+
+        call.respond(HttpStatusCode.Created, notary.id.toString())
+    }
+
+    private fun parseCreateNotaryForm(form: Parameters): CreateNotaryRequest {
+        return CreateNotaryRequest(
+            form["name"]?:throw BadRequestException("Nome inválido ou nulo."),
+            form["cnpj"]?:throw BadRequestException("CNPJ inválido ou nulo."),
+            form["cns"]?:throw BadRequestException("CNS inválido ou nulo.")
+        )
     }
 }

@@ -1,6 +1,7 @@
 package ui.controllers
 
 import document.Notary
+import document.handlers.notary.CreateNotaryRequest
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
@@ -47,6 +48,19 @@ class DocumentClient(
 
         if (response.status == HttpStatusCode.NotFound) {
             throw NotFoundException("Página não encontrada")
+        }
+
+        return response.receive()
+    }
+
+    suspend fun createNotary(rb: CreateNotaryRequest): Notary {
+        val response: HttpResponse = try {
+            client.post("$documentUrl/notary") {
+                contentType(ContentType.Application.Json)
+                body = rb
+            }
+        } catch (ex: Exception) {
+            throw ex
         }
 
         return response.receive()

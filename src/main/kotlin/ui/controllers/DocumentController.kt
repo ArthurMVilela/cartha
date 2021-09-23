@@ -1,6 +1,7 @@
 package ui.controllers
 
 import document.Notary
+import document.handlers.notary.CreateNotaryRequest
 import persistence.ResultSet
 
 class DocumentController {
@@ -9,5 +10,9 @@ class DocumentController {
 
     suspend fun getNotaries(page:Int):ResultSet<Notary> {
         return documentClient.getNotaries(page)
+    }
+
+    suspend fun createNotary(rb: CreateNotaryRequest): Notary {
+        return documentClient.createNotary(rb)
     }
 }

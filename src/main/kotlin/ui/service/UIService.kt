@@ -120,6 +120,9 @@ fun main() {
                         get("/create") {
                             notaryHandler.getCreateNotaryPage(call)
                         }
+                        post("/create") {
+                            notaryHandler.createNotary(call)
+                        }
                     }
                 }
 
