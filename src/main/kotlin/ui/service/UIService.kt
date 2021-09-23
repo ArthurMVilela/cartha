@@ -126,8 +126,14 @@ fun main() {
                         get("/{id}/add-official") {
                             userAccountHandler.getCreateOfficialPage(call)
                         }
+                        get("/{id}/add-manager") {
+                            userAccountHandler.getCreateManagerPage(call)
+                        }
                         post("/{id}/add-official") {
                             userAccountHandler.createOfficial(call)
+                        }
+                        post("/{id}/add-manager") {
+                            userAccountHandler.createManager(call)
                         }
                         post("/create") {
                             notaryHandler.createNotary(call)

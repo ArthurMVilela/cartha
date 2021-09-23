@@ -14,6 +14,7 @@ import ui.controllers.AuthenticationController
 import ui.controllers.DocumentController
 import ui.features.UserSessionCookie
 import ui.features.getUserRole
+import ui.pages.CreateManagerPageBuilder
 import ui.pages.CreateOfficialPageBuilder
 import ui.pages.LoginPageBuilder
 import ui.util.Util
@@ -116,6 +117,22 @@ class UserAccountHandler {
         call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
     }
 
+    suspend fun getCreateManagerPage(call: ApplicationCall) {
+        val id = try {
+            UUID.fromString(call.parameters["id"])
+        } catch (ex: Exception) {
+            throw io.ktor.features.BadRequestException("Id inválida.")
+        }
+
+        val pageBuilder = CreateManagerPageBuilder()
+
+        pageBuilder.setupMenu(call.getUserRole())
+        pageBuilder.setNotaryId(id)
+
+        val page = pageBuilder.build()
+        call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
+    }
+
     suspend fun createOfficial(call: ApplicationCall) {
         val id = try {
             UUID.fromString(call.parameters["id"])
@@ -129,6 +146,44 @@ class UserAccountHandler {
             authController.createAccount(
                 form["name"]!!,
                 Role.Official,
+                form["email"]!!,
+                form["cpf"]!!,
+                null,
+                form["password"]!!,
+                id
+            )
+        } catch (ex: Exception) {
+            throw ex
+        }
+
+        val official = try {
+            documentController.createOfficial(CreateOfficialRequest(
+                user.id,
+                user.name,
+                user.cpf!!,
+                Sex.valueOf(form["sex"]!!),
+                id
+            ))
+        } catch (ex: Exception) {
+            throw ex
+        }
+
+        call.respondRedirect("/notary/$id")
+    }
+
+    suspend fun createManager(call: ApplicationCall) {
+        val id = try {
+            UUID.fromString(call.parameters["id"])
+        } catch (ex: Exception) {
+            throw io.ktor.features.BadRequestException("Id inválida.")
+        }
+
+        val form = call.receiveParameters()
+
+        val user = try {
+            authController.createAccount(
+                form["name"]!!,
+                Role.Manager,
                 form["email"]!!,
                 form["cpf"]!!,
                 null,
