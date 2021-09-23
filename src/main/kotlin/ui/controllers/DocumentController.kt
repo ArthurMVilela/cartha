@@ -2,6 +2,7 @@ package ui.controllers
 
 import document.Notary
 import document.handlers.notary.CreateNotaryRequest
+import document.person.Official
 import persistence.ResultSet
 import java.util.*
 
@@ -19,5 +20,9 @@ class DocumentController {
 
     suspend fun getNotary(id: UUID): Notary {
         return documentClient.getNotary(id)
+    }
+
+    suspend fun getOfficials(notaryId: UUID): List<Official> {
+        return documentClient.getOfficials(notaryId)
     }
 }

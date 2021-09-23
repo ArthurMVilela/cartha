@@ -74,10 +74,17 @@ class NotaryHandler {
             throw ex
         }
 
+        val officials = try {
+            documentController.getOfficials(notary.id)
+        } catch (ex: Exception) {
+            throw ex
+        }
+
         val pageBuilder = NotaryPageBuilder()
 
         pageBuilder.setupMenu(call.getUserRole())
         pageBuilder.setUpNotary(notary)
+        pageBuilder.setOfficials(officials)
 
         val page = pageBuilder.build()
         call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))

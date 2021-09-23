@@ -2,6 +2,7 @@ package ui.controllers
 
 import document.Notary
 import document.handlers.notary.CreateNotaryRequest
+import document.person.Official
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
@@ -72,6 +73,16 @@ class DocumentClient(
             client.get("$documentUrl/notary/$id") {
 
             }
+        } catch (ex: Exception) {
+            throw ex
+        }
+
+        return response.receive()
+    }
+
+    suspend fun getOfficials(id: UUID): List<Official> {
+        val response:HttpResponse = try {
+            client.get("$documentUrl/person/official/notary/$id") {}
         } catch (ex: Exception) {
             throw ex
         }

@@ -8,7 +8,7 @@
 <#include "./partials/_topbarMenu.ftl">
 <div class="container" style="margin-top:80px">
     <div class="row justify-content-center">
-        <h2>Cartório (ID: ${notary.id})</h2>
+        <h2 class="m-3">Cartório (ID: ${notary.id})</h2>
     </div>
     <div class="row justify-content-center">
         <div class="col">
@@ -27,6 +27,27 @@
             <a class="btn btn-primary" href="/notary/${notary.id}/add-manager" role="button">Adicionar Gerente</a>
             <a class="btn btn-primary" href="/notary/${notary.id}/add-official" role="button">Adicionar Funcionário</a>
         </div>
+    </div>
+    <div class="row justify-content-center">
+        <h3 class="m-3">Funcionários e gerentes: </h3>
+    </div>
+    <div class="row justify-content-center">
+        <table class="table col m-3">
+            <thead>
+                <tr>
+                    <th scope="col">CPF</th>
+                    <th scope="col">Nome</th>
+                </tr>
+            </thead>
+            <tbody>
+                <#list officials as official>
+                    <tr>
+                        <td>${official.cpf}</td>
+                        <td>${official.name}</td>
+                    </tr>
+                </#list>
+            </tbody>
+        </table>
     </div>
 </div>
 

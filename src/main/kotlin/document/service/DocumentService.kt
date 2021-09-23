@@ -84,6 +84,9 @@ fun main() {
                     get("/cpf/{cpf}") {
                         personHandler.getOfficial(call)
                     }
+                    get("/notary/{id}") {
+                        personHandler.getOfficials(call)
+                    }
                 }
             }
             route("/document") {

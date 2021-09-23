@@ -82,7 +82,22 @@ class OfficialDAO:DAO<Official, UUID> {
     }
 
     override fun selectMany(condition: Op<Boolean>): List<Official> {
-        TODO("Not yet implemented")
+        val results = mutableListOf<Official>()
+
+        transaction {
+            try {
+                val rows = table.select(condition)
+
+                rows.forEach {
+                    results.add(toType(it))
+                }
+            } catch (ex: Exception) {
+                rollback()
+                throw ex
+            }
+        }
+
+        return results
     }
 
     override fun selectAll(page: Int, pageLength: Int): ResultSet<Official> {
