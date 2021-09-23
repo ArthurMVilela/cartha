@@ -2,6 +2,7 @@ package ui.controllers
 
 import authentication.Role
 import authentication.Subject
+import authentication.User
 import authentication.UserSession
 import authentication.handlers.AccessLogRequestBody
 import authentication.logging.AccessLog
@@ -110,5 +111,17 @@ class AuthenticationController {
         )
 
         authenticationClient.logAction(request)
+    }
+
+    suspend fun createAccount(
+        name: String,
+        role: Role,
+        email: String,
+        cpf: String?,
+        cnpj: String?,
+        password: String,
+        notaryId: UUID?
+    ): User {
+        return authenticationClient.createAccount(name, role, email, cpf, cnpj, password, notaryId)
     }
 }

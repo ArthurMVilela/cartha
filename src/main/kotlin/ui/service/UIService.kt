@@ -123,6 +123,12 @@ fun main() {
                         get("/create") {
                             notaryHandler.getCreateNotaryPage(call)
                         }
+                        get("/{id}/add-official") {
+                            userAccountHandler.getCreateOfficialPage(call)
+                        }
+                        post("/{id}/add-official") {
+                            userAccountHandler.createOfficial(call)
+                        }
                         post("/create") {
                             notaryHandler.createNotary(call)
                         }
