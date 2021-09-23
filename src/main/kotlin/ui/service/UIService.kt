@@ -117,6 +117,9 @@ fun main() {
                         get("") {
                             notaryHandler.getNotariesPage(call)
                         }
+                        get("/{id}") {
+                            notaryHandler.getNotaryPage(call)
+                        }
                         get("/create") {
                             notaryHandler.getCreateNotaryPage(call)
                         }

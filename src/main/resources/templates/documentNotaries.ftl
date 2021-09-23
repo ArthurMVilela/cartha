@@ -7,9 +7,9 @@
 <body>
 <#include "./partials/_topbarMenu.ftl">
 <div class="container" style="margin-top:80px">
-    <div class="row justify-content-center">
-        <#if notaries??>
-            <#list notaries as notary>
+    <#if notaries??>
+        <#list notaries as notary>
+            <div class="row justify-content-center">
                 <div class="col ">
                     <div class="card m-3">
                         <div class="col ">
@@ -21,13 +21,16 @@
                                     <li class="list-group-item">CNS: ${notary.cns}</li>
                                 </ul>
                             </div>
+                            <div class="card-body">
+                                <a href="/notary/${notary.id}" class="card-link">Ver Cartório</a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </#list>
-        </#if>
+            </div>
+        </#list>
+    </#if>
 
-    </div>
     <div class="row justify-content-center">
         <div class="col">
             <div class="input-group mb-3">

@@ -13,6 +13,8 @@ import ui.controllers.DocumentController
 import ui.features.getUserRole
 import ui.pages.document.CreateNotaryPageBuilder
 import ui.pages.document.NotariesPageBuilder
+import ui.pages.document.NotaryPageBuilder
+import java.util.*
 
 class NotaryHandler {
     private val documentController = DocumentController()
@@ -56,7 +58,29 @@ class NotaryHandler {
     suspend fun createNotary(call: ApplicationCall) {
         val notary = documentController.createNotary(parseCreateNotaryForm(call.receiveParameters()))
 
-        call.respond(HttpStatusCode.Created, notary.id.toString())
+        call.respondRedirect("/notary/${notary.id}")
+    }
+
+    suspend fun getNotaryPage(call: ApplicationCall) {
+        val id = try {
+            UUID.fromString(call.parameters["id"])
+        } catch (ex: Exception) {
+            throw io.ktor.features.BadRequestException("Id inválida.")
+        }
+
+        val notary = try {
+            documentController.getNotary(id)
+        } catch (ex: Exception) {
+            throw ex
+        }
+
+        val pageBuilder = NotaryPageBuilder()
+
+        pageBuilder.setupMenu(call.getUserRole())
+        pageBuilder.setUpNotary(notary)
+
+        val page = pageBuilder.build()
+        call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
     }
 
     private fun parseCreateNotaryForm(form: Parameters): CreateNotaryRequest {

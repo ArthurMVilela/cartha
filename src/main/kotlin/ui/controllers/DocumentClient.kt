@@ -14,6 +14,7 @@ import io.ktor.client.statement.*
 import io.ktor.features.*
 import io.ktor.http.*
 import persistence.ResultSet
+import java.util.*
 
 class DocumentClient(
     val documentUrl: String
@@ -58,6 +59,18 @@ class DocumentClient(
             client.post("$documentUrl/notary") {
                 contentType(ContentType.Application.Json)
                 body = rb
+            }
+        } catch (ex: Exception) {
+            throw ex
+        }
+
+        return response.receive()
+    }
+
+    suspend fun getNotary(id: UUID): Notary {
+        val response:HttpResponse = try {
+            client.get("$documentUrl/notary/$id") {
+
             }
         } catch (ex: Exception) {
             throw ex

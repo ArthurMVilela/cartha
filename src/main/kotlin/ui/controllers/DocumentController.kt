@@ -3,10 +3,11 @@ package ui.controllers
 import document.Notary
 import document.handlers.notary.CreateNotaryRequest
 import persistence.ResultSet
+import java.util.*
 
 class DocumentController {
-    private val nodeManagerURL = System.getenv("DOCUMENT_URL")?:throw Exception()
-    private val documentClient = DocumentClient(nodeManagerURL)
+    private val documentUrl = System.getenv("DOCUMENT_URL")?:throw Exception()
+    private val documentClient = ui.controllers.DocumentClient(documentUrl)
 
     suspend fun getNotaries(page:Int):ResultSet<Notary> {
         return documentClient.getNotaries(page)
@@ -14,5 +15,9 @@ class DocumentController {
 
     suspend fun createNotary(rb: CreateNotaryRequest): Notary {
         return documentClient.createNotary(rb)
+    }
+
+    suspend fun getNotary(id: UUID): Notary {
+        return documentClient.getNotary(id)
     }
 }
