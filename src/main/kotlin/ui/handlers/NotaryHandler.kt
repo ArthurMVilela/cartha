@@ -8,6 +8,7 @@ import io.ktor.response.*
 import serviceExceptions.BadRequestException
 import ui.controllers.DocumentController
 import ui.features.getUserRole
+import ui.pages.document.CreateNotaryPageBuilder
 import ui.pages.document.NotariesPageBuilder
 
 class NotaryHandler {
@@ -35,6 +36,15 @@ class NotaryHandler {
 
         pageBuilder.setupMenu(call.getUserRole())
         pageBuilder.setResultSet(notaries)
+
+        val page = pageBuilder.build()
+        call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
+    }
+
+    suspend fun getCreateNotaryPage(call: ApplicationCall) {
+        val pageBuilder = CreateNotaryPageBuilder()
+
+        pageBuilder.setupMenu(call.getUserRole())
 
         val page = pageBuilder.build()
         call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
