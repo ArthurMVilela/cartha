@@ -2,7 +2,9 @@
 
 package ui.service
 
+import authentication.Permission
 import authentication.Role
+import authentication.Subject
 import authentication.logging.AccessLogSearchFilter
 import freemarker.cache.ClassTemplateLoader
 import freemarker.core.HTMLOutputFormat
@@ -17,10 +19,9 @@ import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.sessions.*
-import ui.features.AuthenticationMiddleware
-import ui.features.UserSessionCookie
-import ui.features.authorizedRoute
+import ui.features.*
 import ui.handlers.*
+import java.util.*
 
 fun main() {
     val mainPageHandler = MainPageHandler()
@@ -81,12 +82,12 @@ fun main() {
             }
 
             authenticate {
-                authorizedRoute(Role.Client, null) {
+                authorizedRoute(Role.Client) {
                     get("/document") {
                         call.respond("Hello")
                     }
                 }
-                authorizedRoute(Role.SysAdmin, null) {
+                authorizedRoute(Role.SysAdmin) {
                     get("/logs") {
                         accessLogsHandlers.getLogs(call)
                     }
@@ -113,30 +114,53 @@ fun main() {
                             blockchainHandlers.getBlockPage(call)
                         }
                     }
-                    route("/notary") {
-                        get("") {
-                            notaryHandler.getNotariesPage(call)
-                        }
-                        get("/{id}") {
-                            notaryHandler.getNotaryPage(call)
-                        }
+                }
+
+                route("/notary") {
+                    authorizedRoute(Role.SysAdmin) {
                         get("/create") {
                             notaryHandler.getCreateNotaryPage(call)
                         }
-                        get("/{id}/add-official") {
-                            userAccountHandler.getCreateOfficialPage(call)
-                        }
+
                         get("/{id}/add-manager") {
                             userAccountHandler.getCreateManagerPage(call)
                         }
-                        post("/{id}/add-official") {
-                            userAccountHandler.createOfficial(call)
-                        }
+
                         post("/{id}/add-manager") {
                             userAccountHandler.createManager(call)
                         }
                         post("/create") {
                             notaryHandler.createNotary(call)
+                        }
+                    }
+                    authorizedRoute(Role.SysAdmin, Role.Manager) {
+                        get("") {
+                            if (call.getUserRole() == Role.Manager) {
+                                val id = call.getUserPermissions().first { it.subject == Subject.Notary && it.domainId != null }.domainId
+                                call.respondRedirect("/notary/${id}")
+                            }
+                            notaryHandler.getNotariesPage(call)
+                        }
+                        get("/{id}") {
+                            if (call.getUserRole() == Role.Manager) {
+                                val id = UUID.fromString(call.parameters["id"])
+                                call.checkForPermission(Permission(null, Subject.Notary, id))
+                            }
+                            notaryHandler.getNotaryPage(call)
+                        }
+                        get("/{id}/add-official") {
+                            if (call.getUserRole() == Role.Manager) {
+                                val id = UUID.fromString(call.parameters["id"])
+                                call.checkForPermission(Permission(null, Subject.Notary, id))
+                            }
+                            userAccountHandler.getCreateOfficialPage(call)
+                        }
+                        post("/{id}/add-official") {
+                            if (call.getUserRole() == Role.Manager) {
+                                val id = UUID.fromString(call.parameters["id"])
+                                call.checkForPermission(Permission(null, Subject.Notary, id))
+                            }
+                            userAccountHandler.createOfficial(call)
                         }
                     }
                 }

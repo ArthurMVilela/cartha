@@ -15,7 +15,7 @@ object Menus {
     val manager = mapOf(
         "Início" to "/",
         "Registro cívil" to "/civil-registry",
-        "Funcionários" to "/official"
+        "Cartório" to "/notary"
     )
     val sysAdmin = mapOf(
         "Início" to "/",
