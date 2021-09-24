@@ -3,7 +3,9 @@ package ui.controllers
 import document.Notary
 import document.handlers.notary.CreateNotaryRequest
 import document.handlers.person.CreateOfficialRequest
+import document.handlers.person.CreatePhysicalPersonRequest
 import document.person.Official
+import document.person.PhysicalPerson
 import persistence.ResultSet
 import java.util.*
 
@@ -29,5 +31,9 @@ class DocumentController {
 
     suspend fun createOfficial(rb: CreateOfficialRequest): Official {
         return documentClient.createOfficial(rb)
+    }
+
+    suspend fun createPhysicalPerson(rb: CreatePhysicalPersonRequest): PhysicalPerson {
+        return documentClient.createPhysicalPerson(rb)
     }
 }

@@ -4,6 +4,9 @@ import authentication.Role
 import authentication.Subject
 import authentication.logging.ActionType
 import document.handlers.person.CreateOfficialRequest
+import document.handlers.person.CreatePhysicalPersonRequest
+import document.person.CivilStatus
+import document.person.Color
 import document.person.Sex
 import io.ktor.application.*
 import io.ktor.freemarker.*
@@ -17,10 +20,13 @@ import ui.controllers.DocumentController
 import ui.features.UserSessionCookie
 import ui.features.getUserRole
 import ui.features.logAction
+import ui.pages.CreateClientPageBuilder
 import ui.pages.CreateManagerPageBuilder
 import ui.pages.CreateOfficialPageBuilder
 import ui.pages.LoginPageBuilder
 import ui.util.Util
+import java.time.LocalDate
+import java.time.Month
 import java.util.*
 
 class UserAccountHandler {
@@ -216,5 +222,53 @@ class UserAccountHandler {
         call.logAction(ActionType.AddManagerToNotary, Subject.Notary, id)
 
         call.respondRedirect("/notary/$id")
+    }
+
+    suspend fun getCreateClientPage(call: ApplicationCall) {
+        val pageBuilder = CreateClientPageBuilder()
+
+        pageBuilder.setupMenu(call.getUserRole())
+
+        val page = pageBuilder.build()
+        call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
+    }
+
+    suspend fun createClient(call: ApplicationCall){
+        val form = call.receiveParameters()
+
+        val user = try {
+            authController.createAccount(
+                form["name"]!!,
+                Role.Client,
+                form["email"]!!,
+                form["cpf"]!!,
+                null,
+                form["password"]!!,
+                null
+            )
+        } catch (ex: Exception) {
+            throw ex
+        }
+
+        val physicalPerson = try {
+            documentController.createPhysicalPerson(CreatePhysicalPersonRequest(
+                user.id,
+                user.name,
+                user.cpf!!,
+                LocalDate.of(
+                    form["birthday-year"]!!.toInt(),
+                    Month.valueOf(form["birthday-month"]!!),
+                    form["birthday-day"]!!.toInt()
+                ),
+                Sex.valueOf(form["sex"]!!),
+                Color.valueOf(form["color"]!!),
+                CivilStatus.valueOf(form["civil-status"]!!),
+                form["nationality"]!!
+            ))
+        } catch (ex: Exception) {
+            throw ex
+        }
+
+        call.respondRedirect("/login")
     }
 }

@@ -3,7 +3,9 @@ package ui.controllers
 import document.Notary
 import document.handlers.notary.CreateNotaryRequest
 import document.handlers.person.CreateOfficialRequest
+import document.handlers.person.CreatePhysicalPersonRequest
 import document.person.Official
+import document.person.PhysicalPerson
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
@@ -98,6 +100,19 @@ class DocumentClient(
                 body = rb
             }
         } catch (ex: Exception) {
+            throw ex
+        }
+
+        return response.receive()
+    }
+
+    suspend fun createPhysicalPerson(rb: CreatePhysicalPersonRequest): PhysicalPerson {
+        val response:HttpResponse = try {
+            client.post("$documentUrl/person/physical_person") {
+                contentType(ContentType.Application.Json)
+                body = rb
+            }
+        }catch (ex: Exception) {
             throw ex
         }
 

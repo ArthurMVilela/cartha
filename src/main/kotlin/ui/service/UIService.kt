@@ -81,6 +81,13 @@ fun main() {
                 userAccountHandler.logout(call)
             }
 
+            get("/create-account") {
+                userAccountHandler.getCreateClientPage(call)
+            }
+            post("/create-account") {
+                userAccountHandler.createClient(call)
+            }
+
             authenticate {
                 authorizedRoute(Role.Client) {
                     get("/document") {
