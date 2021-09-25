@@ -30,6 +30,7 @@ fun main() {
     val errorPageHandler = ErrorPageHandler()
     val blockchainHandlers = BlockchainHandlers()
     val notaryHandler = NotaryHandler()
+    val birthCertificateHandler = BirthCertificateHandler()
 
     embeddedServer(Netty, port = 8080, watchPaths = listOf("templates", "js")) {
         install(StatusPages) {
@@ -143,7 +144,8 @@ fun main() {
                     authorizedRoute(Role.SysAdmin, Role.Manager) {
                         get("") {
                             if (call.getUserRole() == Role.Manager) {
-                                val id = call.getUserPermissions().first { it.subject == Subject.Notary && it.domainId != null }.domainId
+                                val id = call.getUserPermissions()
+                                    .first { it.subject == Subject.Notary && it.domainId != null }.domainId
                                 call.respondRedirect("/notary/${id}")
                             }
                             notaryHandler.getNotariesPage(call)
@@ -172,6 +174,32 @@ fun main() {
                     }
                 }
 
+
+            }
+            route("/civil-registry") {
+                route("/birth") {
+                    get("") {
+
+                    }
+                    get("/create") {
+                        birthCertificateHandler.getCreateBirthCertificatePage(call)
+                    }
+                    post("/create") {
+
+                    }
+                    get("/official/{id}") {
+                        call.respond("Mostrar certidões de nascimento feitas por este funcionário")
+                    }
+                    get("/notary/{id}") {
+                        call.respond("Mostrar certidões de nascimento feitas neste cartório")
+                    }
+                    get("/{id}") {
+                        call.respond("Mostrar certidão de nascimento com este id")
+                    }
+                    get("/person/{id}") {
+                        call.respond("Mostrar certidões de nascimento feitas deste cliente")
+                    }
+                }
             }
         }
     }.start(true)

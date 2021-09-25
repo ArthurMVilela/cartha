@@ -6,6 +6,7 @@ import document.person.CivilStatus
 import document.person.Color
 import document.person.Sex
 import document.address.UF
+import document.civilRegistry.birth.GrandparentType
 import java.time.Month
 
 object EnumMaps {
@@ -30,6 +31,8 @@ object EnumMaps {
 
     val subjects = mutableMapOf<String,String>()
     val actionTypes = mutableMapOf<String,String>()
+
+    val grandparentType = mutableMapOf<String,String>()
     init {
         Sex.values().forEach {
             sex[it.name] = it.value
@@ -49,6 +52,10 @@ object EnumMaps {
         }
         ActionType.values().forEach {
             actionTypes[it.name] = it.value
+        }
+
+        GrandparentType.values().forEach {
+            grandparentType[it.name] = it.value
         }
     }
 
