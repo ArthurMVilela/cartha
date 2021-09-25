@@ -1,6 +1,8 @@
 package ui.controllers
 
 import document.Notary
+import document.civilRegistry.birth.BirthCertificate
+import document.handlers.civilRegistry.birth.CreateBirthCertificateRequest
 import document.handlers.notary.CreateNotaryRequest
 import document.handlers.person.CreateOfficialRequest
 import document.handlers.person.CreatePhysicalPersonRequest
@@ -35,5 +37,9 @@ class DocumentController {
 
     suspend fun createPhysicalPerson(rb: CreatePhysicalPersonRequest): PhysicalPerson {
         return documentClient.createPhysicalPerson(rb)
+    }
+
+    suspend fun createBirthCertificate(rb: CreateBirthCertificateRequest): BirthCertificate {
+        return documentClient.createBirthCertificate(rb)
     }
 }

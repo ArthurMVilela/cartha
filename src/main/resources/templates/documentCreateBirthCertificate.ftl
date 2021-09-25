@@ -48,11 +48,11 @@
             </div>
 
             <div class="m-3">
-                <label for="birth-hour" class="form-label">Hora de nascimento: </label>
-                <div id="birth-hour" class="input-group mb-3">
-                    <input id="birth-hour-h" name="birth-hour-h" type="number" class="form-control" min="0" max="23">
+                <label for="birth-time" class="form-label">Hora de nascimento: </label>
+                <div id="birth-time" class="input-group mb-3">
+                    <input id="birth-time-h" name="birth-time-h" type="number" class="form-control" min="0" max="23">
                     <span class="input-group-text"> : </span>
-                    <input id="birth-hour-m" name="birth-hour-m" type="number" class="form-control" min="0" max="59">
+                    <input id="birth-time-m" name="birth-time-m" type="number" class="form-control" min="0" max="59">
                 </div>
             </div>
 
@@ -82,6 +82,14 @@
                             <option value="${i}">${v}</option>
                         </#list>
                     </select>
+                </div>
+            </div>
+
+            <div class="m-3">
+                <label for="place-of-birth" class="form-label">Local de nascimento: </label>
+                <input id="place-of-birth" type="text" class="form-control" name="place-of-birth">
+                <div class="invalid-feedback">
+                    Você deve inserir nome do cartório
                 </div>
             </div>
 

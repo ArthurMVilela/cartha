@@ -94,3 +94,11 @@ suspend fun ApplicationCall.getUserPermissions(): HashSet<Permission> {
 
     return session.user.permissions
 }
+
+suspend fun ApplicationCall.getUserId(): UUID {
+    val authController = AuthenticationController()
+    val sessionCookie = sessions.get<UserSessionCookie>()?:throw UserSessionNotFound("Usuário não logado.")
+    val session = authController.getSession(sessionCookie)
+
+    return session.user.id
+}

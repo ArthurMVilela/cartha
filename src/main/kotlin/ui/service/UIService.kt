@@ -174,33 +174,36 @@ fun main() {
                     }
                 }
 
+                route("/civil-registry") {
+                    route("/birth") {
+                        get("") {
 
-            }
-            route("/civil-registry") {
-                route("/birth") {
-                    get("") {
-
-                    }
-                    get("/create") {
-                        birthCertificateHandler.getCreateBirthCertificatePage(call)
-                    }
-                    post("/create") {
-
-                    }
-                    get("/official/{id}") {
-                        call.respond("Mostrar certidões de nascimento feitas por este funcionário")
-                    }
-                    get("/notary/{id}") {
-                        call.respond("Mostrar certidões de nascimento feitas neste cartório")
-                    }
-                    get("/{id}") {
-                        call.respond("Mostrar certidão de nascimento com este id")
-                    }
-                    get("/person/{id}") {
-                        call.respond("Mostrar certidões de nascimento feitas deste cliente")
+                        }
+                        authorizedRoute(Role.Manager, Role.Official) {
+                            get("/create") {
+                                birthCertificateHandler.getCreateBirthCertificatePage(call)
+                            }
+                            post("/create") {
+                                birthCertificateHandler.createBirthCertificate(call)
+                            }
+                        }
+                        get("/official/{id}") {
+                            call.respond("Mostrar certidões de nascimento feitas por este funcionário")
+                        }
+                        get("/notary/{id}") {
+                            call.respond("Mostrar certidões de nascimento feitas neste cartório")
+                        }
+                        get("/{id}") {
+                            call.respond("Mostrar certidão de nascimento com este id")
+                        }
+                        get("/person/{id}") {
+                            call.respond("Mostrar certidões de nascimento feitas deste cliente")
+                        }
                     }
                 }
+
             }
+
         }
     }.start(true)
 }

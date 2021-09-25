@@ -1,6 +1,8 @@
 package ui.controllers
 
 import document.Notary
+import document.civilRegistry.birth.BirthCertificate
+import document.handlers.civilRegistry.birth.CreateBirthCertificateRequest
 import document.handlers.notary.CreateNotaryRequest
 import document.handlers.person.CreateOfficialRequest
 import document.handlers.person.CreatePhysicalPersonRequest
@@ -109,6 +111,19 @@ class DocumentClient(
     suspend fun createPhysicalPerson(rb: CreatePhysicalPersonRequest): PhysicalPerson {
         val response:HttpResponse = try {
             client.post("$documentUrl/person/physical_person") {
+                contentType(ContentType.Application.Json)
+                body = rb
+            }
+        }catch (ex: Exception) {
+            throw ex
+        }
+
+        return response.receive()
+    }
+
+    suspend fun createBirthCertificate(rb: CreateBirthCertificateRequest): BirthCertificate {
+        val response:HttpResponse = try {
+            client.post("$documentUrl/document/civil_registry/birth") {
                 contentType(ContentType.Application.Json)
                 body = rb
             }
