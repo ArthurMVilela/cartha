@@ -42,4 +42,8 @@ class DocumentController {
     suspend fun createBirthCertificate(rb: CreateBirthCertificateRequest): BirthCertificate {
         return documentClient.createBirthCertificate(rb)
     }
+
+    suspend fun getBirthCertificate(id: UUID): BirthCertificate {
+        return documentClient.getBirthCertificate(id)
+    }
 }

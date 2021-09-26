@@ -133,4 +133,15 @@ class DocumentClient(
 
         return response.receive()
     }
+
+    suspend fun getBirthCertificate(id: UUID): BirthCertificate {
+        val response:HttpResponse = try {
+            client.get("$documentUrl/document/civil_registry/birth/$id") {
+            }
+        }catch (ex: Exception) {
+            throw ex
+        }
+
+        return response.receive()
+    }
 }

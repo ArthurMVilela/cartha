@@ -193,11 +193,12 @@ fun main() {
                         get("/notary/{id}") {
                             call.respond("Mostrar certidões de nascimento feitas neste cartório")
                         }
-                        get("/{id}") {
-                            call.respond("Mostrar certidão de nascimento com este id")
-                        }
+
                         get("/person/{id}") {
                             call.respond("Mostrar certidões de nascimento feitas deste cliente")
+                        }
+                        get("/{id}") {
+                            birthCertificateHandler.getBirthCertificatePage(call)
                         }
                     }
                 }

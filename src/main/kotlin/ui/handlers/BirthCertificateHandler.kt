@@ -11,6 +11,7 @@ import document.handlers.civilRegistry.birth.CreateBirthCertificateRequest
 import document.handlers.civilRegistry.birth.CreateGrandparentRequest
 import document.person.Sex
 import io.ktor.application.*
+import io.ktor.features.*
 import io.ktor.freemarker.*
 import io.ktor.http.*
 import io.ktor.request.*
@@ -19,6 +20,7 @@ import ui.controllers.DocumentController
 import ui.features.getUserId
 import ui.features.getUserPermissions
 import ui.features.getUserRole
+import ui.pages.document.civilRegistry.BirthCertificatePage
 import ui.pages.document.civilRegistry.CreateBirthCertificatePageBuilder
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -28,6 +30,27 @@ import java.util.*
 
 class BirthCertificateHandler {
     private val documentController = DocumentController()
+
+    suspend fun getBirthCertificatePage(call: ApplicationCall) {
+        val id = try {
+            UUID.fromString(call.parameters["id"])
+        } catch (ex: Exception) {
+            throw io.ktor.features.BadRequestException("Id inválida.")
+        }
+
+        val bc = try {
+            documentController.getBirthCertificate(id)
+        } catch (ex: Exception) {
+            throw NotFoundException("Não encontrada.")
+        }
+
+        val pageBuilder = BirthCertificatePage()
+        pageBuilder.setupMenu(call.getUserRole())
+        pageBuilder.setBirthCertificate(bc)
+
+        val page = pageBuilder.build()
+        call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
+    }
 
     suspend fun getCreateBirthCertificatePage(call: ApplicationCall) {
         val userId = call.getUserId()
