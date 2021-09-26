@@ -7,6 +7,7 @@ import document.civilRegistry.birth.Twin
 import document.persistence.dao.address.MunicipalityDAO
 import document.persistence.dao.civilRegistry.AffiliationDAO
 import document.persistence.tables.DocumentTable
+import document.persistence.tables.NotaryTable
 import document.persistence.tables.civilRegistry.AffiliationTable
 import document.persistence.tables.civilRegistry.CivilRegistryDocumentTable
 import document.persistence.tables.civilRegistry.birth.BirthCertificateTable
@@ -18,6 +19,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import persistence.DAO
 import persistence.ResultSet
 import java.util.*
+import kotlin.math.ceil
 
 class BirthCertificateDAO:DAO<BirthCertificate, UUID> {
     private val affiliationDAO = AffiliationDAO()
@@ -109,7 +111,26 @@ class BirthCertificateDAO:DAO<BirthCertificate, UUID> {
     }
 
     override fun selectMany(condition: Op<Boolean>, page: Int, pageLength: Int): ResultSet<BirthCertificate> {
-        TODO("Not yet implemented")
+        var numberOfPages = 0
+        val results = mutableListOf<BirthCertificate>()
+
+        transaction {
+            try {
+                val count = table.select(condition).count()
+                numberOfPages = ceil(count/(pageLength * 1.0f)).toInt()
+
+                val rows = table.select(condition).limit((pageLength * page), ((page - 1) * pageLength).toLong())
+
+                rows.forEach {
+                    results.add(toType(it))
+                }
+            } catch (ex: Exception) {
+                rollback()
+                throw ex
+            }
+        }
+
+        return ResultSet(results, page, numberOfPages, pageLength)
     }
 
     override fun selectMany(condition: Op<Boolean>): List<BirthCertificate> {

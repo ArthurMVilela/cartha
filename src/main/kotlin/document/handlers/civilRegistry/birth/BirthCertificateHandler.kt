@@ -48,6 +48,50 @@ class BirthCertificateHandler {
         call.respond(HttpStatusCode.OK, bc)
     }
 
+    suspend fun getBirthCertificatesByOfficial(call: ApplicationCall) {
+        val id = try {
+            UUID.fromString(call.parameters["id"])
+        } catch (ex: Exception) {
+            throw serviceExceptions.BadRequestException("id não válida")
+        }
+
+        val page = try {
+            call.request.queryParameters["page"]?.toInt()?:1
+        } catch (ex: Exception) {
+            throw serviceExceptions.BadRequestException("Página inválida")
+        }
+
+        if (page < 1) {
+            throw serviceExceptions.BadRequestException("Página inválida")
+        }
+
+        val bc = birthCertificateController.getBirthCertificatesByOfficial(id, 1)
+
+        call.respond(HttpStatusCode.OK, bc)
+    }
+
+    suspend fun getBirthCertificatesByNotary(call: ApplicationCall) {
+        val id = try {
+            UUID.fromString(call.parameters["id"])
+        } catch (ex: Exception) {
+            throw serviceExceptions.BadRequestException("id não válida")
+        }
+
+        val page = try {
+            call.request.queryParameters["page"]?.toInt()?:1
+        } catch (ex: Exception) {
+            throw serviceExceptions.BadRequestException("Página inválida")
+        }
+
+        if (page < 1) {
+            throw serviceExceptions.BadRequestException("Página inválida")
+        }
+
+        val bc = birthCertificateController.getBirthCertificatesByNotary(id, 1)
+
+        call.respond(HttpStatusCode.OK, bc)
+    }
+
     private fun buildBirthCertificate(requestBody: CreateBirthCertificateRequest):BirthCertificate {
         val id = Document.createId()
 

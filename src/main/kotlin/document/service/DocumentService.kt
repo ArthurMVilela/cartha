@@ -98,6 +98,12 @@ fun main() {
                         get("/{id}") {
                             birthCertificateHandler.getBirthCertificate(call)
                         }
+                        get("/official/{id}") {
+                            birthCertificateHandler.getBirthCertificatesByOfficial(call)
+                        }
+                        get("/notary/{id}") {
+                            birthCertificateHandler.getBirthCertificatesByNotary(call)
+                        }
                     }
                     route("/marriage") {
                         post("") {
