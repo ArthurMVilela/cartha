@@ -65,7 +65,7 @@ class BirthCertificateHandler {
             throw serviceExceptions.BadRequestException("Página inválida")
         }
 
-        val bc = birthCertificateController.getBirthCertificatesByOfficial(id, 1)
+        val bc = birthCertificateController.getBirthCertificatesByOfficial(id, page)
 
         call.respond(HttpStatusCode.OK, bc)
     }
@@ -87,7 +87,7 @@ class BirthCertificateHandler {
             throw serviceExceptions.BadRequestException("Página inválida")
         }
 
-        val bc = birthCertificateController.getBirthCertificatesByNotary(id, 1)
+        val bc = birthCertificateController.getBirthCertificatesByNotary(id, page)
 
         call.respond(HttpStatusCode.OK, bc)
     }

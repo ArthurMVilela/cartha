@@ -16,11 +16,13 @@ import io.ktor.freemarker.*
 import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
+import serviceExceptions.BadRequestException
 import ui.controllers.DocumentController
 import ui.features.getUserId
 import ui.features.getUserPermissions
 import ui.features.getUserRole
 import ui.pages.document.civilRegistry.BirthCertificatePage
+import ui.pages.document.civilRegistry.BirthCertificatesPageBuilder
 import ui.pages.document.civilRegistry.CreateBirthCertificatePageBuilder
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -70,6 +72,62 @@ class BirthCertificateHandler {
         pageBuilder.setupMenu(call.getUserRole())
         pageBuilder.setNotaryId(notaryId)
         pageBuilder.setOfficialId(officialId)
+
+        val page = pageBuilder.build()
+        call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
+    }
+
+    suspend fun getBirthCertificateByOfficialPage(call: ApplicationCall) {
+        val id = try {
+            UUID.fromString(call.parameters["id"])
+        } catch (ex: Exception) {
+            throw io.ktor.features.BadRequestException("Id inválida.")
+        }
+
+        val pageNumber = try {
+            call.request.queryParameters["page"]?.toInt()?:1
+        } catch (ex: Exception) {
+            throw BadRequestException("Página inválida")
+        }
+
+        if (pageNumber < 1) {
+            throw BadRequestException("Página inválida")
+        }
+
+        val bcs = documentController.getBirthCertificatesByOfficial(id, pageNumber)
+
+        val pageBuilder = BirthCertificatesPageBuilder()
+
+        pageBuilder.setupMenu(call.getUserRole())
+        pageBuilder.setResultSet(bcs)
+
+        val page = pageBuilder.build()
+        call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
+    }
+
+    suspend fun getBirthCertificateByNotaryPage(call: ApplicationCall) {
+        val id = try {
+            UUID.fromString(call.parameters["id"])
+        } catch (ex: Exception) {
+            throw io.ktor.features.BadRequestException("Id inválida.")
+        }
+
+        val pageNumber = try {
+            call.request.queryParameters["page"]?.toInt()?:1
+        } catch (ex: Exception) {
+            throw BadRequestException("Página inválida")
+        }
+
+        if (pageNumber < 1) {
+            throw BadRequestException("Página inválida")
+        }
+
+        val bcs = documentController.getBirthCertificatesByNotary(id, pageNumber)
+
+        val pageBuilder = BirthCertificatesPageBuilder()
+
+        pageBuilder.setupMenu(call.getUserRole())
+        pageBuilder.setResultSet(bcs)
 
         val page = pageBuilder.build()
         call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))

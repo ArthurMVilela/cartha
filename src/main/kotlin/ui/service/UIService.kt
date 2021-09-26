@@ -188,10 +188,10 @@ fun main() {
                             }
                         }
                         get("/official/{id}") {
-                            call.respond("Mostrar certidões de nascimento feitas por este funcionário")
+                            birthCertificateHandler.getBirthCertificateByOfficialPage(call)
                         }
                         get("/notary/{id}") {
-                            call.respond("Mostrar certidões de nascimento feitas neste cartório")
+                            birthCertificateHandler.getBirthCertificateByNotaryPage(call)
                         }
 
                         get("/person/{id}") {

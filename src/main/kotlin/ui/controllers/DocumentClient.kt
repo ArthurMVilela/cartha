@@ -144,4 +144,28 @@ class DocumentClient(
 
         return response.receive()
     }
+
+    suspend fun getBirthCertificateByOfficial(officialId: UUID, page: Int): ResultSet<BirthCertificate> {
+        val response:HttpResponse = try {
+            client.get("$documentUrl/document/civil_registry/birth/official/$officialId") {
+                parameter("page", page)
+            }
+        }catch (ex: Exception) {
+            throw ex
+        }
+
+        return response.receive()
+    }
+
+    suspend fun getBirthCertificateByNotary(notaryId: UUID, page: Int): ResultSet<BirthCertificate> {
+        val response:HttpResponse = try {
+            client.get("$documentUrl/document/civil_registry/birth/notary/$notaryId") {
+                parameter("page", page)
+            }
+        }catch (ex: Exception) {
+            throw ex
+        }
+
+        return response.receive()
+    }
 }
