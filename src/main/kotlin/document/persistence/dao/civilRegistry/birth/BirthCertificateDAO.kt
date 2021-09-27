@@ -67,6 +67,7 @@ class BirthCertificateDAO:DAO<BirthCertificate, UUID> {
                     } else {
                         null
                     }
+                    it[cpf] = obj.cpf
                     it[name] = obj.name
                     it[sex] = obj.sex
                     it[municipalityOfBirthId] = municipalityOfBirth.id
@@ -163,6 +164,7 @@ class BirthCertificateDAO:DAO<BirthCertificate, UUID> {
         val registering = mutableListOf<Registering>()
 
         val personId = row[BirthCertificateTable.personId]?.value
+        val cpf = row[BirthCertificateTable.cpf]
         val name = row[BirthCertificateTable.name]
         val sex = row[BirthCertificateTable.sex]
         val municipalityOfBirth = municipalityDAO.select(row[BirthCertificateTable.municipalityOfBirthId].value)!!
@@ -177,7 +179,7 @@ class BirthCertificateDAO:DAO<BirthCertificate, UUID> {
 
         return BirthCertificate(
             id, status, officialId, notaryId, hash, registrationNumber, registering,
-            personId, name, sex, municipalityOfBirth, municipalityOfRegistry, placeOfBirth, affiliation, grandparents,
+            personId, cpf, name, sex, municipalityOfBirth, municipalityOfRegistry, placeOfBirth, affiliation, grandparents,
             dateTimeOfBirth,dateOfRegistry, twins, dnnNumber
         )
     }

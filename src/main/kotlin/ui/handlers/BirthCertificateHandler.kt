@@ -179,7 +179,7 @@ class BirthCertificateHandler {
         val dnnNumber = form["dn-number"]!!
 
         return CreateBirthCertificateRequest(
-            officialId, notaryId, personId, name, sex, municipalityOfBirth, municipalityOfRegistry,
+            officialId, notaryId, personId, "", name, sex, municipalityOfBirth, municipalityOfRegistry,
             placeOfBirth, affiliation, grandparents, dateTimeOfBirth, dateOfRegistry, dnnNumber
         )
     }
@@ -192,6 +192,7 @@ class BirthCertificateHandler {
             affiliation.add(
                 CreateAffiliationRequest(
                     null,
+                    "",
                     form["affiliation[$i]name"]!!,
                     CreateMunicipalityRequest(
                         form["affiliation[$i]municipality-name"]!!,
@@ -212,6 +213,7 @@ class BirthCertificateHandler {
             grandparents.add(
                 CreateGrandparentRequest(
                     null,
+                    "",
                     form["grandparent[$i]name"]!!,
                     GrandparentType.valueOf(form["grandparent[$i]type"]!!,),
                     CreateMunicipalityRequest(

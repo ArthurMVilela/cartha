@@ -101,6 +101,7 @@ class BirthCertificateHandler {
                 Affiliation(
                     UUID.randomUUID(),
                     it.personId,
+                    it.cpf,
                     id,
                     it.name,
                     Municipality(
@@ -118,6 +119,7 @@ class BirthCertificateHandler {
                 Grandparent(
                     UUID.randomUUID(),
                     it.personId,
+                    it.cpf,
                     id,
                     it.name,
                     it.type,
@@ -139,6 +141,7 @@ class BirthCertificateHandler {
             null,
             mutableListOf(),
             requestBody.personId,
+            requestBody.cpf,
             requestBody.name,
             requestBody.sex,
             Municipality(
