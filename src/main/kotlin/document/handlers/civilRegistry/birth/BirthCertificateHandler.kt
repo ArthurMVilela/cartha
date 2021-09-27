@@ -92,6 +92,14 @@ class BirthCertificateHandler {
         call.respond(HttpStatusCode.OK, bc)
     }
 
+    suspend fun getBirthCertificateByCpf(call: ApplicationCall) {
+        val cpf = call.parameters["cpf"]!!
+
+        val bc = birthCertificateController.getBirthCertificate(cpf)?:throw NotFoundException("Certidão não Encontrada")
+
+        call.respond(HttpStatusCode.OK, bc)
+    }
+
     private fun buildBirthCertificate(requestBody: CreateBirthCertificateRequest):BirthCertificate {
         val id = Document.createId()
 

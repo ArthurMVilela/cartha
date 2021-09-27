@@ -19,6 +19,10 @@ class BirthCertificateController {
         return birthCertificateDAO.select(id)
     }
 
+    fun getBirthCertificate(cpf: String): BirthCertificate? {
+        return birthCertificateDAO.selectMany(Op.build { BirthCertificateTable.cpf eq cpf }).firstOrNull()
+    }
+
     fun getBirthCertificatesByOfficial(officialId: UUID, page: Int): ResultSet<BirthCertificate> {
         return birthCertificateDAO.selectMany(Op.build { DocumentTable.officialId eq officialId }, page)
     }

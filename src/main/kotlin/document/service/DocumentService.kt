@@ -98,6 +98,9 @@ fun main() {
                         get("/{id}") {
                             birthCertificateHandler.getBirthCertificate(call)
                         }
+                        get("/cpf/{cpf}") {
+                            birthCertificateHandler.getBirthCertificateByCpf(call)
+                        }
                         get("/official/{id}") {
                             birthCertificateHandler.getBirthCertificatesByOfficial(call)
                         }

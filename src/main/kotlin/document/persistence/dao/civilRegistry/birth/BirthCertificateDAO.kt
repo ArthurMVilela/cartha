@@ -135,7 +135,22 @@ class BirthCertificateDAO:DAO<BirthCertificate, UUID> {
     }
 
     override fun selectMany(condition: Op<Boolean>): List<BirthCertificate> {
-        TODO("Not yet implemented")
+        val results = mutableListOf<BirthCertificate>()
+
+        transaction {
+            try {
+                val rows = table.select(condition)
+
+                rows.forEach {
+                    results.add(toType(it))
+                }
+            } catch (ex: Exception) {
+                rollback()
+                throw ex
+            }
+        }
+
+        return results
     }
 
     override fun selectAll(page: Int, pageLength: Int): ResultSet<BirthCertificate> {
