@@ -9,6 +9,7 @@ import org.jetbrains.exposed.sql.and
 import util.serializer.LocalDateTimeSerializer
 import util.serializer.UUIDSerializer
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 /**
@@ -25,10 +26,8 @@ import java.util.*
 class AccessLogSearchFilter(
     @Serializable(with = UUIDSerializer::class)
     val userId: UUID?,
-    @Serializable(with = LocalDateTimeSerializer::class)
-    val start: LocalDateTime?,
-    @Serializable(with = LocalDateTimeSerializer::class)
-    val end: LocalDateTime?,
+    val start: String?,
+    val end: String?,
     @Serializable(with = UUIDSerializer::class)
     val domainId: UUID?,
     val actionType: ActionType?,
@@ -41,6 +40,7 @@ class AccessLogSearchFilter(
      */
     fun createSearchCondition():Op<Boolean> {
         var condition = Op.build { AccessLogTable.id neq null }
+        val dateTimeFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
 
         if (userId != null) {
             condition = Op.build { condition and (AccessLogTable.userId eq userId) }
@@ -48,13 +48,13 @@ class AccessLogSearchFilter(
 
         when {
             start != null && end != null -> {
-                condition = Op.build { condition and ((AccessLogTable.timestamp.between(start, end))) }
+                condition = Op.build { condition and ((AccessLogTable.timestamp.between(LocalDateTime.parse(start, dateTimeFormat), LocalDateTime.parse(end, dateTimeFormat)))) }
             }
             start != null && end == null -> {
-                condition = Op.build { condition and (AccessLogTable.timestamp greaterEq start) }
+                condition = Op.build { condition and (AccessLogTable.timestamp greaterEq LocalDateTime.parse(start, dateTimeFormat)) }
             }
             start == null && end != null -> {
-                condition = Op.build { condition and (AccessLogTable.timestamp lessEq end) }
+                condition = Op.build { condition and (AccessLogTable.timestamp lessEq LocalDateTime.parse(end, dateTimeFormat)) }
             }
         }
 

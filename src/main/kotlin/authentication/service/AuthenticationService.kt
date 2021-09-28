@@ -70,6 +70,9 @@ fun main() {
             get("/access_logs/{id}") {
                 accessLogHandler.getLog(call)
             }
+            get("/user/email/{email}") {
+                userHandler.getAccount(call)
+            }
         }
     }.start(wait = true)
 }

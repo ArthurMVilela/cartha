@@ -108,4 +108,14 @@ class UserHandler {
         }
         call.respond(HttpStatusCode.OK, logoutSession)
     }
+
+    suspend fun getAccount(call: ApplicationCall) {
+        val email = call.parameters["email"]?:throw BadRequestException("Email não pode ser nulo.")
+        val user = try {
+            controller.getUserAccount(email)
+        } catch (ex:Exception) {
+            throw ex
+        }
+        call.respond(HttpStatusCode.OK,user)
+    }
 }

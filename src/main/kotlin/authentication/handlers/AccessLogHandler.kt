@@ -38,7 +38,12 @@ class AccessLogHandler {
     suspend fun getLogs(call: ApplicationCall) {
         val filter = call.receive<AccessLogSearchFilter>()
         val page = call.request.queryParameters["page"]?.toInt()?:1
-        val logs = authenticationController.getAccessLogs(filter, page)
+        val logs = try {
+            authenticationController.getAccessLogs(filter, page)
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+            throw BadRequestException("Erro ao tentar aplicar filtro")
+        }
         call.respond(HttpStatusCode.OK, logs)
     }
 }

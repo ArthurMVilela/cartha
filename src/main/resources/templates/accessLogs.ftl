@@ -7,6 +7,15 @@
 <body>
 <#include "./partials/_topbarMenu.ftl">
 <div class="container" style="margin-top:80px">
+
+    <#if errorMessage??>
+        <div class="row">
+                <div class="alert alert-danger" role="alert">
+                    ${errorMessage}
+                </div>
+        </div>
+    </#if>
+
     <div class="row justify-content-center">
         <form class="col mb-3" method="post" action="/logs">
             <div class="row mb-3">
@@ -22,21 +31,19 @@
             <div class="row mb-3">
                 <div class="col-6">
                     <label for="start" class="form-label">Desde:</label>
-<#--                    <#if filter??>-->
-<#--                        <input type="text" class="form-control mask-date-time" id="start" name="start" <#if filter.start??>value="${filter.start}"</#if>>-->
-<#--                    <#else>-->
-<#--                        <input type="text" class="form-control mask-date-time" id="start" name="start">-->
-<#--                    </#if>-->
-                    <input type="text" class="form-control mask-date-time" id="start" name="start" disabled>
+                    <#if filter??>
+                        <input type="text" class="form-control mask-date-time" id="start" name="start" <#if filter.start??>value="${filter.start}"</#if>>
+                    <#else >
+                        <input type="text" class="form-control mask-date-time" id="start" name="start">
+                    </#if>
                 </div>
                 <div class="col-6">
                     <label for="end" class="form-label">Até:</label>
-<#--                    <#if filter??>-->
-<#--                        <input type="text" class="form-control mask-date-time" id="end" name="end" <#if filter.end??>value="${filter.end}"</#if>>-->
-<#--                    <#else>-->
-<#--                        <input type="text" class="form-control mask-date-time" id="end" name="end">-->
-<#--                    </#if>-->
-                    <input type="text" class="form-control mask-date-time" id="end" name="end" disabled>
+                    <#if filter??>
+                        <input type="text" class="form-control mask-date-time" id="end" name="end" <#if filter.end??>value="${filter.end}"</#if>>
+                    <#else>
+                        <input type="text" class="form-control mask-date-time" id="end" name="end">
+                    </#if>
                 </div>
             </div>
             <div class="row mb-3">
@@ -104,29 +111,7 @@
 
     <div class="row justify-content-center">
         <div class="col">
-            <div class="input-group mb-3">
-
-                <#if searchResult.currentPage gt 1>
-                    <a href="?page=1" class="btn btn-primary" type="button">Primeira</a>
-                    <a href="?page=${searchResult.currentPage - 1}" class="btn btn-primary" type="button">Anterior</a>
-                <#else>
-                    <a class="btn btn-secondary disabled" type="button">Primeira</a>
-                    <a class="btn btn-secondary disabled" type="button">Anterior</a>
-                </#if>
-
-                <div class="input-group-text" id="btnGroupAddon">página: </div>
-                <input type="text" class="form-control" value="${searchResult.currentPage}" disabled>
-                <div class="input-group-text" id="btnGroupAddon">de: </div>
-                <input type="text" class="form-control" value="${searchResult.numberOfPages}" disabled>
-
-                <#if searchResult.currentPage != searchResult.numberOfPages>
-                    <a href="?page=${searchResult.currentPage + 1}" class="btn btn-primary" type="button">Próxima</a>
-                    <a href="?page=${searchResult.numberOfPages}" class="btn btn-primary" type="button">Ultima</a>
-                <#else>
-                    <a class="btn btn-secondary disabled" type="button">Próxima</a>
-                    <a class="btn btn-secondary disabled" type="button">Ultima</a>
-                </#if>
-            </div>
+            <#include "./partials/_pagination.ftl">
         </div>
 
     </div>

@@ -124,4 +124,8 @@ class AuthenticationController {
     ): User {
         return authenticationClient.createAccount(name, role, email, cpf, cnpj, password, notaryId)
     }
+
+    suspend fun getUserAccount(email: String):User {
+        return authenticationClient.getUserAccount(email)
+    }
 }

@@ -62,4 +62,8 @@ class DocumentController {
     suspend fun getBirthCertificatesByAffiliation(cpf: String): List<BirthCertificate> {
         return documentClient.getBirthCertificateByAffiliation(cpf)
     }
+
+    suspend fun getPhysicalPerson(cpf: String): PhysicalPerson {
+        return documentClient.getPhysicalPerson(cpf)
+    }
 }

@@ -15,8 +15,14 @@ class AccessLogsPageBuilder: PageBuilder() {
         page.data["subjects"] = EnumMaps.subjects
     }
 
+    fun setErrorMessage(errorMessage:String?) {
+        page.data["errorMessage"] = errorMessage
+    }
+
     fun setResultSet(resultSet: ResultSet<AccessLog>) {
         page.data["searchResult"] = resultSet
+        page.data["currentPage"] = resultSet.currentPage?:0
+        page.data["numberOfPages"] = resultSet.numberOfPages?:0
     }
 
     fun setFilter(filter: AccessLogSearchFilter?) {

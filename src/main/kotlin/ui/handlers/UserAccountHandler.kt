@@ -236,6 +236,40 @@ class UserAccountHandler {
     suspend fun createClient(call: ApplicationCall){
         val form = call.receiveParameters()
 
+        val registeredUser = try {
+            authController.getUserAccount(form["email"]!!)
+        } catch (ex: Exception) {
+            null
+        }
+
+        if (registeredUser != null) {
+            val pageBuilder = CreateClientPageBuilder()
+
+            pageBuilder.setupMenu(call.getUserRole())
+            pageBuilder.setErrorMessage("Email já cadastrado")
+
+            val page = pageBuilder.build()
+            call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
+            return
+        }
+
+        val registeredPhysicalPerson = try {
+            documentController.getPhysicalPerson(form["cpf"]!!)
+        } catch (ex: Exception) {
+            null
+        }
+
+        if (registeredPhysicalPerson != null) {
+            val pageBuilder = CreateClientPageBuilder()
+
+            pageBuilder.setupMenu(call.getUserRole())
+            pageBuilder.setErrorMessage("CPF já cadastrado")
+
+            val page = pageBuilder.build()
+            call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
+            return
+        }
+
         val user = try {
             authController.createAccount(
                 form["name"]!!,
@@ -247,7 +281,14 @@ class UserAccountHandler {
                 null
             )
         } catch (ex: Exception) {
-            throw ex
+            val pageBuilder = CreateClientPageBuilder()
+
+            pageBuilder.setupMenu(call.getUserRole())
+            pageBuilder.setErrorMessage("Erro ao tentar criar conta de usuário.")
+
+            val page = pageBuilder.build()
+            call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
+            return
         }
 
         val physicalPerson = try {
@@ -266,7 +307,14 @@ class UserAccountHandler {
                 form["nationality"]!!
             ))
         } catch (ex: Exception) {
-            throw ex
+            val pageBuilder = CreateClientPageBuilder()
+
+            pageBuilder.setupMenu(call.getUserRole())
+            pageBuilder.setErrorMessage("Erro ao tentar criar conta de usuário.")
+
+            val page = pageBuilder.build()
+            call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
+            return
         }
 
         call.respondRedirect("/login")
