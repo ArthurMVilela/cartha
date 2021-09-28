@@ -104,29 +104,7 @@
 
     <div class="row justify-content-center">
         <div class="col">
-            <div class="input-group mb-3">
-
-                <#if searchResult.currentPage gt 1>
-                    <a href="?page=1" class="btn btn-primary" type="button">Primeira</a>
-                    <a href="?page=${searchResult.currentPage - 1}" class="btn btn-primary" type="button">Anterior</a>
-                <#else>
-                    <a class="btn btn-secondary disabled" type="button">Primeira</a>
-                    <a class="btn btn-secondary disabled" type="button">Anterior</a>
-                </#if>
-
-                <div class="input-group-text" id="btnGroupAddon">página: </div>
-                <input type="text" class="form-control" value="${searchResult.currentPage}" disabled>
-                <div class="input-group-text" id="btnGroupAddon">de: </div>
-                <input type="text" class="form-control" value="${searchResult.numberOfPages}" disabled>
-
-                <#if searchResult.currentPage != searchResult.numberOfPages>
-                    <a href="?page=${searchResult.currentPage + 1}" class="btn btn-primary" type="button">Próxima</a>
-                    <a href="?page=${searchResult.numberOfPages}" class="btn btn-primary" type="button">Ultima</a>
-                <#else>
-                    <a class="btn btn-secondary disabled" type="button">Próxima</a>
-                    <a class="btn btn-secondary disabled" type="button">Ultima</a>
-                </#if>
-            </div>
+            <#include "./partials/_pagination.ftl">
         </div>
 
     </div>

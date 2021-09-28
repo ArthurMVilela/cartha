@@ -17,6 +17,8 @@ class AccessLogsPageBuilder: PageBuilder() {
 
     fun setResultSet(resultSet: ResultSet<AccessLog>) {
         page.data["searchResult"] = resultSet
+        page.data["currentPage"] = resultSet.currentPage?:0
+        page.data["numberOfPages"] = resultSet.numberOfPages?:0
     }
 
     fun setFilter(filter: AccessLogSearchFilter?) {
