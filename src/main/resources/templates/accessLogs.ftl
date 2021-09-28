@@ -27,7 +27,7 @@
 <#--                    <#else>-->
 <#--                        <input type="text" class="form-control mask-date-time" id="start" name="start">-->
 <#--                    </#if>-->
-                    <input type="text" class="form-control mask-date-time" id="start" name="start" disabled>
+                    <input type="text" class="form-control mask-date-time" id="start" name="start">
                 </div>
                 <div class="col-6">
                     <label for="end" class="form-label">Até:</label>
@@ -36,7 +36,7 @@
 <#--                    <#else>-->
 <#--                        <input type="text" class="form-control mask-date-time" id="end" name="end">-->
 <#--                    </#if>-->
-                    <input type="text" class="form-control mask-date-time" id="end" name="end" disabled>
+                    <input type="text" class="form-control mask-date-time" id="end" name="end">
                 </div>
             </div>
             <div class="row mb-3">

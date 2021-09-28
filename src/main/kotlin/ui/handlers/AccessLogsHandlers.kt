@@ -98,16 +98,8 @@ class AccessLogsHandlers {
         } catch (ex: Exception) {
             null
         }
-        val start = try {
-            LocalDateTime.parse(parameters["start"], dateTimeFormat)
-        } catch (ex: Exception) {
-            null
-        }
-        val end = try {
-            LocalDateTime.parse(parameters["end"], dateTimeFormat)
-        } catch (ex: Exception) {
-            null
-        }
+        val start = if(parameters["start"].isNullOrEmpty()) null else parameters["start"]
+        val end = if(parameters["end"].isNullOrEmpty()) null else parameters["end"]
         val domainId = try {
             UUID.fromString(parameters["domain-id"])
         } catch (ex: Exception) {
