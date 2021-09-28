@@ -19,6 +19,7 @@ import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.sessions.*
+import ui.exception.AuthenticationMiddlewareException
 import ui.features.*
 import ui.handlers.*
 import java.util.*
@@ -31,6 +32,7 @@ fun main() {
     val blockchainHandlers = BlockchainHandlers()
     val notaryHandler = NotaryHandler()
     val birthCertificateHandler = BirthCertificateHandler()
+    val documentHandler = DocumentHandler()
 
     embeddedServer(Netty, port = 8080, watchPaths = listOf("templates", "js")) {
         install(StatusPages) {
@@ -175,9 +177,27 @@ fun main() {
                 }
 
                 route("/civil-registry") {
+                    authorizedRoute(Role.Manager, Role.Official) {
+                        get("") {
+                            documentHandler.getCivilRegistryPage(call)
+                        }
+                    }
                     route("/birth") {
                         get("") {
-
+                            when (call.getUserRole()) {
+                                Role.Manager -> {
+                                    val id = call.getUserPermissions()
+                                        .first { it.subject == Subject.Notary && it.domainId != null }.domainId
+                                    call.respondRedirect("/civil-registry/birth/notary/${id}")
+                                }
+                                Role.Official -> {
+                                    val id = call.getUserOfficialId()
+                                    call.respondRedirect("/civil-registry/birth/official/${id}")
+                                }
+                                else -> {
+                                    throw AuthenticationMiddlewareException()
+                                }
+                            }
                         }
                         authorizedRoute(Role.Manager, Role.Official) {
                             get("/create") {

@@ -13,6 +13,7 @@ import io.ktor.sessions.*
 import io.ktor.util.*
 import io.ktor.util.pipeline.*
 import ui.controllers.AuthenticationController
+import ui.controllers.DocumentController
 import ui.exception.AuthenticationMiddlewareException
 import java.util.*
 import kotlin.collections.HashSet
@@ -101,4 +102,16 @@ suspend fun ApplicationCall.getUserId(): UUID {
     val session = authController.getSession(sessionCookie)
 
     return session.user.id
+}
+
+suspend fun ApplicationCall.getUserOfficialId(): UUID {
+    val userId = getUserId()
+    val userNotary = getUserPermissions()
+        .first { it.subject == Subject.CivilRegistry && it.domainId != null }.domainId
+    val documentController = DocumentController()
+    val official = documentController.getOfficials(userNotary!!).first{
+        it.accountId == userId
+    }
+
+    return official.id
 }
