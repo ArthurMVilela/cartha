@@ -100,6 +100,14 @@ class BirthCertificateHandler {
         call.respond(HttpStatusCode.OK, bc)
     }
 
+    suspend fun getBirthCertificatesWithAffiliation(call: ApplicationCall) {
+        val cpf = call.parameters["cpf"]!!
+
+        val bc = birthCertificateController.getBirthCertificatesWithAffiliation(cpf)
+
+        call.respond(HttpStatusCode.OK, bc)
+    }
+
     private fun buildBirthCertificate(requestBody: CreateBirthCertificateRequest):BirthCertificate {
         val id = Document.createId()
 
