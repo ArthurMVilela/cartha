@@ -12,6 +12,7 @@ class CreateAffiliationRequest(
     @Serializable(with = UUIDSerializer::class)
     @SerialName("person_id")
     var personId: UUID?,
+    val cpf:String,
     val name:String,
     val municipality: CreateMunicipalityRequest
 ) {

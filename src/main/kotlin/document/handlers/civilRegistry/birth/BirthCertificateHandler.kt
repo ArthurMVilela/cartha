@@ -92,6 +92,22 @@ class BirthCertificateHandler {
         call.respond(HttpStatusCode.OK, bc)
     }
 
+    suspend fun getBirthCertificateByCpf(call: ApplicationCall) {
+        val cpf = call.parameters["cpf"]!!
+
+        val bc = birthCertificateController.getBirthCertificate(cpf)?:throw NotFoundException("Certidão não Encontrada")
+
+        call.respond(HttpStatusCode.OK, bc)
+    }
+
+    suspend fun getBirthCertificatesWithAffiliation(call: ApplicationCall) {
+        val cpf = call.parameters["cpf"]!!
+
+        val bc = birthCertificateController.getBirthCertificatesWithAffiliation(cpf)
+
+        call.respond(HttpStatusCode.OK, bc)
+    }
+
     private fun buildBirthCertificate(requestBody: CreateBirthCertificateRequest):BirthCertificate {
         val id = Document.createId()
 
@@ -101,6 +117,7 @@ class BirthCertificateHandler {
                 Affiliation(
                     UUID.randomUUID(),
                     it.personId,
+                    it.cpf,
                     id,
                     it.name,
                     Municipality(
@@ -118,6 +135,7 @@ class BirthCertificateHandler {
                 Grandparent(
                     UUID.randomUUID(),
                     it.personId,
+                    it.cpf,
                     id,
                     it.name,
                     it.type,
@@ -139,6 +157,7 @@ class BirthCertificateHandler {
             null,
             mutableListOf(),
             requestBody.personId,
+            requestBody.cpf,
             requestBody.name,
             requestBody.sex,
             Municipality(

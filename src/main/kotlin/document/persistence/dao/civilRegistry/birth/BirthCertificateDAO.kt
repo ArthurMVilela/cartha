@@ -67,6 +67,7 @@ class BirthCertificateDAO:DAO<BirthCertificate, UUID> {
                     } else {
                         null
                     }
+                    it[cpf] = obj.cpf
                     it[name] = obj.name
                     it[sex] = obj.sex
                     it[municipalityOfBirthId] = municipalityOfBirth.id
@@ -134,7 +135,22 @@ class BirthCertificateDAO:DAO<BirthCertificate, UUID> {
     }
 
     override fun selectMany(condition: Op<Boolean>): List<BirthCertificate> {
-        TODO("Not yet implemented")
+        val results = mutableListOf<BirthCertificate>()
+
+        transaction {
+            try {
+                val rows = table.select(condition)
+
+                rows.forEach {
+                    results.add(toType(it))
+                }
+            } catch (ex: Exception) {
+                rollback()
+                throw ex
+            }
+        }
+
+        return results
     }
 
     override fun selectAll(page: Int, pageLength: Int): ResultSet<BirthCertificate> {
@@ -163,6 +179,7 @@ class BirthCertificateDAO:DAO<BirthCertificate, UUID> {
         val registering = mutableListOf<Registering>()
 
         val personId = row[BirthCertificateTable.personId]?.value
+        val cpf = row[BirthCertificateTable.cpf]
         val name = row[BirthCertificateTable.name]
         val sex = row[BirthCertificateTable.sex]
         val municipalityOfBirth = municipalityDAO.select(row[BirthCertificateTable.municipalityOfBirthId].value)!!
@@ -177,7 +194,7 @@ class BirthCertificateDAO:DAO<BirthCertificate, UUID> {
 
         return BirthCertificate(
             id, status, officialId, notaryId, hash, registrationNumber, registering,
-            personId, name, sex, municipalityOfBirth, municipalityOfRegistry, placeOfBirth, affiliation, grandparents,
+            personId, cpf, name, sex, municipalityOfBirth, municipalityOfRegistry, placeOfBirth, affiliation, grandparents,
             dateTimeOfBirth,dateOfRegistry, twins, dnnNumber
         )
     }

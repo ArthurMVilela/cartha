@@ -32,6 +32,7 @@ class BirthCertificate(
     @Serializable(with = UUIDSerializer::class)
     @SerialName("person_id")
     val personId: UUID?,
+    val cpf:String,
     val name: String,
     val sex: Sex,
     @SerialName("municipality_of_birth")
@@ -49,7 +50,7 @@ class BirthCertificate(
     @SerialName("date_of_registry")
     val dateOfRegistry: LocalDate,
     val twins:MutableSet<Twin>,
-    @SerialName("dnn_number")
+    @SerialName("dn_number")
     val dnNumber: String,
 ):CivilRegistryDocument() {
     init {

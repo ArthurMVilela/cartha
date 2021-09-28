@@ -31,6 +31,7 @@ class GrandparentDAO:DAO<Grandparent, UUID> {
                     } else {
                         null
                     }
+                    it[cpf] = obj.cpf
                     it[birthCertificateId] = obj.birthCertificateId
                     it[name] = obj.name
                     it[type] = obj.type
@@ -106,10 +107,11 @@ class GrandparentDAO:DAO<Grandparent, UUID> {
         val id = row[GrandparentTable.id].value
         val personId = row[GrandparentTable.personId]?.value
         val birthCertificateId = row[GrandparentTable.birthCertificateId].value
+        val cpf = row[GrandparentTable.cpf]
         val name = row[GrandparentTable.name]
         val type = row[GrandparentTable.type]
         val municipality = municipalityDAO.select(row[GrandparentTable.municipalityId].value)!!
 
-        return Grandparent(id, personId, birthCertificateId, name, type, municipality)
+        return Grandparent(id, personId, cpf, birthCertificateId, name, type, municipality)
     }
 }

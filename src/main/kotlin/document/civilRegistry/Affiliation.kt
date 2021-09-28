@@ -13,6 +13,7 @@ class Affiliation(
     @Serializable(with = UUIDSerializer::class)
     @SerialName("person_id")
     var personId:UUID?,
+    val cpf:String,
     @Serializable(with = UUIDSerializer::class)
     @SerialName("document_id")
     val documentId:UUID,
