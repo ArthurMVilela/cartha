@@ -49,16 +49,28 @@ class AccessLogsHandlers {
 
         val filter = parseFilterForm(parameters)
         call.sessions.set("accessLogSearchFilter", filter)
-        val searchResult = authController.getAccessLogs(
-            filter,
-            pageNumber
-        )
+
+        var errorMessage:String? = null
+
+        val searchResult = try {
+            authController.getAccessLogs(
+                filter,
+                pageNumber
+            )
+        } catch (ex: Exception) {
+            errorMessage = "Filtro de busca inválido."
+            authController.getAccessLogs(
+                AccessLogSearchFilter(null, null, null, null, null, null),
+                pageNumber
+            )
+        }
 
         val pageBuilder = AccessLogsPageBuilder()
 
         pageBuilder.setupMenu(call.getUserRole())
         pageBuilder.setResultSet(searchResult)
         pageBuilder.setFilter(filter)
+        pageBuilder.setErrorMessage(errorMessage)
 
         call.logAction(ActionType.SeeLogs, Subject.UserAccount, null)
 

@@ -7,6 +7,15 @@
 <body>
 <#include "./partials/_topbarMenu.ftl">
 <div class="container" style="margin-top:80px">
+
+    <#if errorMessage??>
+        <div class="row">
+                <div class="alert alert-danger" role="alert">
+                    ${errorMessage}
+                </div>
+        </div>
+    </#if>
+
     <div class="row justify-content-center">
         <form class="col mb-3" method="post" action="/logs">
             <div class="row mb-3">
@@ -22,21 +31,19 @@
             <div class="row mb-3">
                 <div class="col-6">
                     <label for="start" class="form-label">Desde:</label>
-<#--                    <#if filter??>-->
-<#--                        <input type="text" class="form-control mask-date-time" id="start" name="start" <#if filter.start??>value="${filter.start}"</#if>>-->
-<#--                    <#else>-->
-<#--                        <input type="text" class="form-control mask-date-time" id="start" name="start">-->
-<#--                    </#if>-->
-                    <input type="text" class="form-control mask-date-time" id="start" name="start">
+                    <#if filter??>
+                        <input type="text" class="form-control mask-date-time" id="start" name="start" <#if filter.start??>value="${filter.start}"</#if>>
+                    <#else >
+                        <input type="text" class="form-control mask-date-time" id="start" name="start">
+                    </#if>
                 </div>
                 <div class="col-6">
                     <label for="end" class="form-label">Até:</label>
-<#--                    <#if filter??>-->
-<#--                        <input type="text" class="form-control mask-date-time" id="end" name="end" <#if filter.end??>value="${filter.end}"</#if>>-->
-<#--                    <#else>-->
-<#--                        <input type="text" class="form-control mask-date-time" id="end" name="end">-->
-<#--                    </#if>-->
-                    <input type="text" class="form-control mask-date-time" id="end" name="end">
+                    <#if filter??>
+                        <input type="text" class="form-control mask-date-time" id="end" name="end" <#if filter.end??>value="${filter.end}"</#if>>
+                    <#else>
+                        <input type="text" class="form-control mask-date-time" id="end" name="end">
+                    </#if>
                 </div>
             </div>
             <div class="row mb-3">
