@@ -54,4 +54,12 @@ class DocumentController {
     suspend fun getBirthCertificatesByNotary(id: UUID, page: Int): ResultSet<BirthCertificate> {
         return documentClient.getBirthCertificateByNotary(id, page)
     }
+
+    suspend fun getBirthCertificatesByCpf(cpf: String): BirthCertificate {
+        return documentClient.getBirthCertificateByCpf(cpf)
+    }
+
+    suspend fun getBirthCertificatesByAffiliation(cpf: String): List<BirthCertificate> {
+        return documentClient.getBirthCertificateByAffiliation(cpf)
+    }
 }

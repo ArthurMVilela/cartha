@@ -168,4 +168,37 @@ class DocumentClient(
 
         return response.receive()
     }
+
+    suspend fun getBirthCertificateByCpf(cpf: String): BirthCertificate {
+        val response: HttpResponse = try {
+            client.get("$documentUrl/document/civil_registry/birth/cpf/$cpf") {
+            }
+        }catch (ex: Exception) {
+            throw ex
+        }
+
+        return response.receive()
+    }
+
+    suspend fun getBirthCertificateByAffiliation(cpf: String): List<BirthCertificate> {
+        val response: HttpResponse = try {
+            client.get("$documentUrl/document/civil_registry/birth/affiliation/$cpf") {
+            }
+        }catch (ex: Exception) {
+            throw ex
+        }
+
+        return response.receive()
+    }
+
+    suspend fun getBirthCertificateByGrandparent(cpf: String): List<BirthCertificate> {
+        val response: HttpResponse = try {
+            client.get("$documentUrl/document/civil_registry/birth/grandparent/$cpf") {
+            }
+        }catch (ex: Exception) {
+            throw ex
+        }
+
+        return response.receive()
+    }
 }

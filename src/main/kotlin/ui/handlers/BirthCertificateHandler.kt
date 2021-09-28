@@ -140,7 +140,7 @@ class BirthCertificateHandler {
 
         val cb = documentController.createBirthCertificate(rb)
 
-        call.respond(HttpStatusCode.Created, cb.id.toString())
+        call.respondRedirect("/civil-registry/birth/${cb.id}")
     }
 
     private fun parseCreateBirthCertificateForm(form: Parameters):CreateBirthCertificateRequest {

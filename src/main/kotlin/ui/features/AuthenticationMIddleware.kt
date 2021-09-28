@@ -115,3 +115,11 @@ suspend fun ApplicationCall.getUserOfficialId(): UUID {
 
     return official.id
 }
+
+suspend fun ApplicationCall.getUserCpf(): String {
+    val authController = AuthenticationController()
+    val sessionCookie = sessions.get<UserSessionCookie>()?:throw UserSessionNotFound("Usuário não logado.")
+    val session = authController.getSession(sessionCookie)
+
+    return session.user.cpf!!
+}

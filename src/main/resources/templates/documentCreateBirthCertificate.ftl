@@ -105,7 +105,7 @@
                 <label for="municipality-of-registry" class="form-label">Município de registro: </label>
                 <div id="municipality-of-registry" class="input-group mb-3">
                     <span class="input-group-text"> Município:  </span>
-                    <input id="municipality-of-registry-name" name="municipality-of-birth-name" type="text" class="form-control">
+                    <input id="municipality-of-registry-name" name="municipality-of-registry-name" type="text" class="form-control">
                     <span class="input-group-text"> UF:  </span>
                     <select id="municipality-of-registry-uf" name="municipality-of-registry-uf" class="form-select">
                         <#list uf as i,v>

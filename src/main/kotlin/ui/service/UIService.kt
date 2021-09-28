@@ -94,7 +94,7 @@ fun main() {
             authenticate {
                 authorizedRoute(Role.Client) {
                     get("/document") {
-                        call.respond("Hello")
+                        documentHandler.getDocumentPage(call)
                     }
                 }
                 authorizedRoute(Role.SysAdmin) {
