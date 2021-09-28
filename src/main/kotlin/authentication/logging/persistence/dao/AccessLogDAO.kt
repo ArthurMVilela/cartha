@@ -69,7 +69,7 @@ class AccessLogDAO:DAO<AccessLog, UUID> {
                 val logsTable = (AccessLogTable innerJoin ActionTable)
 
                 val count = logsTable
-                    .select { AccessLogTable.id eq ActionTable.logId }
+                    .select { AccessLogTable.id eq ActionTable.logId and condition }
                     .count()
                 numberOfPages = ceil(count/(pageLength * 1.0f)).toInt()
                 val rows = logsTable
