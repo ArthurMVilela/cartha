@@ -39,13 +39,14 @@ function setupFormMasks() {
         $(this).val('');
         $(this).val(currentValue);
     })
-    $("form").submit(function () {
-        $(".mask-cpf").unmask()
-        $(".mask-cnpj").unmask()
-        $(".mask-cns").unmask()
-        $(".mask-cpf-cnpj").unmask()
-        $(".mask-dn").unmask()
-    })
+}
+
+function clearMasks() {
+    $(".mask-cpf").unmask()
+    $(".mask-cnpj").unmask()
+    $(".mask-cns").unmask()
+    $(".mask-cpf-cnpj").unmask()
+    $(".mask-dn").unmask()
 }
 
 function setUpAffiliationForm() {

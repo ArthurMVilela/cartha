@@ -146,4 +146,8 @@ class AuthenticationController {
      * @return resultado da busca: pagina com os resutados da busca.
      */
     fun getAccessLogs(filter: AccessLogSearchFilter, page:Int): ResultSet<AccessLog> {return accessLogController.getLogs(filter, page)}
+
+    fun getUserAccount(email: String): User {
+        return userController.getUser(email)
+    }
 }

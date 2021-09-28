@@ -1,5 +1,6 @@
 package ui.controllers
 
+import authentication.User
 import document.Notary
 import document.civilRegistry.birth.BirthCertificate
 import document.handlers.civilRegistry.birth.CreateBirthCertificateRequest
@@ -194,6 +195,17 @@ class DocumentClient(
     suspend fun getBirthCertificateByGrandparent(cpf: String): List<BirthCertificate> {
         val response: HttpResponse = try {
             client.get("$documentUrl/document/civil_registry/birth/grandparent/$cpf") {
+            }
+        }catch (ex: Exception) {
+            throw ex
+        }
+
+        return response.receive()
+    }
+
+    suspend fun getPhysicalPerson(cpf: String): PhysicalPerson {
+        val response: HttpResponse = try {
+            client.get("$documentUrl/person/physical_person/cpf/$cpf") {
             }
         }catch (ex: Exception) {
             throw ex

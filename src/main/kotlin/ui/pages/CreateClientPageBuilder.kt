@@ -9,6 +9,10 @@ class CreateClientPageBuilder: PageBuilder() {
         setEnums()
     }
 
+    fun setErrorMessage(errorMessage: String?) {
+        page.data["errorMessage"] = errorMessage
+    }
+
     private fun setEnums() {
         page.data["sex"] = EnumMaps.sex
         page.data["color"] = EnumMaps.color

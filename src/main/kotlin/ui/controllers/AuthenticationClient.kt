@@ -134,4 +134,15 @@ class AuthenticationClient {
             body = request
         }
     }
+
+    suspend fun getUserAccount(email: String): User {
+        val response: HttpResponse = try {
+            client.get("$authenticationURL/user/email/$email") {
+            }
+        }catch (ex: Exception) {
+            throw ex
+        }
+
+        return response.receive()
+    }
 }

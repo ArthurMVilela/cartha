@@ -121,4 +121,8 @@ class UserController {
         val session = userSessionDAO.select(sessionId)?:throw UserSessionNotFound("Sessão de usuário não encontrada.")
         return session
     }
+
+    fun getUser(email: String): User {
+        return userDAO.selectMany(Op.build { UserTable.email eq email  }).first()
+    }
 }
