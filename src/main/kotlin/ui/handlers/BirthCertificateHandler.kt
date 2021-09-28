@@ -147,6 +147,7 @@ class BirthCertificateHandler {
         val officialId = UUID.fromString(form["official-id"]!!)
         val notaryId = UUID.fromString(form["notary-id"]!!)
         val personId = null
+        val cpf = form["cpf"]!!
         val name = form["name"]!!
         val sex = Sex.valueOf(form["sex"]!!)
         val municipalityOfBirth = CreateMunicipalityRequest(
@@ -154,7 +155,7 @@ class BirthCertificateHandler {
             UF.valueOf(form["municipality-of-birth-uf"]!!)
         )
         val municipalityOfRegistry = CreateMunicipalityRequest(
-            "municipality-of-registry-name",
+            form["municipality-of-registry-name"]!!,
             UF.valueOf(form["municipality-of-registry-uf"]!!)
         )
         val placeOfBirth = form["place-of-birth"]!!
@@ -179,7 +180,7 @@ class BirthCertificateHandler {
         val dnnNumber = form["dn-number"]!!
 
         return CreateBirthCertificateRequest(
-            officialId, notaryId, personId, "", name, sex, municipalityOfBirth, municipalityOfRegistry,
+            officialId, notaryId, personId, cpf, name, sex, municipalityOfBirth, municipalityOfRegistry,
             placeOfBirth, affiliation, grandparents, dateTimeOfBirth, dateOfRegistry, dnnNumber
         )
     }
@@ -192,7 +193,7 @@ class BirthCertificateHandler {
             affiliation.add(
                 CreateAffiliationRequest(
                     null,
-                    "",
+                    form["affiliation[$i]cpf"]!!,
                     form["affiliation[$i]name"]!!,
                     CreateMunicipalityRequest(
                         form["affiliation[$i]municipality-name"]!!,
@@ -213,7 +214,7 @@ class BirthCertificateHandler {
             grandparents.add(
                 CreateGrandparentRequest(
                     null,
-                    "",
+                    form["grandparent[$i]cpf"]!!,
                     form["grandparent[$i]name"]!!,
                     GrandparentType.valueOf(form["grandparent[$i]type"]!!,),
                     CreateMunicipalityRequest(

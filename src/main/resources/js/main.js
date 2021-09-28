@@ -112,6 +112,7 @@ function updateAffiliationIndexes() {
 
     items.each(function (index) {
         $(this).find(".affiliation__item__name").attr("name", "affiliation[" + index + "]name")
+        $(this).find(".affiliation__item__cpf").attr("name", "affiliation[" + index + "]cpf")
         $(this).find(".affiliation__item__municipality-name").attr("name", "affiliation[" + index + "]municipality-name")
         $(this).find(".affiliation__item__municipality-uf").attr("name", "affiliation[" + index + "]municipality-uf")
     })
@@ -125,6 +126,7 @@ function updateGrandparentIndexes() {
 
     items.each(function (index) {
         $(this).find(".grandparent__item__name").attr("name", "grandparent[" + index + "]name")
+        $(this).find(".grandparent__item__cpf").attr("name", "grandparent[" + index + "]cpf")
         $(this).find(".grandparent__item__type").attr("name", "grandparent[" + index + "]type")
         $(this).find(".grandparent__item__municipality-name").attr("name", "grandparent[" + index + "]municipality-name")
         $(this).find(".grandparent__item__municipality-uf").attr("name", "grandparent[" + index + "]municipality-uf")

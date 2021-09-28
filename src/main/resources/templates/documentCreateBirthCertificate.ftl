@@ -21,6 +21,14 @@
             </div>
 
             <div class="m-3">
+                <label for="cpf" class="form-label">CPF: </label>
+                <input id="cpf" type="text" class="form-control mask-cpf" name="cpf">
+                <div class="invalid-feedback">
+                    Você deve inserir nome do cartório
+                </div>
+            </div>
+
+            <div class="m-3">
                 <label for="sex" class="form-label">Sexo: </label>
                 <select name="sex" class="form-select">
                     <#list sex as i,v>
@@ -119,6 +127,10 @@
                                     <input type="text" class="form-control affiliation__item__name" name="">
                                 </div>
                                 <div class="m-3">
+                                    <label class="form-label">CPF: </label>
+                                    <input type="text" class="form-control affiliation__item__cpf mask-cpf" name="">
+                                </div>
+                                <div class="m-3">
                                     <div id="municipality-of-registry" class="input-group mb-3">
                                         <span class="input-group-text"> Município:  </span>
                                         <input name="municipality-name" type="text" class="form-control affiliation__item__municipality-name">
@@ -153,6 +165,10 @@
                                 <div class="m-3">
                                     <label class="form-label">Nome: </label>
                                     <input type="text" class="form-control grandparent__item__name" name="">
+                                </div>
+                                <div class="m-3">
+                                    <label class="form-label">CPF: </label>
+                                    <input type="text" class="form-control grandparent__item__cpf mask-cpf" name="">
                                 </div>
                                 <div class="m-3">
                                     <label class="form-label">Tipo: </label>
