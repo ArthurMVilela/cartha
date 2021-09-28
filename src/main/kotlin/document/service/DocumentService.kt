@@ -84,6 +84,9 @@ fun main() {
                     get("/cpf/{cpf}") {
                         personHandler.getOfficial(call)
                     }
+                    get("/notary/{id}") {
+                        personHandler.getOfficials(call)
+                    }
                 }
             }
             route("/document") {
@@ -94,6 +97,18 @@ fun main() {
                         }
                         get("/{id}") {
                             birthCertificateHandler.getBirthCertificate(call)
+                        }
+                        get("/cpf/{cpf}") {
+                            birthCertificateHandler.getBirthCertificateByCpf(call)
+                        }
+                        get("/affiliation/{cpf}") {
+                            birthCertificateHandler.getBirthCertificatesWithAffiliation(call)
+                        }
+                        get("/official/{id}") {
+                            birthCertificateHandler.getBirthCertificatesByOfficial(call)
+                        }
+                        get("/notary/{id}") {
+                            birthCertificateHandler.getBirthCertificatesByNotary(call)
                         }
                     }
                     route("/marriage") {

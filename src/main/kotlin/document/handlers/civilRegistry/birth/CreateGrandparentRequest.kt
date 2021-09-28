@@ -12,6 +12,7 @@ class CreateGrandparentRequest(
     @Serializable(with = UUIDSerializer::class)
     @SerialName("person_id")
     val personId: UUID?,
+    val cpf: String,
     val name: String,
     val type: GrandparentType,
     val municipality: CreateMunicipalityRequest

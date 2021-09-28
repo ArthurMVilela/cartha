@@ -62,6 +62,7 @@ class MarriageCertificateHandler {
                     Affiliation(
                         UUID.randomUUID(),
                         aff.personId,
+                        aff.cpf,
                         id,
                         aff.name,
                         Municipality(

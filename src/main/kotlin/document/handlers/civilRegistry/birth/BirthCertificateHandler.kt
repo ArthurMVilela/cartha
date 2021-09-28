@@ -48,6 +48,66 @@ class BirthCertificateHandler {
         call.respond(HttpStatusCode.OK, bc)
     }
 
+    suspend fun getBirthCertificatesByOfficial(call: ApplicationCall) {
+        val id = try {
+            UUID.fromString(call.parameters["id"])
+        } catch (ex: Exception) {
+            throw serviceExceptions.BadRequestException("id não válida")
+        }
+
+        val page = try {
+            call.request.queryParameters["page"]?.toInt()?:1
+        } catch (ex: Exception) {
+            throw serviceExceptions.BadRequestException("Página inválida")
+        }
+
+        if (page < 1) {
+            throw serviceExceptions.BadRequestException("Página inválida")
+        }
+
+        val bc = birthCertificateController.getBirthCertificatesByOfficial(id, page)
+
+        call.respond(HttpStatusCode.OK, bc)
+    }
+
+    suspend fun getBirthCertificatesByNotary(call: ApplicationCall) {
+        val id = try {
+            UUID.fromString(call.parameters["id"])
+        } catch (ex: Exception) {
+            throw serviceExceptions.BadRequestException("id não válida")
+        }
+
+        val page = try {
+            call.request.queryParameters["page"]?.toInt()?:1
+        } catch (ex: Exception) {
+            throw serviceExceptions.BadRequestException("Página inválida")
+        }
+
+        if (page < 1) {
+            throw serviceExceptions.BadRequestException("Página inválida")
+        }
+
+        val bc = birthCertificateController.getBirthCertificatesByNotary(id, page)
+
+        call.respond(HttpStatusCode.OK, bc)
+    }
+
+    suspend fun getBirthCertificateByCpf(call: ApplicationCall) {
+        val cpf = call.parameters["cpf"]!!
+
+        val bc = birthCertificateController.getBirthCertificate(cpf)?:throw NotFoundException("Certidão não Encontrada")
+
+        call.respond(HttpStatusCode.OK, bc)
+    }
+
+    suspend fun getBirthCertificatesWithAffiliation(call: ApplicationCall) {
+        val cpf = call.parameters["cpf"]!!
+
+        val bc = birthCertificateController.getBirthCertificatesWithAffiliation(cpf)
+
+        call.respond(HttpStatusCode.OK, bc)
+    }
+
     private fun buildBirthCertificate(requestBody: CreateBirthCertificateRequest):BirthCertificate {
         val id = Document.createId()
 
@@ -57,6 +117,7 @@ class BirthCertificateHandler {
                 Affiliation(
                     UUID.randomUUID(),
                     it.personId,
+                    it.cpf,
                     id,
                     it.name,
                     Municipality(
@@ -74,6 +135,7 @@ class BirthCertificateHandler {
                 Grandparent(
                     UUID.randomUUID(),
                     it.personId,
+                    it.cpf,
                     id,
                     it.name,
                     it.type,
@@ -95,6 +157,7 @@ class BirthCertificateHandler {
             null,
             mutableListOf(),
             requestBody.personId,
+            requestBody.cpf,
             requestBody.name,
             requestBody.sex,
             Municipality(

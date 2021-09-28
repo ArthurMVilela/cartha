@@ -2,7 +2,9 @@ package document.controllers
 
 import document.persistence.dao.person.OfficialDAO
 import document.persistence.dao.person.PhysicalPersonDAO
+import document.persistence.tables.person.OfficialTable
 import document.person.*
+import org.jetbrains.exposed.sql.Op
 import java.util.*
 
 class PersonController {
@@ -31,5 +33,9 @@ class PersonController {
 
     fun getOfficial(cpf: String): Official? {
         return officialDAO.select(cpf)
+    }
+
+    fun getOfficials(notaryId: UUID): List<Official> {
+        return officialDAO.selectMany(Op.build { OfficialTable.notaryId eq notaryId })
     }
 }

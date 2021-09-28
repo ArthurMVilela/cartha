@@ -1,5 +1,7 @@
 package ui.controllers
 
+import authentication.Role
+import authentication.User
 import authentication.UserSession
 import authentication.handlers.AccessLogRequestBody
 import authentication.logging.AccessLog
@@ -52,6 +54,35 @@ class AuthenticationClient {
             throw ex
         }
         return response.receive<UserSession>()
+    }
+
+    suspend fun createAccount(
+        name: String,
+        role: Role,
+        email: String,
+        cpf: String?,
+        cnpj: String?,
+        password: String,
+        notaryId: UUID?
+    ):User {
+        val response:HttpResponse = try {
+            client.submitForm (
+                url = "$authenticationURL/users",
+                formParameters = Parameters.build {
+                    append("name", name)
+                    append("role", role.name)
+                    append("email", email)
+                    append("password", password)
+                    if(notaryId != null) append("notary_id", notaryId.toString())
+                    if(cpf != null) append("cpf", cpf)
+                    if(cnpj != null) append("cnpj", cnpj)
+                }
+            )
+        } catch (ex: Exception) {
+            throw ex
+        }
+
+        return response.receive()
     }
 
     suspend fun logout(sessionId: UUID) : UserSession {

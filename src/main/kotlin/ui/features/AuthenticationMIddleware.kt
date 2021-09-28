@@ -3,6 +3,7 @@ package ui.features
 import authentication.Permission
 import authentication.Role
 import authentication.Subject
+import authentication.User
 import authentication.exception.UserSessionNotFound
 import authentication.logging.ActionType
 import io.ktor.application.*
@@ -12,8 +13,10 @@ import io.ktor.sessions.*
 import io.ktor.util.*
 import io.ktor.util.pipeline.*
 import ui.controllers.AuthenticationController
+import ui.controllers.DocumentController
 import ui.exception.AuthenticationMiddlewareException
 import java.util.*
+import kotlin.collections.HashSet
 
 class AuthenticationMiddleware(config: Configuration) {
     val authController = AuthenticationController()
@@ -32,7 +35,7 @@ class AuthenticationMiddleware(config: Configuration) {
         }
     }
 
-    fun interceptPipeline(pipeline: ApplicationCallPipeline, role: Role?, permission: Permission?) {
+    fun interceptPipeline(pipeline: ApplicationCallPipeline, roles: Array<out Role?>) {
         pipeline.insertPhaseAfter(ApplicationCallPipeline.Features, Authentication.ChallengePhase)
         pipeline.insertPhaseAfter(Authentication.ChallengePhase, AuthorizationPhase)
 
@@ -40,7 +43,7 @@ class AuthenticationMiddleware(config: Configuration) {
             val principal = call.authentication.principal<UserSessionCookie>() ?: throw AuthenticationMiddlewareException("Usuário não logado")
             val session = authController.getSession(principal)
 
-            if (!session.user.isAuthorized(role, permission)) {
+            if (!roles.contains(session.user.role)) {
                 throw AuthenticationMiddlewareException("Usuário não pode acessar")
             }
         }
@@ -53,9 +56,9 @@ class AuthorizedRouteSelector():RouteSelector(RouteSelectorEvaluation.qualityCon
     }
 }
 
-fun Route.authorizedRoute(role: Role?, permission: Permission?, build: Route.() -> Unit): Route {
+fun Route.authorizedRoute(vararg roles: Role?, build: Route.() -> Unit): Route {
     var authorizedRoute = createChild(AuthorizedRouteSelector())
-    application.feature(AuthenticationMiddleware).interceptPipeline(authorizedRoute, role, permission)
+    application.feature(AuthenticationMiddleware).interceptPipeline(authorizedRoute, roles)
     authorizedRoute.build()
     return authorizedRoute
 }
@@ -73,4 +76,50 @@ suspend fun ApplicationCall.getUserRole(): Role? {
     } catch (ex: Exception) {
         null
     }
+}
+
+suspend fun ApplicationCall.checkForPermission(permission: Permission) {
+    val authController = AuthenticationController()
+    val sessionCookie = sessions.get<UserSessionCookie>()?:throw UserSessionNotFound("Usuário não logado.")
+    val session = authController.getSession(sessionCookie)
+
+    if (!session.user.isAuthorized(session.user.role, permission)) {
+        throw AuthenticationMiddlewareException("Usuário não pode acessar")
+    }
+}
+
+suspend fun ApplicationCall.getUserPermissions(): HashSet<Permission> {
+    val authController = AuthenticationController()
+    val sessionCookie = sessions.get<UserSessionCookie>()?:throw UserSessionNotFound("Usuário não logado.")
+    val session = authController.getSession(sessionCookie)
+
+    return session.user.permissions
+}
+
+suspend fun ApplicationCall.getUserId(): UUID {
+    val authController = AuthenticationController()
+    val sessionCookie = sessions.get<UserSessionCookie>()?:throw UserSessionNotFound("Usuário não logado.")
+    val session = authController.getSession(sessionCookie)
+
+    return session.user.id
+}
+
+suspend fun ApplicationCall.getUserOfficialId(): UUID {
+    val userId = getUserId()
+    val userNotary = getUserPermissions()
+        .first { it.subject == Subject.CivilRegistry && it.domainId != null }.domainId
+    val documentController = DocumentController()
+    val official = documentController.getOfficials(userNotary!!).first{
+        it.accountId == userId
+    }
+
+    return official.id
+}
+
+suspend fun ApplicationCall.getUserCpf(): String {
+    val authController = AuthenticationController()
+    val sessionCookie = sessions.get<UserSessionCookie>()?:throw UserSessionNotFound("Usuário não logado.")
+    val session = authController.getSession(sessionCookie)
+
+    return session.user.cpf!!
 }

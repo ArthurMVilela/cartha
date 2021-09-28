@@ -140,4 +140,20 @@ class PersonHandler {
             throw BadRequestException("")
         }
     }
+
+    suspend fun getOfficials(call: ApplicationCall) {
+        val id = try {
+            UUID.fromString(call.parameters["id"])
+        } catch (ex: Exception) {
+            throw BadRequestException("Id inválida.")
+        }
+
+        val officials = try {
+            controller.getOfficials(id)
+        } catch (ex: Exception) {
+            throw ex
+        }
+
+        call.respond(HttpStatusCode.OK, officials)
+    }
 }

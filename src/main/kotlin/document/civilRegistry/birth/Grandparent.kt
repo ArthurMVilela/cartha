@@ -13,6 +13,7 @@ class Grandparent(
     @Serializable(with = UUIDSerializer::class)
     @SerialName("person_id")
     val personId: UUID?,
+    val cpf:String,
     @Serializable(with = UUIDSerializer::class)
     @SerialName("birth_certificate_id")
     val birthCertificateId: UUID,

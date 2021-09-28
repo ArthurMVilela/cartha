@@ -2,7 +2,9 @@
 
 package ui.service
 
+import authentication.Permission
 import authentication.Role
+import authentication.Subject
 import authentication.logging.AccessLogSearchFilter
 import freemarker.cache.ClassTemplateLoader
 import freemarker.core.HTMLOutputFormat
@@ -17,10 +19,10 @@ import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.sessions.*
-import ui.features.AuthenticationMiddleware
-import ui.features.UserSessionCookie
-import ui.features.authorizedRoute
+import ui.exception.AuthenticationMiddlewareException
+import ui.features.*
 import ui.handlers.*
+import java.util.*
 
 fun main() {
     val mainPageHandler = MainPageHandler()
@@ -28,6 +30,9 @@ fun main() {
     val accessLogsHandlers = AccessLogsHandlers()
     val errorPageHandler = ErrorPageHandler()
     val blockchainHandlers = BlockchainHandlers()
+    val notaryHandler = NotaryHandler()
+    val birthCertificateHandler = BirthCertificateHandler()
+    val documentHandler = DocumentHandler()
 
     embeddedServer(Netty, port = 8080, watchPaths = listOf("templates", "js")) {
         install(StatusPages) {
@@ -79,13 +84,20 @@ fun main() {
                 userAccountHandler.logout(call)
             }
 
+            get("/create-account") {
+                userAccountHandler.getCreateClientPage(call)
+            }
+            post("/create-account") {
+                userAccountHandler.createClient(call)
+            }
+
             authenticate {
-                authorizedRoute(Role.Client, null) {
+                authorizedRoute(Role.Client) {
                     get("/document") {
-                        call.respond("Hello")
+                        documentHandler.getDocumentPage(call)
                     }
                 }
-                authorizedRoute(Role.SysAdmin, null) {
+                authorizedRoute(Role.SysAdmin) {
                     get("/logs") {
                         accessLogsHandlers.getLogs(call)
                     }
@@ -112,10 +124,107 @@ fun main() {
                             blockchainHandlers.getBlockPage(call)
                         }
                     }
+                }
 
+                route("/notary") {
+                    authorizedRoute(Role.SysAdmin) {
+                        get("/create") {
+                            notaryHandler.getCreateNotaryPage(call)
+                        }
+
+                        get("/{id}/add-manager") {
+                            userAccountHandler.getCreateManagerPage(call)
+                        }
+
+                        post("/{id}/add-manager") {
+                            userAccountHandler.createManager(call)
+                        }
+                        post("/create") {
+                            notaryHandler.createNotary(call)
+                        }
+                    }
+                    authorizedRoute(Role.SysAdmin, Role.Manager) {
+                        get("") {
+                            if (call.getUserRole() == Role.Manager) {
+                                val id = call.getUserPermissions()
+                                    .first { it.subject == Subject.Notary && it.domainId != null }.domainId
+                                call.respondRedirect("/notary/${id}")
+                            }
+                            notaryHandler.getNotariesPage(call)
+                        }
+                        get("/{id}") {
+                            if (call.getUserRole() == Role.Manager) {
+                                val id = UUID.fromString(call.parameters["id"])
+                                call.checkForPermission(Permission(null, Subject.Notary, id))
+                            }
+                            notaryHandler.getNotaryPage(call)
+                        }
+                        get("/{id}/add-official") {
+                            if (call.getUserRole() == Role.Manager) {
+                                val id = UUID.fromString(call.parameters["id"])
+                                call.checkForPermission(Permission(null, Subject.Notary, id))
+                            }
+                            userAccountHandler.getCreateOfficialPage(call)
+                        }
+                        post("/{id}/add-official") {
+                            if (call.getUserRole() == Role.Manager) {
+                                val id = UUID.fromString(call.parameters["id"])
+                                call.checkForPermission(Permission(null, Subject.Notary, id))
+                            }
+                            userAccountHandler.createOfficial(call)
+                        }
+                    }
+                }
+
+                route("/civil-registry") {
+                    authorizedRoute(Role.Manager, Role.Official) {
+                        get("") {
+                            documentHandler.getCivilRegistryPage(call)
+                        }
+                    }
+                    route("/birth") {
+                        get("") {
+                            when (call.getUserRole()) {
+                                Role.Manager -> {
+                                    val id = call.getUserPermissions()
+                                        .first { it.subject == Subject.Notary && it.domainId != null }.domainId
+                                    call.respondRedirect("/civil-registry/birth/notary/${id}")
+                                }
+                                Role.Official -> {
+                                    val id = call.getUserOfficialId()
+                                    call.respondRedirect("/civil-registry/birth/official/${id}")
+                                }
+                                else -> {
+                                    throw AuthenticationMiddlewareException()
+                                }
+                            }
+                        }
+                        authorizedRoute(Role.Manager, Role.Official) {
+                            get("/create") {
+                                birthCertificateHandler.getCreateBirthCertificatePage(call)
+                            }
+                            post("/create") {
+                                birthCertificateHandler.createBirthCertificate(call)
+                            }
+                        }
+                        get("/official/{id}") {
+                            birthCertificateHandler.getBirthCertificateByOfficialPage(call)
+                        }
+                        get("/notary/{id}") {
+                            birthCertificateHandler.getBirthCertificateByNotaryPage(call)
+                        }
+
+                        get("/person/{id}") {
+                            call.respond("Mostrar certidões de nascimento feitas deste cliente")
+                        }
+                        get("/{id}") {
+                            birthCertificateHandler.getBirthCertificatePage(call)
+                        }
+                    }
                 }
 
             }
+
         }
     }.start(true)
 }

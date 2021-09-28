@@ -31,6 +31,7 @@ class AffiliationDAO:DAO<Affiliation, UUID> {
                     } else {
                         null
                     }
+                    it[cpf] = obj.cpf
                     it[documentId] = obj.documentId
                     it[name] = obj.name
                     it[municipalityId] = m.id
@@ -104,11 +105,12 @@ class AffiliationDAO:DAO<Affiliation, UUID> {
     override fun toType(row: ResultRow): Affiliation {
         val id = row[AffiliationTable.id].value
         val personId = row[AffiliationTable.personId]?.value
+        val cpf = row[AffiliationTable.cpf]
         val documentId = row[AffiliationTable.documentId].value
         val name = row[AffiliationTable.name]
 
         val municipality = municipalityDAO.select(row[AffiliationTable.municipalityId].value)!!
 
-        return Affiliation(id, personId, documentId, name, municipality)
+        return Affiliation(id, personId, cpf, documentId, name, municipality)
     }
 }

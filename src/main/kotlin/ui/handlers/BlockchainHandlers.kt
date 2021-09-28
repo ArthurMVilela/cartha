@@ -13,10 +13,10 @@ import serviceExceptions.BadRequestException
 import ui.controllers.AuthenticationController
 import ui.controllers.BlockchainController
 import ui.features.getUserRole
-import ui.pages.BlockchainBlockPageBuilder
-import ui.pages.BlockchainBlocksPageBuilder
-import ui.pages.BlockchainNodesPageBuilder
-import ui.pages.BlockchainPageBuilder
+import ui.pages.blockchain.BlockchainBlockPageBuilder
+import ui.pages.blockchain.BlockchainBlocksPageBuilder
+import ui.pages.blockchain.BlockchainNodesPageBuilder
+import ui.pages.blockchain.BlockchainPageBuilder
 import java.time.LocalDateTime
 import java.util.*
 

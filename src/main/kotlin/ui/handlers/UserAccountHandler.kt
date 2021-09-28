@@ -1,5 +1,13 @@
 package ui.handlers
 
+import authentication.Role
+import authentication.Subject
+import authentication.logging.ActionType
+import document.handlers.person.CreateOfficialRequest
+import document.handlers.person.CreatePhysicalPersonRequest
+import document.person.CivilStatus
+import document.person.Color
+import document.person.Sex
 import io.ktor.application.*
 import io.ktor.freemarker.*
 import io.ktor.http.*
@@ -8,13 +16,23 @@ import io.ktor.response.*
 import io.ktor.sessions.*
 import io.ktor.utils.io.*
 import ui.controllers.AuthenticationController
+import ui.controllers.DocumentController
 import ui.features.UserSessionCookie
 import ui.features.getUserRole
+import ui.features.logAction
+import ui.pages.CreateClientPageBuilder
+import ui.pages.CreateManagerPageBuilder
+import ui.pages.CreateOfficialPageBuilder
 import ui.pages.LoginPageBuilder
 import ui.util.Util
+import java.time.LocalDate
+import java.time.Month
+import java.util.*
 
 class UserAccountHandler {
     private val authController = AuthenticationController()
+    private val documentController = DocumentController()
+
     /**
      * Recebe uma chamada da aplicação e retorna a tela de login
      *
@@ -90,5 +108,167 @@ class UserAccountHandler {
 
     fun userAccountPage(call: ApplicationCall) {
         TODO()
+    }
+
+    suspend fun getCreateOfficialPage(call: ApplicationCall) {
+        val id = try {
+            UUID.fromString(call.parameters["id"])
+        } catch (ex: Exception) {
+            throw io.ktor.features.BadRequestException("Id inválida.")
+        }
+
+        val pageBuilder = CreateOfficialPageBuilder()
+
+        pageBuilder.setupMenu(call.getUserRole())
+        pageBuilder.setNotaryId(id)
+
+        val page = pageBuilder.build()
+        call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
+    }
+
+    suspend fun getCreateManagerPage(call: ApplicationCall) {
+        val id = try {
+            UUID.fromString(call.parameters["id"])
+        } catch (ex: Exception) {
+            throw io.ktor.features.BadRequestException("Id inválida.")
+        }
+
+        val pageBuilder = CreateManagerPageBuilder()
+
+        pageBuilder.setupMenu(call.getUserRole())
+        pageBuilder.setNotaryId(id)
+
+        val page = pageBuilder.build()
+        call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
+    }
+
+    suspend fun createOfficial(call: ApplicationCall) {
+        val id = try {
+            UUID.fromString(call.parameters["id"])
+        } catch (ex: Exception) {
+            throw io.ktor.features.BadRequestException("Id inválida.")
+        }
+
+        val form = call.receiveParameters()
+
+        val user = try {
+            authController.createAccount(
+                form["name"]!!,
+                Role.Official,
+                form["email"]!!,
+                form["cpf"]!!,
+                null,
+                form["password"]!!,
+                id
+            )
+        } catch (ex: Exception) {
+            throw ex
+        }
+
+        val official = try {
+            documentController.createOfficial(CreateOfficialRequest(
+                user.id,
+                user.name,
+                user.cpf!!,
+                Sex.valueOf(form["sex"]!!),
+                id
+            ))
+        } catch (ex: Exception) {
+            throw ex
+        }
+
+        call.logAction(ActionType.CreateAccount, Subject.UserAccount, user.id)
+        call.logAction(ActionType.AddOfficialToNotary, Subject.Notary, id)
+
+        call.respondRedirect("/notary/$id")
+    }
+
+    suspend fun createManager(call: ApplicationCall) {
+        val id = try {
+            UUID.fromString(call.parameters["id"])
+        } catch (ex: Exception) {
+            throw io.ktor.features.BadRequestException("Id inválida.")
+        }
+
+        val form = call.receiveParameters()
+
+        val user = try {
+            authController.createAccount(
+                form["name"]!!,
+                Role.Manager,
+                form["email"]!!,
+                form["cpf"]!!,
+                null,
+                form["password"]!!,
+                id
+            )
+        } catch (ex: Exception) {
+            throw ex
+        }
+
+        val official = try {
+            documentController.createOfficial(CreateOfficialRequest(
+                user.id,
+                user.name,
+                user.cpf!!,
+                Sex.valueOf(form["sex"]!!),
+                id
+            ))
+        } catch (ex: Exception) {
+            throw ex
+        }
+
+        call.logAction(ActionType.CreateAccount, Subject.UserAccount, user.id)
+        call.logAction(ActionType.AddManagerToNotary, Subject.Notary, id)
+
+        call.respondRedirect("/notary/$id")
+    }
+
+    suspend fun getCreateClientPage(call: ApplicationCall) {
+        val pageBuilder = CreateClientPageBuilder()
+
+        pageBuilder.setupMenu(call.getUserRole())
+
+        val page = pageBuilder.build()
+        call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
+    }
+
+    suspend fun createClient(call: ApplicationCall){
+        val form = call.receiveParameters()
+
+        val user = try {
+            authController.createAccount(
+                form["name"]!!,
+                Role.Client,
+                form["email"]!!,
+                form["cpf"]!!,
+                null,
+                form["password"]!!,
+                null
+            )
+        } catch (ex: Exception) {
+            throw ex
+        }
+
+        val physicalPerson = try {
+            documentController.createPhysicalPerson(CreatePhysicalPersonRequest(
+                user.id,
+                user.name,
+                user.cpf!!,
+                LocalDate.of(
+                    form["birthday-year"]!!.toInt(),
+                    Month.valueOf(form["birthday-month"]!!),
+                    form["birthday-day"]!!.toInt()
+                ),
+                Sex.valueOf(form["sex"]!!),
+                Color.valueOf(form["color"]!!),
+                CivilStatus.valueOf(form["civil-status"]!!),
+                form["nationality"]!!
+            ))
+        } catch (ex: Exception) {
+            throw ex
+        }
+
+        call.respondRedirect("/login")
     }
 }
