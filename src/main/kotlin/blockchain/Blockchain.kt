@@ -34,6 +34,9 @@ class Blockchain(val blocks:MutableList<Block> = mutableListOf()) {
      */
     fun addBlock(timestamp: LocalDateTime, transactions: List<Transaction>, nodeId:UUID) {
         val lastBlockHash = getLast()?.hash?:""
+        transactions.forEach {
+            it.pending = false
+        }
         this.addBlock(Block(timestamp, transactions, lastBlockHash, nodeId))
     }
 

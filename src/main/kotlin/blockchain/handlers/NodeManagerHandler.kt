@@ -44,7 +44,7 @@ class NodeManagerHandler {
         val t = Transaction(LocalDateTime.now(), transaction.documentId, transaction.documentHash, transaction.type)
         nodeManager.addTransactionToQueue(t)
 
-        call.respond(HttpStatusCode.Created, "Transação adicionada com sucesso")
+        call.respond(HttpStatusCode.Created, t)
     }
 
     suspend fun getPendingTransactions(call: ApplicationCall) {

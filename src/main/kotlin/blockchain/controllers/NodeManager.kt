@@ -35,7 +35,7 @@ class NodeManager (
         transactionDAO.insert(transaction)
 
         val pendingCount = transactionDAO.getPendingCount()
-        if (pendingCount >= 1) {
+        if (pendingCount >= 5) {
             val pick = pickNodeToGenerate()
             val transactions = transactionDAO.selectMany(Op.build { TransactionTable.pending eq true })
 
@@ -45,7 +45,10 @@ class NodeManager (
                 throw ex
             }
 
-            println(block)
+            transactions.forEach {
+                it.pending = false
+                transactionDAO.update(it)
+            }
         }
     }
 
