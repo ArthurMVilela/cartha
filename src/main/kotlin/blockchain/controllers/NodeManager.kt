@@ -31,27 +31,22 @@ class NodeManager (
         }
     }
 
-    fun addTransactionToQueue(transaction: Transaction) {
-        //transactionQueue.add(transaction)
+    suspend fun addTransactionToQueue(transaction: Transaction) {
         transactionDAO.insert(transaction)
-        //transmitTransaction(transaction)
-//        if (transactionQueue.size >= Config.transactionAmount) {
-//            val pick = pickNodeToGenerateNextBlock()
-//            val transactions = mutableListOf<Transaction>()
-//
-//            for (i in 0 until Config.transactionAmount) {
-//                transactions.add(transactionQueue.remove())
-//            }
-//
-//            val block:Block
-//            runBlocking {
-//                block = requestBlock(transactions, pick)
-//            }
-//
-//            runBlocking {
-//                transmitBlock(block)
-//            }
-//        }
+
+        val pendingCount = transactionDAO.getPendingCount()
+        if (pendingCount >= 1) {
+            val pick = pickNodeToGenerate()
+            val transactions = transactionDAO.selectMany(Op.build { TransactionTable.pending eq true })
+
+            val block = try {
+                client.createBlock(pick, transactions)
+            } catch (ex: Exception) {
+                throw ex
+            }
+
+            println(block)
+        }
     }
 
     fun getPendingTransactions(page: Int = 1):ResultSet<Transaction> {
@@ -71,6 +66,10 @@ class NodeManager (
         return result.firstOrNull()
     }
 
+    fun pickNodeToGenerate(): NodeInfo {
+        return nodeInfoDAO.getRandom()
+    }
+
     /**
      * Busca os registros de nós cadastrados
      *
@@ -88,37 +87,4 @@ class NodeManager (
 
         nodeInfoDAO.update(node)
     }
-
-    fun transmitTransaction(transaction: Transaction) {
-        TODO("Not implemented yet")
-    }
-
-    suspend fun transmitBlock(block:Block) {
-//        nodes.forEach {
-//            println("${it.id} ${block.nodeId}")
-//            if (it.id != block.nodeId) {
-//                run {
-//                    val block = client.post<Block>("${it.address}/blocks") {
-//                        contentType(ContentType.Application.Json)
-//                        body = block
-//                    }
-//                }
-//            }
-//        }
-    }
-
-//    fun pickNodeToGenerateNextBlock(): Node {
-//        val pick = nodes.random()
-//
-//        return pick
-//    }
-
-//    suspend fun requestBlock(transactions: List<Transaction>, node: Node): Block {
-//        val block = client.post<Block>("${node.address}/blocks/new") {
-//            contentType(ContentType.Application.Json)
-//            body = transactions
-//        }
-//
-//        return block
-//    }
 }

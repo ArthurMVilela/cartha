@@ -159,8 +159,19 @@ class TransactionDAO:DAO<Transaction, UUID> {
         val type = row[TransactionTable.type]
         val hash = row[TransactionTable.hash]
         val pending = row[TransactionTable.pending]
-        val blockId = row[TransactionTable.blockId].value
+        val blockId = row[TransactionTable.blockId]
 
         return Transaction(id, timestamp, documentId, documentHash, type, hash, pending, blockId)
+    }
+
+    fun getPendingCount(): Int {
+        return transaction {
+            try {
+                TransactionTable.select(Op.build { TransactionTable.pending eq true }).count().toInt()
+            } catch (ex: Exception) {
+                rollback()
+                throw ex
+            }
+        }
     }
 }

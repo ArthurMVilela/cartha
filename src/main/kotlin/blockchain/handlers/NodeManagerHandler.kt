@@ -40,7 +40,9 @@ class NodeManagerHandler {
             throw BadRequestException("conteudo da requisição é inválido")
         }
 
-        nodeManager.addTransactionToQueue(Transaction(LocalDateTime.now(), transaction.documentId, transaction.documentHash, transaction.type))
+
+        val t = Transaction(LocalDateTime.now(), transaction.documentId, transaction.documentHash, transaction.type)
+        nodeManager.addTransactionToQueue(t)
 
         call.respond(HttpStatusCode.Created, "Transação adicionada com sucesso")
     }
@@ -72,14 +74,7 @@ class NodeManagerHandler {
             throw BadRequestException("Página inválida")
         }
 
-        if (page < 1) {
-            throw BadRequestException("Página inválida")
-        }
-
         val nodes = nodeManager.getNodes(page)
-        if (nodes.currentPage > nodes.numberOfPages) {
-            throw NotFoundException("Página não encontrada.")
-        }
 
         call.respond(nodes)
     }
