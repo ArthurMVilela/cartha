@@ -8,7 +8,7 @@
 <#include "./partials/_topbarMenu.ftl">
 <div class="container" style="margin-top:80px">
     <div class="row justify-content-center">
-        <form class="col" action="/civil-registry/birth/create" method="post">
+        <form id="create-birth-certificate-form" class="col" action="/civil-registry/birth/create" method="post">
             <input type="hidden" name="official-id" value="${officialId}">
             <input type="hidden" name="notary-id" value="${notaryId}">
 
@@ -221,5 +221,6 @@
 </div>
 
 <script type="text/javascript" src="/static/main.js"></script>
+<script type="text/javascript" src="/static/createBirthCertificate.js"></script>
 </body>
 </html>
