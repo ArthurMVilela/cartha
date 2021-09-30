@@ -1,5 +1,7 @@
 package ui.controllers
 
+import blockchain.Block
+import blockchain.BlockInfo
 import blockchain.NodeInfo
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -12,6 +14,7 @@ import io.ktor.client.statement.*
 import io.ktor.features.*
 import io.ktor.http.*
 import persistence.ResultSet
+import java.util.*
 
 class BlockchainClient(
     val nodeManagerURL:String
@@ -48,4 +51,47 @@ class BlockchainClient(
 
         return response.receive()
     }
+
+    suspend fun getNode(id: UUID): NodeInfo {
+        val response: HttpResponse = try {
+            client.get("$nodeManagerURL/nodes/$id") {
+            }
+        } catch (ex: Exception) {
+            throw ex
+        }
+
+        if (response.status == HttpStatusCode.NotFound) {
+            throw NotFoundException("Página não encontrada")
+        }
+
+        return response.receive()
+    }
+
+    suspend fun getBlocks(nodeId: UUID, page: Int): ResultSet<BlockInfo> {
+        val node = getNode(nodeId)
+
+        val response: HttpResponse = try {
+            client.get("${node.address}/blocks") {
+                parameter("page", page)
+            }
+        } catch (ex: Exception) {
+            throw ex
+        }
+
+        return response.receive()
+    }
+
+    suspend fun getBlock(nodeId: UUID, blockId: UUID): Block {
+        val node = getNode(nodeId)
+
+        val response: HttpResponse = try {
+            client.get("${node.address}/blocks/${blockId}") {
+            }
+        } catch (ex: Exception) {
+            throw ex
+        }
+
+        return response.receive()
+    }
+
 }

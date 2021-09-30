@@ -60,17 +60,26 @@ class BlockchainHandlers {
     }
 
     suspend fun getBlocksPage(call: ApplicationCall) {
+        val id = try {
+            UUID.fromString(call.parameters["nodeId"])
+        } catch (ex: Exception) {
+            throw io.ktor.features.BadRequestException("Id inválida.")
+        }
+
+        val pageNumber = try {
+            call.request.queryParameters["page"]?.toInt()?:1
+        } catch (ex: Exception) {
+            throw BadRequestException("Página inválida")
+        }
+
+        val blocks = blockchainController.getBlocks(id, pageNumber)
+
         val pageBuilder = BlockchainBlocksPageBuilder()
 
         pageBuilder.setupMenu(call.getUserRole())
-        pageBuilder.setSetNodeInfo(NodeInfo(UUID.randomUUID(), "", LocalDateTime.now()))
+        pageBuilder.setSetNodeInfo(id)
         pageBuilder.setResultSet(
-            ResultSet(
-                listOf(
-                    BlockInfo(UUID.randomUUID(), LocalDateTime.now(), "BLABLA", UUID.randomUUID()
-                    )),
-                1, 1, 20
-            )
+            blocks
         )
 
         val page = pageBuilder.build()
@@ -78,10 +87,25 @@ class BlockchainHandlers {
     }
 
     suspend fun getBlockPage(call: ApplicationCall) {
+        val nodeId = try {
+            UUID.fromString(call.parameters["nodeId"])
+        } catch (ex: Exception) {
+            throw io.ktor.features.BadRequestException("Id inválida.")
+        }
+
+        val blockId = try {
+            UUID.fromString(call.parameters["blockId"])
+        } catch (ex: Exception) {
+            throw io.ktor.features.BadRequestException("Id inválida.")
+        }
+
+        val block = blockchainController.getBlock(nodeId, blockId)
+
         val pageBuilder = BlockchainBlockPageBuilder()
 
         pageBuilder.setupMenu(call.getUserRole())
-        pageBuilder.setBlock(Block(LocalDateTime.now(), listOf(), "BleBle", UUID.randomUUID()))
+        pageBuilder.setNodeId(nodeId)
+        pageBuilder.setBlock(block)
 
         val page = pageBuilder.build()
         call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
