@@ -8,7 +8,7 @@
 <#include "./partials/_topbarMenu.ftl">
 <div class="container" style="margin-top:80px">
     <div class="row justify-content-center">
-        <form class="col" action="/notary/create" method="post">
+        <form id="create-node-form" class="col" action="/notary/create" method="post">
             <div class="m-3">
                 <label for="name" class="form-label">Nome: </label>
                 <input id="name" type="text" class="form-control" name="name">
@@ -38,5 +38,6 @@
 </div>
 
 <script type="text/javascript" src="/static/main.js"></script>
+<script type="text/javascript" src="/static/createNode.js"></script>
 </body>
 </html>

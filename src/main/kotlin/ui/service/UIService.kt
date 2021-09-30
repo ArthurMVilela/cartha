@@ -114,6 +114,15 @@ fun main() {
                         get("/nodes") {
                             blockchainHandlers.getNodesPage(call)
                         }
+                        get("/nodes/{nodeId}") {
+                            blockchainHandlers.getNodePage(call)
+                        }
+                        get("/nodes/create/{notaryId}") {
+                            blockchainHandlers.getCreateNodePage(call)
+                        }
+                        post("/nodes/create/{notaryId}") {
+                            blockchainHandlers.createNodePage(call)
+                        }
                         get("/blocks") {
                             blockchainHandlers.getBlocksPage(call)
                         }

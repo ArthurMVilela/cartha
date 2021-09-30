@@ -3,20 +3,19 @@ package ui.handlers
 import blockchain.Block
 import blockchain.BlockInfo
 import blockchain.NodeInfo
+import blockchain.handlers.AddNodeRequest
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.freemarker.*
 import io.ktor.http.*
+import io.ktor.request.*
 import io.ktor.response.*
 import persistence.ResultSet
 import serviceExceptions.BadRequestException
 import ui.controllers.AuthenticationController
 import ui.controllers.BlockchainController
 import ui.features.getUserRole
-import ui.pages.blockchain.BlockchainBlockPageBuilder
-import ui.pages.blockchain.BlockchainBlocksPageBuilder
-import ui.pages.blockchain.BlockchainNodesPageBuilder
-import ui.pages.blockchain.BlockchainPageBuilder
+import ui.pages.blockchain.*
 import java.time.LocalDateTime
 import java.util.*
 
@@ -106,6 +105,57 @@ class BlockchainHandlers {
         pageBuilder.setupMenu(call.getUserRole())
         pageBuilder.setNodeId(nodeId)
         pageBuilder.setBlock(block)
+
+        val page = pageBuilder.build()
+        call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
+    }
+
+    suspend fun getCreateNodePage(call: ApplicationCall) {
+        val notaryId = try {
+            UUID.fromString(call.parameters["notaryId"])
+        } catch (ex: Exception) {
+            throw io.ktor.features.BadRequestException("Id inválida.")
+        }
+
+        val pageBuilder = CreateNodePageBuilder()
+
+        pageBuilder.setupMenu(call.getUserRole())
+        pageBuilder.setNotaryId(notaryId)
+
+        val page = pageBuilder.build()
+        call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
+    }
+
+    suspend fun createNodePage(call: ApplicationCall) {
+        val notaryId = try {
+            UUID.fromString(call.parameters["notaryId"])
+        } catch (ex: Exception) {
+            throw io.ktor.features.BadRequestException("Id inválida.")
+        }
+
+        val form = call.receiveParameters()
+
+        val rb = AddNodeRequest(
+            notaryId, form["address"]!!
+        )
+
+        val node = blockchainController.createNode(rb)
+
+        call.respondRedirect("/blockchain/nodes/${node.nodeId}")
+    }
+
+    suspend fun getNodePage(call: ApplicationCall) {
+        val id = try {
+            UUID.fromString(call.parameters["nodeId"])
+        } catch (ex: Exception) {
+            throw io.ktor.features.BadRequestException("Id inválida.")
+        }
+
+        val node = blockchainController.getNode(id)
+
+        val pageBuilder = BlockchainNodePageBuilder()
+        pageBuilder.setupMenu(call.getUserRole())
+        pageBuilder.setNode(node)
 
         val page = pageBuilder.build()
         call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
