@@ -3,7 +3,9 @@ package ui.controllers
 import blockchain.Block
 import blockchain.BlockInfo
 import blockchain.NodeInfo
+import blockchain.Transaction
 import blockchain.handlers.AddNodeRequest
+import blockchain.handlers.CreateTransactionRequest
 import persistence.ResultSet
 import java.util.*
 
@@ -29,5 +31,9 @@ class BlockchainController {
 
     suspend fun createNode(rb: AddNodeRequest) : NodeInfo {
         return client.createNode(rb)
+    }
+
+    suspend fun createTransaction(rb: CreateTransactionRequest):Transaction {
+        return client.createTransaction(rb)
     }
 }

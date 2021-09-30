@@ -3,7 +3,9 @@ package ui.controllers
 import blockchain.Block
 import blockchain.BlockInfo
 import blockchain.NodeInfo
+import blockchain.Transaction
 import blockchain.handlers.AddNodeRequest
+import blockchain.handlers.CreateTransactionRequest
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
@@ -40,6 +42,19 @@ class BlockchainClient(
     suspend fun createNode(rb: AddNodeRequest): NodeInfo {
         val response: HttpResponse = try {
             client.post("$nodeManagerURL/nodes") {
+                contentType(ContentType.Application.Json)
+                body = rb
+            }
+        } catch (ex: Exception) {
+            throw ex
+        }
+
+        return response.receive()
+    }
+
+    suspend fun createTransaction(rb: CreateTransactionRequest): Transaction {
+        val response: HttpResponse = try {
+            client.post("$nodeManagerURL/transactions") {
                 contentType(ContentType.Application.Json)
                 body = rb
             }
