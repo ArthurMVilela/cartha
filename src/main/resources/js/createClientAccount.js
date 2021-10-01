@@ -1,8 +1,4 @@
 function validateCreateClientAccountForm(evt) {
-    // $("#create-client-account-form").find("input, select").each(function (el) {
-    //     el.removeClass("is-invalid")
-    // })
-
     let password = $("#password")
     let passwordRepeat = $("#password-repeat")
 

@@ -1,11 +1,13 @@
 package blockchain.controllers
 
+import blockchain.Block
 import blockchain.NodeInfo
 import blockchain.NodeStatus
+import blockchain.Transaction
 import io.ktor.client.*
+import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.features.*
-import io.ktor.client.features.get
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
@@ -50,5 +52,14 @@ class NodeClient {
         }
 
         return status
+    }
+
+    suspend fun createBlock(node: NodeInfo, transactions: List<Transaction>) : Block {
+        val response: HttpResponse = client.post("${node.address}/blocks/new") {
+            contentType(ContentType.Application.Json)
+            body = transactions
+        }
+
+        return response.receive()
     }
 }

@@ -5,12 +5,13 @@ import blockchain.NodeInfo
 import persistence.ResultSet
 import ui.pages.Page
 import ui.pages.PageBuilder
+import java.util.*
 
 class BlockchainBlocksPageBuilder: PageBuilder() {
     override val page: Page = Page("blockchainChain.ftl", mutableMapOf())
 
-    fun setSetNodeInfo(nodeInfo:NodeInfo) {
-        page.data["node"] = nodeInfo
+    fun setSetNodeInfo(nodeId: UUID) {
+        page.data["nodeId"] = nodeId
     }
 
     fun setResultSet(resultSet: ResultSet<BlockInfo>?) {

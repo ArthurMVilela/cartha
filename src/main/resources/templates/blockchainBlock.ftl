@@ -10,19 +10,45 @@
     <div class="row justify-content-center">
         <div class="col">
             <div class="input-group mb-3">
-                <input type="text" class="form-control" value="${block.nodeId}">
-                <button class="btn btn-outline-secondary" type="button" id="button-addon2">Buscar</button>
+                <span class="input-group-text" id="basic-addon1">Cartório</span>
+                <input type="text" class="form-control" disabled value="${nodeId}">
             </div>
         </div>
     </div>
     <div class="row justify-content-center">
         <div class="col ">
             <div class="card m-3">
+                <div class="card-body">
+                    <p class="card-text">ID: ${block.id}</p>
+                    <p class="card-text">Timestamp: ${block.timestamp}</p>
+                    <p class="card-text">Hash do bloco anterior: ${block.previousHash}</p>
+                    <p class="card-text">Hash: ${block.hash}</p>
+                    <p class="card-text">ID do nó criador: ${block.nodeId}</p>
+                    <h5 class="card-title">Transações</h5>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Timestamp</th>
+                                <th scope="col">Tipo</th>
+                                <th scope="col">Hash</th>
+                                <th scope="col">Hash do documento</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <#list block.transactions as t>
+                            <tr>
+                                <td>${t.timestamp}</td>
+                                <td>${t.type}</td>
+                                <td>${t.hash}</td>
+                                <td>${t.documentHash}</td>
+                            </tr>
+                        </#list>
+
+                        </tbody>
+                    </table>
+                </div>
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item">ID: ${block.id}</li>
-                    <li class="list-group-item">Timestamp: ${block.timestamp}</li>
-                    <li class="list-group-item">Hash: ${block.hash}</li>
-                    <li class="list-group-item">ID do nó criador: ${block.nodeId}</li>
+
                 </ul>
             </div>
         </div>

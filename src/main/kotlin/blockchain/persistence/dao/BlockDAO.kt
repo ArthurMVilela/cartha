@@ -26,6 +26,7 @@ class BlockDAO:DAO<Block, UUID> {
                 }
 
                 obj.transactions.forEach {
+                    it.blockId = obj.id
                     transactionDAO.insert(it)
                 }
 

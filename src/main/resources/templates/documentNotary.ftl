@@ -24,6 +24,7 @@
     </div>
     <div class="row justify-content-end">
         <div class="col">
+            <a class="btn btn-primary" href="/blockchain/nodes/create/${notary.id}" role="button">Adicionar Nó de Blockchain</a>
             <a class="btn btn-primary" href="/notary/${notary.id}/add-manager" role="button">Adicionar Gerente</a>
             <a class="btn btn-primary" href="/notary/${notary.id}/add-official" role="button">Adicionar Funcionário</a>
         </div>

@@ -2,6 +2,8 @@ package ui.handlers
 
 import authentication.Role
 import authentication.Subject
+import blockchain.TransactionType
+import blockchain.handlers.CreateTransactionRequest
 import document.address.UF
 import document.civilRegistry.Affiliation
 import document.civilRegistry.birth.GrandparentType
@@ -17,6 +19,7 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import serviceExceptions.BadRequestException
+import ui.controllers.BlockchainController
 import ui.controllers.DocumentController
 import ui.features.getUserId
 import ui.features.getUserPermissions
@@ -32,6 +35,7 @@ import java.util.*
 
 class BirthCertificateHandler {
     private val documentController = DocumentController()
+    private val blockchainController = BlockchainController()
 
     suspend fun getBirthCertificatePage(call: ApplicationCall) {
         val id = try {
@@ -139,6 +143,12 @@ class BirthCertificateHandler {
         val rb = parseCreateBirthCertificateForm(form)
 
         val cb = documentController.createBirthCertificate(rb)
+
+        val transaction = blockchainController.createTransaction(
+            CreateTransactionRequest(
+                cb.id, cb.hash!!, TransactionType.Creation
+            )
+        )
 
         call.respondRedirect("/civil-registry/birth/${cb.id}")
     }

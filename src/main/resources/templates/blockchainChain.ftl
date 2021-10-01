@@ -10,14 +10,14 @@
     <div class="row justify-content-center">
         <div class="col">
             <div class="input-group mb-3">
-                <input type="text" class="form-control" value="${node.nodeId}">
-                <button class="btn btn-outline-secondary" type="button" id="button-addon2">Buscar</button>
+                <span class="input-group-text" id="basic-addon1">Cartório</span>
+                <input type="text" class="form-control" disabled value="${nodeId}">
             </div>
         </div>
     </div>
-    <div class="row justify-content-center">
-        <#if blocks??>
-            <#list blocks as block>
+    <#if blocks??>
+        <#list blocks as block>
+            <div class="row justify-content-center">
                 <div class="col ">
                     <div class="card m-3">
                         <ul class="list-group list-group-flush">
@@ -27,16 +27,13 @@
                             <li class="list-group-item">ID do nó criador: ${block.nodeId}</li>
                         </ul>
                         <div class="card-body">
-                            <a href="/blockchain/blocks/${node.nodeId}/${block.id}" class="card-link">Ver Bloco</a>
+                            <a href="/blockchain/blocks/${nodeId}/${block.id}" class="card-link">Ver Bloco</a>
                         </div>
                     </div>
                 </div>
-            </#list>
-        <#else >
-
-        </#if>
-
-    </div>
+            </div>
+        </#list>
+    </#if>
     <div class="row justify-content-center">
         <div class="col">
             <#include "./partials/_pagination.ftl">

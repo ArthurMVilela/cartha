@@ -5,6 +5,7 @@ package blockchain.service
 import blockchain.Blockchain
 import blockchain.controllers.Node
 import blockchain.handlers.NodeHandler
+import blockchain.persistence.DatabaseInitializer
 import blockchain.persistence.tables.BlockTable
 import blockchain.persistence.tables.TransactionTable
 import io.ktor.application.*
@@ -21,30 +22,18 @@ import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
 import serviceExceptions.BadRequestException
 import java.util.*
+import kotlin.system.exitProcess
 
 fun main() {
     try {
-        val host = System.getenv("DATABASE_HOST")?:throw IllegalArgumentException("Necessário expecificar host do DB")
-        val port = System.getenv("DATABASE_PORT")?:throw IllegalArgumentException("Necessário expecificar porta do DB")
-        val database = System.getenv("DATABASE_NAME")?:throw IllegalArgumentException("Necessário expecificar nome do DB")
-        val user = System.getenv("DATABASE_USER")?:throw IllegalArgumentException("Necessário expecificar usuário do DB")
-        val password = System.getenv("DATABASE_PASSWORD")?:throw IllegalArgumentException("Necessário expecificar senha do DB")
-        val url = "jdbc:mysql://$host:$port/$database?verifyServerCertificate=false&useSSL=false&allowPublicKeyRetrieval=true"
-        val db = Database.connect(
-            url = url,
-            driver = "com.mysql.jdbc.Driver",
-            user = user,
-            password = password,
-        )
-
-        TransactionManager.defaultDatabase = db
-
-        transaction {
-            SchemaUtils.create(BlockTable, TransactionTable)
-        }
+        DatabaseInitializer.loadConfigurations()
+        DatabaseInitializer.initialize()
     } catch (e:Exception) {
-        println(e.message)
+        e.printStackTrace()
+        exitProcess(1)
     }
+
+
     val nodeId = try {
         UUID.fromString(System.getenv("NODE_ID"))
     } catch (ex: Exception) {

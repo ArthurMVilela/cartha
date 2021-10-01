@@ -26,6 +26,9 @@
                             </li>
                         </ul>
                     </div>
+                    <div class="card-body">
+                        <a href="/blockchain/blocks/${node.nodeId}" class="card-link">Ver Blockchain</a>
+                    </div>
                 </div>
             </div>
         </div>

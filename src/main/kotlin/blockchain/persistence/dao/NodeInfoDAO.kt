@@ -5,6 +5,7 @@ import blockchain.persistence.tables.NodeInfoTable
 import persistence.DAO
 import persistence.ResultSet
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.Random
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 import kotlin.math.ceil
@@ -131,5 +132,21 @@ class NodeInfoDAO:DAO<NodeInfo, UUID> {
         val lastHealthCheck = row[NodeInfoTable.lastHealthCheck]
 
         return NodeInfo(nodeId, notaryId, address, status, lastHealthCheck)
+    }
+
+    fun getRandom():NodeInfo {
+        var found:NodeInfo? = null
+
+        transaction {
+            try {
+                val row = NodeInfoTable.select{Op.TRUE}.orderBy(Random()).first()
+                found = toType(row)
+            } catch (ex: Exception) {
+                rollback()
+                throw ex
+            }
+        }
+
+        return found!!
     }
 }
