@@ -39,7 +39,7 @@
                     </div>
                     <div class="m-3">
                         <button type="submit" class="btn btn-primary">Entrar</button>
-                        <a class="btn btn-primary" href="/create-account/client" role="button">Cadastrar-se</a>
+                        <a class="btn btn-primary" href="/create-account" role="button">Cadastrar-se</a>
                     </div>
                 </form>
             </div>
