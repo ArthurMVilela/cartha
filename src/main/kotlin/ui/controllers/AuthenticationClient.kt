@@ -145,4 +145,15 @@ class AuthenticationClient {
 
         return response.receive()
     }
+
+    suspend fun getUserAccountByCpf(cpf: String): User {
+        val response: HttpResponse = try {
+            client.get("$authenticationURL/user/cpf/$cpf") {
+            }
+        }catch (ex: Exception) {
+            throw ex
+        }
+
+        return response.receive()
+    }
 }

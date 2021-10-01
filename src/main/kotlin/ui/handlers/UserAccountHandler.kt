@@ -9,12 +9,13 @@ import document.person.CivilStatus
 import document.person.Color
 import document.person.Sex
 import io.ktor.application.*
+import io.ktor.client.call.*
+import io.ktor.client.features.*
 import io.ktor.freemarker.*
 import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.sessions.*
-import io.ktor.utils.io.*
 import ui.controllers.AuthenticationController
 import ui.controllers.DocumentController
 import ui.features.UserSessionCookie
@@ -24,7 +25,6 @@ import ui.pages.CreateClientPageBuilder
 import ui.pages.CreateManagerPageBuilder
 import ui.pages.CreateOfficialPageBuilder
 import ui.pages.LoginPageBuilder
-import ui.util.Util
 import java.time.LocalDate
 import java.time.Month
 import java.util.*
@@ -77,10 +77,23 @@ class UserAccountHandler {
             val userSession = authController.login(email, cpf, cnpj, form["password"]!!)
             call.sessions.set(UserSessionCookie(userSession.id.toString()))
             call.respondRedirect("/")
-        } catch (ex: Exception) {
+        }  catch (ex: ClientRequestException) {
             val pageBuilder = LoginPageBuilder()
             pageBuilder.setupMenu(call.getUserRole())
-            pageBuilder.setErrorMessage(ex.message?:"Erro inesperado")
+            val msg = try {
+                ex.response.receive<String>()
+            } catch (ex: Exception) {
+                "Erro inesperado"
+            }
+            pageBuilder.setErrorMessage(msg)
+
+            val page = pageBuilder.build()
+            call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
+        }
+        catch (ex: Exception) {
+            val pageBuilder = LoginPageBuilder()
+            pageBuilder.setupMenu(call.getUserRole())
+            pageBuilder.setErrorMessage("Um erro inesperado ocorreu.")
 
             val page = pageBuilder.build()
             call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
@@ -151,6 +164,11 @@ class UserAccountHandler {
 
         val form = call.receiveParameters()
 
+        if (isRegisteredUser(form["email"]!!, form["cpf"]!!) || isRegisterOfficial(form["cpf"]!!)) {
+            generateOfficialErrorPage(call, "Email e/ou CPF já cadastrado", id)
+            return
+        }
+
         val user = try {
             authController.createAccount(
                 form["name"]!!,
@@ -162,7 +180,9 @@ class UserAccountHandler {
                 id
             )
         } catch (ex: Exception) {
-            throw ex
+            ex.printStackTrace()
+            generateOfficialErrorPage(call, "Occorreu um error inesperado ao tentar criar usuário", id)
+            return
         }
 
         val official = try {
@@ -174,7 +194,9 @@ class UserAccountHandler {
                 id
             ))
         } catch (ex: Exception) {
-            throw ex
+            ex.printStackTrace()
+            generateOfficialErrorPage(call, "Occorreu um error inesperado ao tentar criar usuário", id)
+            return
         }
 
         call.logAction(ActionType.CreateAccount, Subject.UserAccount, user.id)
@@ -192,6 +214,11 @@ class UserAccountHandler {
 
         val form = call.receiveParameters()
 
+        if (isRegisteredUser(form["email"]!!, form["cpf"]!!) || isRegisterOfficial(form["cpf"]!!)) {
+            generateManagerErrorPage(call, "Email e/ou CPF já cadastrado", id)
+            return
+        }
+
         val user = try {
             authController.createAccount(
                 form["name"]!!,
@@ -203,7 +230,9 @@ class UserAccountHandler {
                 id
             )
         } catch (ex: Exception) {
-            throw ex
+            ex.printStackTrace()
+            generateManagerErrorPage(call, "Occorreu um error inesperado ao tentar criar usuário", id)
+            return
         }
 
         val official = try {
@@ -215,7 +244,9 @@ class UserAccountHandler {
                 id
             ))
         } catch (ex: Exception) {
-            throw ex
+            ex.printStackTrace()
+            generateManagerErrorPage(call, "Occorreu um error inesperado ao tentar criar usuário", id)
+            return
         }
 
         call.logAction(ActionType.CreateAccount, Subject.UserAccount, user.id)
@@ -236,37 +267,8 @@ class UserAccountHandler {
     suspend fun createClient(call: ApplicationCall){
         val form = call.receiveParameters()
 
-        val registeredUser = try {
-            authController.getUserAccount(form["email"]!!)
-        } catch (ex: Exception) {
-            null
-        }
-
-        if (registeredUser != null) {
-            val pageBuilder = CreateClientPageBuilder()
-
-            pageBuilder.setupMenu(call.getUserRole())
-            pageBuilder.setErrorMessage("Email já cadastrado")
-
-            val page = pageBuilder.build()
-            call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
-            return
-        }
-
-        val registeredPhysicalPerson = try {
-            documentController.getPhysicalPerson(form["cpf"]!!)
-        } catch (ex: Exception) {
-            null
-        }
-
-        if (registeredPhysicalPerson != null) {
-            val pageBuilder = CreateClientPageBuilder()
-
-            pageBuilder.setupMenu(call.getUserRole())
-            pageBuilder.setErrorMessage("CPF já cadastrado")
-
-            val page = pageBuilder.build()
-            call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
+        if (isRegisteredUser(form["email"]!!, form["cpf"]!!) || isRegisterPhysicalPerson(form["cpf"]!!)) {
+            generateClientErrorPage(call, "Email e/ou CPF já cadastrado")
             return
         }
 
@@ -280,14 +282,16 @@ class UserAccountHandler {
                 form["password"]!!,
                 null
             )
+        } catch (ex: ClientRequestException) {
+            val msg = try {
+                ex.response.receive<String>()
+            } catch (ex: Exception) {
+                "Um erro inesperado ocorreu."
+            }
+            generateClientErrorPage(call, msg)
+            return
         } catch (ex: Exception) {
-            val pageBuilder = CreateClientPageBuilder()
-
-            pageBuilder.setupMenu(call.getUserRole())
-            pageBuilder.setErrorMessage("Erro ao tentar criar conta de usuário.")
-
-            val page = pageBuilder.build()
-            call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
+            generateClientErrorPage(call, "Erro ao tentar criar conta de usuário.")
             return
         }
 
@@ -307,16 +311,78 @@ class UserAccountHandler {
                 form["nationality"]!!
             ))
         } catch (ex: Exception) {
-            val pageBuilder = CreateClientPageBuilder()
-
-            pageBuilder.setupMenu(call.getUserRole())
-            pageBuilder.setErrorMessage("Erro ao tentar criar conta de usuário.")
-
-            val page = pageBuilder.build()
-            call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
+            generateClientErrorPage(call, "Erro ao tentar criar conta de usuário.")
             return
         }
 
         call.respondRedirect("/login")
     }
+
+    private suspend fun isRegisteredUser(email: String, cpf: String): Boolean {
+        val registeredUser = try {
+            authController.getUserAccount(email)
+        } catch (ex: Exception) {
+            try {
+                authController.getUserAccountByCpf(cpf)
+            } catch (ex: Exception) {
+                null
+            }
+        }
+
+        return registeredUser != null
+    }
+
+    private suspend fun isRegisterPhysicalPerson(cpf: String): Boolean {
+        val registeredPhysicalPerson = try {
+            documentController.getPhysicalPerson(cpf)
+        } catch (ex: Exception) {
+            null
+        }
+
+        return registeredPhysicalPerson != null
+    }
+
+    private suspend fun isRegisterOfficial(cpf: String): Boolean {
+        val registeredOfficial = try {
+            documentController.getOfficial(cpf)
+        } catch (ex: Exception) {
+            null
+        }
+
+        return registeredOfficial != null
+    }
+
+    private suspend fun generateClientErrorPage(call: ApplicationCall, errorMessage: String) {
+        val pageBuilder = CreateClientPageBuilder()
+
+        pageBuilder.setupMenu(call.getUserRole())
+        pageBuilder.setErrorMessage(errorMessage)
+
+        val page = pageBuilder.build()
+        call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
+    }
+
+    private suspend fun generateOfficialErrorPage(call: ApplicationCall, errorMessage: String, notaryId: UUID) {
+        val pageBuilder = CreateOfficialPageBuilder()
+
+        pageBuilder.setupMenu(call.getUserRole())
+        pageBuilder.setErrorMessage(errorMessage)
+        pageBuilder.setNotaryId(notaryId)
+
+        val page = pageBuilder.build()
+        call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
+    }
+
+    private suspend fun generateManagerErrorPage(call: ApplicationCall, errorMessage: String, notaryId: UUID) {
+        val pageBuilder = CreateManagerPageBuilder()
+
+        pageBuilder.setupMenu(call.getUserRole())
+        pageBuilder.setErrorMessage(errorMessage)
+        pageBuilder.setNotaryId(notaryId)
+
+        val page = pageBuilder.build()
+        call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
+    }
+
+
 }

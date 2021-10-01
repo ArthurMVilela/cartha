@@ -7,6 +7,7 @@ import authentication.handlers.UserHandler
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.http.*
+import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.serialization.*
@@ -14,6 +15,7 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.transactions.TransactionManager
+import org.slf4j.event.Level
 
 fun main() {
     try {
@@ -42,10 +44,22 @@ fun main() {
         }
         install(StatusPages) {
             exception<Throwable> { cause ->
+                cause.printStackTrace()
                 call.respond(HttpStatusCode.InternalServerError, cause.message?:"Erro inexperado ocorreu.")
             }
             exception<BadRequestException> { cause ->
                 call.respond(HttpStatusCode.BadRequest, cause.message?:"Erro inexperado ocorreu.")
+            }
+        }
+        install(CallLogging) {
+            level = Level.INFO
+            format { call ->
+                val method = call.request.httpMethod
+                val status = call.response.status()
+
+                val uri = call.request.uri
+
+                "${status?.value} | ${method.value} $uri"
             }
         }
         routing {
@@ -72,6 +86,9 @@ fun main() {
             }
             get("/user/email/{email}") {
                 userHandler.getAccount(call)
+            }
+            get("/user/cpf/{cpf}") {
+                userHandler.getAccountByCpf(call)
             }
         }
     }.start(wait = true)

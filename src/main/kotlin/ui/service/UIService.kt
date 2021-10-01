@@ -14,11 +14,13 @@ import io.ktor.features.*
 import io.ktor.freemarker.*
 import io.ktor.http.*
 import io.ktor.http.content.*
+import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.sessions.*
+import org.slf4j.event.Level
 import ui.exception.AuthenticationMiddlewareException
 import ui.features.*
 import ui.handlers.*
@@ -67,6 +69,19 @@ fun main() {
             templateLoader = ClassTemplateLoader(this::class.java.classLoader, "templates")
             outputFormat = HTMLOutputFormat.INSTANCE
         }
+
+        install(CallLogging) {
+            level = Level.INFO
+            format { call ->
+                val method = call.request.httpMethod
+                val status = call.response.status()
+
+                val uri = call.request.uri
+
+                "${status?.value} | ${method.value} $uri"
+            }
+        }
+
         routing {
             static("static") {
                 resources("js")

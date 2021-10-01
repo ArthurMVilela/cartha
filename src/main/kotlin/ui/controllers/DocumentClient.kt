@@ -213,4 +213,15 @@ class DocumentClient(
 
         return response.receive()
     }
+
+    suspend fun getOfficial(cpf: String): Official {
+        val response: HttpResponse = try {
+            client.get("$documentUrl/person/official/cpf/$cpf") {
+            }
+        }catch (ex: Exception) {
+            throw ex
+        }
+
+        return response.receive()
+    }
 }

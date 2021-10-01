@@ -33,7 +33,7 @@
             <div class="m-3">
                 <label for="cpf" class="form-label">CPF: </label>
                 <input id="cpf" type="text" class="form-control mask-cpf" name="cpf" required>
-                <div class="invalid-feedback">
+                <div id="cpf-error-message" class="invalid-feedback">
                     Você deve inserir seu CPF
                 </div>
             </div>
@@ -103,7 +103,7 @@
             <div class="m-3">
                 <label for="password-repeat" class="form-label">Repetir senha: </label>
                 <input id="password-repeat" type="password" class="form-control" name="password-repeat" required>
-                <div id="password-invalid-msg" class="invalid-feedback">
+                <div id="repeat-password-invalid-msg" class="invalid-feedback">
                     Você deve digitar novamente sua senha.
                 </div>
             </div>

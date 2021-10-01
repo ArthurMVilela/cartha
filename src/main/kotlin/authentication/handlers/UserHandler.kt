@@ -79,9 +79,9 @@ class UserHandler {
         val session = try {
             controller.login(email, cpf, cnpj, password)
         } catch (ex: InvalidCredentialsException) {
-            throw BadRequestException(ex.message?:"")
+            throw BadRequestException(ex.message?:"Credentiais de usuário inválidas.")
         } catch (ex: InvalidPasswordException) {
-            throw BadRequestException(ex.message?:"")
+            throw BadRequestException("Credentiais de usuário inválidas.")
         }
 
         call.respond(HttpStatusCode.OK, session)
@@ -113,6 +113,16 @@ class UserHandler {
         val email = call.parameters["email"]?:throw BadRequestException("Email não pode ser nulo.")
         val user = try {
             controller.getUserAccount(email)
+        } catch (ex:Exception) {
+            throw ex
+        }
+        call.respond(HttpStatusCode.OK,user)
+    }
+
+    suspend fun getAccountByCpf(call: ApplicationCall) {
+        val cpf = call.parameters["cpf"]?:throw BadRequestException("CPF não pode ser nulo.")
+        val user = try {
+            controller.getUserAccountByCpf(cpf)
         } catch (ex:Exception) {
             throw ex
         }
