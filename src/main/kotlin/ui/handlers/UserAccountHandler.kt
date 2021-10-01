@@ -16,7 +16,6 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.sessions.*
-import io.ktor.utils.io.*
 import ui.controllers.AuthenticationController
 import ui.controllers.DocumentController
 import ui.features.UserSessionCookie
@@ -26,7 +25,6 @@ import ui.pages.CreateClientPageBuilder
 import ui.pages.CreateManagerPageBuilder
 import ui.pages.CreateOfficialPageBuilder
 import ui.pages.LoginPageBuilder
-import ui.util.Util
 import java.time.LocalDate
 import java.time.Month
 import java.util.*
@@ -166,6 +164,17 @@ class UserAccountHandler {
 
         val form = call.receiveParameters()
 
+        if (isRegisteredUser(form["email"]!!, form["cpf"]!!) || isRegisterOfficial(form["cpf"]!!)) {
+            val pageBuilder = CreateOfficialPageBuilder()
+
+            pageBuilder.setupMenu(call.getUserRole())
+            pageBuilder.setErrorMessage("Email e/ou CPF já cadastrado")
+
+            val page = pageBuilder.build()
+            call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
+            return
+        }
+
         val user = try {
             authController.createAccount(
                 form["name"]!!,
@@ -207,6 +216,17 @@ class UserAccountHandler {
 
         val form = call.receiveParameters()
 
+        if (isRegisteredUser(form["email"]!!, form["cpf"]!!) || isRegisterOfficial(form["cpf"]!!)) {
+            val pageBuilder = CreateManagerPageBuilder()
+
+            pageBuilder.setupMenu(call.getUserRole())
+            pageBuilder.setErrorMessage("Email e/ou CPF já cadastrado")
+
+            val page = pageBuilder.build()
+            call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
+            return
+        }
+
         val user = try {
             authController.createAccount(
                 form["name"]!!,
@@ -218,7 +238,14 @@ class UserAccountHandler {
                 id
             )
         } catch (ex: Exception) {
-            throw ex
+            val pageBuilder = CreateManagerPageBuilder()
+
+            pageBuilder.setupMenu(call.getUserRole())
+            pageBuilder.setErrorMessage(ex.message)
+
+            val page = pageBuilder.build()
+            call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
+            return
         }
 
         val official = try {
@@ -251,38 +278,11 @@ class UserAccountHandler {
     suspend fun createClient(call: ApplicationCall){
         val form = call.receiveParameters()
 
-        val registeredUser = try {
-            authController.getUserAccount(form["email"]!!)
-        } catch (ex: Exception) {
-            try {
-                authController.getUserAccountByCpf(form["cpf"]!!)
-            } catch (ex: Exception) {
-                null
-            }
-        }
-
-        if (registeredUser != null) {
+        if (isRegisteredUser(form["email"]!!, form["cpf"]!!) || isRegisterPhysicalPerson(form["cpf"]!!)) {
             val pageBuilder = CreateClientPageBuilder()
 
             pageBuilder.setupMenu(call.getUserRole())
             pageBuilder.setErrorMessage("Email e/ou CPF já cadastrado")
-
-            val page = pageBuilder.build()
-            call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
-            return
-        }
-
-        val registeredPhysicalPerson = try {
-            documentController.getPhysicalPerson(form["cpf"]!!)
-        } catch (ex: Exception) {
-            null
-        }
-
-        if (registeredPhysicalPerson != null) {
-            val pageBuilder = CreateClientPageBuilder()
-
-            pageBuilder.setupMenu(call.getUserRole())
-            pageBuilder.setErrorMessage("CPF já cadastrado")
 
             val page = pageBuilder.build()
             call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
@@ -351,5 +351,39 @@ class UserAccountHandler {
         }
 
         call.respondRedirect("/login")
+    }
+
+    private suspend fun isRegisteredUser(email: String, cpf: String): Boolean {
+        val registeredUser = try {
+            authController.getUserAccount(email)
+        } catch (ex: Exception) {
+            try {
+                authController.getUserAccountByCpf(cpf)
+            } catch (ex: Exception) {
+                null
+            }
+        }
+
+        return registeredUser != null
+    }
+
+    private suspend fun isRegisterPhysicalPerson(cpf: String): Boolean {
+        val registeredPhysicalPerson = try {
+            documentController.getPhysicalPerson(cpf)
+        } catch (ex: Exception) {
+            null
+        }
+
+        return registeredPhysicalPerson != null
+    }
+
+    private suspend fun isRegisterOfficial(cpf: String): Boolean {
+        val registeredOfficial = try {
+            documentController.getOfficial(cpf)
+        } catch (ex: Exception) {
+            null
+        }
+
+        return registeredOfficial != null
     }
 }

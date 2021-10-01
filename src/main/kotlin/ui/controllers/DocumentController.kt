@@ -66,4 +66,7 @@ class DocumentController {
     suspend fun getPhysicalPerson(cpf: String): PhysicalPerson {
         return documentClient.getPhysicalPerson(cpf)
     }
+    suspend fun getOfficial(cpf: String): Official {
+        return documentClient.getOfficial(cpf)
+    }
 }

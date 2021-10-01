@@ -7,6 +7,13 @@
 <body>
 <#include "./partials/_topbarMenu.ftl">
 <div class="container" style="margin-top:80px">
+    <#if errorMessage??>
+        <div class="row">
+            <div class="alert alert-danger" role="alert">
+                ${errorMessage}
+            </div>
+        </div>
+    </#if>
     <div class="row justify-content-center">
         <form class="col" action="/notary/${notaryId}/add-official" method="post">
             <div class="m-3">
