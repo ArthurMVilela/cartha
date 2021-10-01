@@ -9,6 +9,8 @@ import document.person.CivilStatus
 import document.person.Color
 import document.person.Sex
 import io.ktor.application.*
+import io.ktor.client.call.*
+import io.ktor.client.features.*
 import io.ktor.freemarker.*
 import io.ktor.http.*
 import io.ktor.request.*
@@ -77,10 +79,23 @@ class UserAccountHandler {
             val userSession = authController.login(email, cpf, cnpj, form["password"]!!)
             call.sessions.set(UserSessionCookie(userSession.id.toString()))
             call.respondRedirect("/")
-        } catch (ex: Exception) {
+        }  catch (ex: ClientRequestException) {
             val pageBuilder = LoginPageBuilder()
             pageBuilder.setupMenu(call.getUserRole())
-            pageBuilder.setErrorMessage(ex.message?:"Erro inesperado")
+            val msg = try {
+                ex.response.receive<String>()
+            } catch (ex: Exception) {
+                "Erro inesperado"
+            }
+            pageBuilder.setErrorMessage(msg)
+
+            val page = pageBuilder.build()
+            call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
+        }
+        catch (ex: Exception) {
+            val pageBuilder = LoginPageBuilder()
+            pageBuilder.setupMenu(call.getUserRole())
+            pageBuilder.setErrorMessage("Um erro inesperado ocorreu.")
 
             val page = pageBuilder.build()
             call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))

@@ -79,9 +79,9 @@ class UserHandler {
         val session = try {
             controller.login(email, cpf, cnpj, password)
         } catch (ex: InvalidCredentialsException) {
-            throw BadRequestException(ex.message?:"")
+            throw BadRequestException(ex.message?:"Credentiais de usuário inválidas.")
         } catch (ex: InvalidPasswordException) {
-            throw BadRequestException(ex.message?:"")
+            throw BadRequestException("Credentiais de usuário inválidas.")
         }
 
         call.respond(HttpStatusCode.OK, session)
