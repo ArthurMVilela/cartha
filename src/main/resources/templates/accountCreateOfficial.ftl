@@ -7,8 +7,15 @@
 <body>
 <#include "./partials/_topbarMenu.ftl">
 <div class="container" style="margin-top:80px">
+    <#if errorMessage??>
+        <div class="row">
+            <div class="alert alert-danger" role="alert">
+                ${errorMessage}
+            </div>
+        </div>
+    </#if>
     <div class="row justify-content-center">
-        <form class="col" action="/notary/${notaryId}/add-official" method="post">
+        <form class="col" id="create-official-form" action="/notary/${notaryId}/add-official" method="post">
             <div class="m-3">
                 <label for="name" class="form-label">Nome: </label>
                 <input id="name" type="text" class="form-control" name="name">
@@ -57,5 +64,6 @@
 </div>
 
 <script type="text/javascript" src="/static/main.js"></script>
+<script type="text/javascript" src="/static/createOfficial.js"></script>
 </body>
 </html>
