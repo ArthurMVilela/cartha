@@ -125,4 +125,8 @@ class UserController {
     fun getUser(email: String): User {
         return userDAO.selectMany(Op.build { UserTable.email eq email  }).first()
     }
+
+    fun getUserByCpf(cpf: String): User {
+        return userDAO.selectMany(Op.build { UserTable.cpf eq cpf  }).first()
+    }
 }

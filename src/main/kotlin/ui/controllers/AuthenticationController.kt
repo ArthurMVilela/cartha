@@ -128,4 +128,8 @@ class AuthenticationController {
     suspend fun getUserAccount(email: String):User {
         return authenticationClient.getUserAccount(email)
     }
+
+    suspend fun getUserAccountByCpf(cpf: String):User {
+        return authenticationClient.getUserAccountByCpf(cpf)
+    }
 }

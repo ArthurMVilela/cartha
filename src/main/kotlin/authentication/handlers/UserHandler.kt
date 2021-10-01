@@ -118,4 +118,14 @@ class UserHandler {
         }
         call.respond(HttpStatusCode.OK,user)
     }
+
+    suspend fun getAccountByCpf(call: ApplicationCall) {
+        val cpf = call.parameters["cpf"]?:throw BadRequestException("CPF não pode ser nulo.")
+        val user = try {
+            controller.getUserAccountByCpf(cpf)
+        } catch (ex:Exception) {
+            throw ex
+        }
+        call.respond(HttpStatusCode.OK,user)
+    }
 }

@@ -150,4 +150,8 @@ class AuthenticationController {
     fun getUserAccount(email: String): User {
         return userController.getUser(email)
     }
+
+    fun getUserAccountByCpf(cpf: String): User {
+        return userController.getUserByCpf(cpf)
+    }
 }

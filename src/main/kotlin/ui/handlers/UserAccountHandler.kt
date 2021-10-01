@@ -254,14 +254,18 @@ class UserAccountHandler {
         val registeredUser = try {
             authController.getUserAccount(form["email"]!!)
         } catch (ex: Exception) {
-            null
+            try {
+                authController.getUserAccountByCpf(form["cpf"]!!)
+            } catch (ex: Exception) {
+                null
+            }
         }
 
         if (registeredUser != null) {
             val pageBuilder = CreateClientPageBuilder()
 
             pageBuilder.setupMenu(call.getUserRole())
-            pageBuilder.setErrorMessage("Email já cadastrado")
+            pageBuilder.setErrorMessage("Email e/ou CPF já cadastrado")
 
             val page = pageBuilder.build()
             call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
@@ -295,6 +299,20 @@ class UserAccountHandler {
                 form["password"]!!,
                 null
             )
+        } catch (ex: ClientRequestException) {
+            val pageBuilder = CreateClientPageBuilder()
+
+            pageBuilder.setupMenu(call.getUserRole())
+            val msg = try {
+                ex.response.receive<String>()
+            } catch (ex: Exception) {
+                "Um erro inesperado ocorreu."
+            }
+            pageBuilder.setErrorMessage(msg)
+
+            val page = pageBuilder.build()
+            call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
+            return
         } catch (ex: Exception) {
             val pageBuilder = CreateClientPageBuilder()
 

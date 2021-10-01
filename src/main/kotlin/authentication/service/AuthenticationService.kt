@@ -73,6 +73,9 @@ fun main() {
             get("/user/email/{email}") {
                 userHandler.getAccount(call)
             }
+            get("/user/cpf/{cpf}") {
+                userHandler.getAccountByCpf(call)
+            }
         }
     }.start(wait = true)
 }
