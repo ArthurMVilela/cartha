@@ -56,8 +56,14 @@ fun main() {
             }
         }
         routing {
+            get("/transactions/{id}") {
+                service.getTransaction(call)
+            }
             get("/transactions/pending") {
                 service.getPendingTransactions(call)
+            }
+            get("/transactions/document/{id}") {
+                service.getTransactionByDocument(call)
             }
             post("/transactions") {
                 service.createTransaction(call)

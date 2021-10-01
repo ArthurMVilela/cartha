@@ -56,6 +56,14 @@ class NodeManager (
         return transactionDAO.selectMany(Op.build { TransactionTable.pending eq true }, page)
     }
 
+    fun getTransaction(id: UUID): Transaction? {
+        return transactionDAO.select(id)
+    }
+
+    fun getTransactionByDocument(id: UUID):List<Transaction> {
+        return transactionDAO.selectMany(Op.build { TransactionTable.documentId eq id })
+    }
+
     fun addNode(node: NodeInfo):NodeInfo {
         return nodeInfoDAO.insert(node)
     }
