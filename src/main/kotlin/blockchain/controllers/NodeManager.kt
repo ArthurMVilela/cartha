@@ -39,15 +39,14 @@ class NodeManager (
             val pick = pickNodeToGenerate()
             val transactions = transactionDAO.selectMany(Op.build { TransactionTable.pending eq true })
 
-            val block = try {
-                client.createBlock(pick, transactions)
-            } catch (ex: Exception) {
-                throw ex
-            }
+            try {
+                val block = client.createBlock(pick, transactions)
 
-            transactions.forEach {
-                it.pending = false
-                transactionDAO.update(it)
+                block.transactions.forEach {
+                    transactionDAO.update(it)
+                }
+            } catch (ex: Exception) {
+
             }
         }
     }
