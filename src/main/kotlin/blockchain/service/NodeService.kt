@@ -11,6 +11,7 @@ import blockchain.persistence.tables.TransactionTable
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.http.*
+import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.serialization.*
@@ -20,6 +21,7 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.slf4j.event.Level
 import serviceExceptions.BadRequestException
 import java.util.*
 import kotlin.system.exitProcess
@@ -63,6 +65,17 @@ fun main() {
             }
             exception<Exception> { cause ->
                 call.respond(HttpStatusCode.InternalServerError)
+            }
+        }
+        install(CallLogging) {
+            level = Level.INFO
+            format { call ->
+                val method = call.request.httpMethod
+                val status = call.response.status()
+
+                val uri = call.request.uri
+
+                "${status?.value} | ${method.value} $uri"
             }
         }
         routing {
