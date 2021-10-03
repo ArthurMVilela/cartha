@@ -3,6 +3,7 @@ package blockchain.controllers
 import blockchain.Block
 import blockchain.BlockInfo
 import blockchain.Blockchain
+import blockchain.BlockchainValidation
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import persistence.ResultSet
@@ -46,7 +47,7 @@ class Node (
         return chain.getBlocks(page)
     }
 
-    fun validateChain(): Boolean {
+    fun validateChain(): BlockchainValidation {
         return chain.validateChain()
     }
 

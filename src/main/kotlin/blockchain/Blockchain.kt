@@ -71,31 +71,43 @@ class Blockchain(val blocks:MutableList<Block> = mutableListOf()) {
      *
      * @return se a blockchain é válida
      */
-    fun validateChain():Boolean {
+    fun validateChain():BlockchainValidation {
         var block = getLast()
+        var isValid = true
+        var blockId:UUID? = null
 
         while (block != null) {
             val previousHash = block.previousHash
 
-            val previous = if(previousHash != "") {
-                blocksDAO.selectMany(Op.build { BlockTable.hash eq previousHash }).firstOrNull()?:return false
-            } else {
-                null
+            val previous = blocksDAO.selectMany(Op.build { BlockTable.hash eq previousHash }).firstOrNull()
+
+            if (previousHash != "" && previous == null) {
+                isValid = false
+                blockId = block.id
+                break
             }
 
-            println("${block.hash} | ${block.createHash()}")
-            if (block.hash != block.createHash()) return false
+            if (block.hash != block.createHash()) {
+                isValid = false
+                blockId = block.id
+                break
+            }
 
             if (previous != null) {
-                println("${block.previousHash} | ${previous.createHash()}")
-                if (block.previousHash != previous.createHash()) return false
+                if (block.previousHash != previous.createHash()) {
+                    isValid = false
+                    blockId = block.id
+                    break
+                }
             }
-
 
             block = previous
         }
 
-        return true
+        return BlockchainValidation(
+            isValid,
+            blockId
+        )
     }
 
     /**
