@@ -46,4 +46,8 @@ class Node (
         return chain.getBlocks(page)
     }
 
+    fun validateChain(): Boolean {
+        return chain.validateChain()
+    }
+
 }

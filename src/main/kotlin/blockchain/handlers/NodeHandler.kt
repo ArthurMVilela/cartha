@@ -100,9 +100,11 @@ class NodeHandler(val nodeManagerAddress:String, val node: Node) {
         call.respond(block)
     }
 
-    suspend fun createTransaction(call: ApplicationCall) {
-        val transaction = call.receive<Transaction>()
-
-
+    suspend fun validateChain(call: ApplicationCall) {
+        if (node.validateChain()) {
+            call.respond(HttpStatusCode.OK, "Blockchain Válida")
+        } else {
+            call.respond(HttpStatusCode.OK, "Blockchain Inválida")
+        }
     }
 }

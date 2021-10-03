@@ -3,6 +3,8 @@ package blockchain
 import blockchain.persistence.dao.BlockDAO
 import blockchain.persistence.dao.BlockInfoDAO
 import blockchain.persistence.dao.TransactionDAO
+import blockchain.persistence.tables.BlockTable
+import org.jetbrains.exposed.sql.Op
 import persistence.ResultSet
 import java.time.LocalDateTime
 import java.util.*
@@ -70,18 +72,28 @@ class Blockchain(val blocks:MutableList<Block> = mutableListOf()) {
      * @return se a blockchain é válida
      */
     fun validateChain():Boolean {
-//        blocks.forEachIndexed { index, block ->
-//
-//            if (block.hash != block.createHash()) return false
-//            if (index > 0) {
-//                val previous = blocks[index - 1]
-//                if (previous.hash != block.previousHash) return false
-//            } else {
-//                if (createGenesys().timestamp != block.timestamp) return false
-//                if (createGenesys().previousHash != block.previousHash) return false
-//                if (createGenesys().transactions != block.transactions) return false
-//            }
-//        }
+        var block = getLast()
+
+        while (block != null) {
+            val previousHash = block.previousHash
+
+            val previous = if(previousHash != "") {
+                blocksDAO.selectMany(Op.build { BlockTable.hash eq previousHash }).firstOrNull()?:return false
+            } else {
+                null
+            }
+
+            println("${block.hash} | ${block.createHash()}")
+            if (block.hash != block.createHash()) return false
+
+            if (previous != null) {
+                println("${block.previousHash} | ${previous.createHash()}")
+                if (block.previousHash != previous.createHash()) return false
+            }
+
+
+            block = previous
+        }
 
         return true
     }

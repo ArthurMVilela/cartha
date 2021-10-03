@@ -100,6 +100,9 @@ fun main() {
             post("/blocks") {
                 handler.addBlock(call)
             }
+            get("/validade-chain") {
+                handler.validateChain(call)
+            }
         }
     }.start(true)
 }
