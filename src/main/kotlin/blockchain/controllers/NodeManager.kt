@@ -45,8 +45,10 @@ class NodeManager (
                 block.transactions.forEach {
                     transactionDAO.update(it)
                 }
-            } catch (ex: Exception) {
 
+                transmitBlock(block)
+            } catch (ex: Exception) {
+                ex.printStackTrace()
             }
         }
     }
@@ -96,5 +98,17 @@ class NodeManager (
         node.lastHealthCheck = LocalDateTime.now()
 
         nodeInfoDAO.update(node)
+    }
+
+    suspend fun transmitBlock(block: Block) {
+        val nodes = nodeInfoDAO.selectMany(Op.build { NodeInfoTable.id neq block.nodeId })
+
+        nodes.forEach {
+            try {
+                client.sendBlock(it, block)
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+            }
+        }
     }
 }

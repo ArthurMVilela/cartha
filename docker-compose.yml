@@ -39,8 +39,6 @@ services:
     networks:
       - net
 
-
-
   node-a-db:
     container_name: "node-a-db"
     image: mysql:latest
@@ -83,6 +81,47 @@ services:
       DATABASE_USER: "node-a"
       DATABASE_PASSWORD: "node-a"
 
+  node-b-db:
+    container_name: "node-b-db"
+    image: mysql:latest
+    restart: always
+    ports:
+      - "3004:3306"
+    environment:
+      MYSQL_USER: "node-b"
+      MYSQL_PASSWORD: "node-b"
+      MYSQL_DATABASE: "node_b_db"
+      MYSQL_ROOT_PASSWORD: "root"
+    networks:
+      - net
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 20s
+      retries: 10
+
+  node-b:
+    container_name: "node_b"
+    restart: on-failure:20
+    build:
+      context: .
+      dockerfile: node.Dockerfile
+    ports:
+      - "5005:8080"
+    networks:
+      - net
+    depends_on:
+      - node-a-db
+    links:
+      - node-a-db
+    environment:
+      NODE_ID: "f4e4c32a-f0d2-4290-9f48-04664c25729b"
+      NOTARY_ID: "27f09ea6-afb3-4332-a2ed-fce16d80141c"
+      NODE_MANAGER_URL: "http://node_manager:8080"
+      DATABASE_HOST: "node-b-db"
+      DATABASE_PORT: "3306"
+      DATABASE_NAME: "node_b_db"
+      DATABASE_USER: "node-b"
+      DATABASE_PASSWORD: "node-b"
 
   node-manager-db:
     container_name: "node-manager-db"

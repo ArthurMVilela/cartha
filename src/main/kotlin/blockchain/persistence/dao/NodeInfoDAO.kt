@@ -139,7 +139,7 @@ class NodeInfoDAO:DAO<NodeInfo, UUID> {
 
         transaction {
             try {
-                val row = NodeInfoTable.select{Op.TRUE}.orderBy(Random()).first()
+                val row = NodeInfoTable.select{Op.TRUE}.orderBy(Random(System.nanoTime().toInt())).first()
                 found = toType(row)
             } catch (ex: Exception) {
                 rollback()
