@@ -6,8 +6,6 @@ import blockchain.Blockchain
 import blockchain.controllers.Node
 import blockchain.handlers.NodeHandler
 import blockchain.persistence.DatabaseInitializer
-import blockchain.persistence.tables.BlockTable
-import blockchain.persistence.tables.TransactionTable
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.http.*
@@ -17,10 +15,6 @@ import io.ktor.routing.*
 import io.ktor.serialization.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.transactions.TransactionManager
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.event.Level
 import serviceExceptions.BadRequestException
 import java.util.*
@@ -50,7 +44,7 @@ fun main() {
 
     val node = Node(nodeId, Blockchain(), notaryId)
 
-    val handler = NodeHandler(nodeManagerURL, node)
+    val handler = NodeHandler(node)
 
     embeddedServer(Netty, port = 8080) {
         install(ContentNegotiation)  {
