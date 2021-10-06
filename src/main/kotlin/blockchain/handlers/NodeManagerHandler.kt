@@ -16,7 +16,7 @@ import java.util.*
 import kotlin.concurrent.fixedRateTimer
 
 class NodeManagerHandler {
-    val nodeManager = NodeManager()
+    private val nodeManager = NodeManager()
 
     init {
         fixedRateTimer("healthCheck", false, initialDelay = 1000, period = 10*60*1000) {
