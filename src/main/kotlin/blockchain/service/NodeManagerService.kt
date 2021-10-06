@@ -15,11 +15,10 @@ import io.ktor.server.netty.*
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.slf4j.event.Level
+import presentation.NodeManagerPresentationSetup
 import serviceExceptions.BadRequestException
 
-fun main() {
-
-
+fun main(args : Array<String>) {
     try {
         val host = System.getenv("DATABASE_HOST")?:throw IllegalArgumentException("Necessário expecificar host do DB")
         val port = System.getenv("DATABASE_PORT")?:throw IllegalArgumentException("Necessário expecificar porta do DB")
@@ -40,6 +39,10 @@ fun main() {
     }
 
     val service = NodeManagerHandler()
+
+    if(args.contains("--presentation-test")) {
+        NodeManagerPresentationSetup().setupNodes()
+    }
 
     embeddedServer(Netty, port = 8080) {
         install(ContentNegotiation)  {

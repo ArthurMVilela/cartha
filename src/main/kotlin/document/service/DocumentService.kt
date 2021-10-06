@@ -16,14 +16,20 @@ import document.handlers.notary.NotaryHandler
 import document.handlers.person.PersonHandler
 import document.persistence.DatabaseInitializer
 import kotlin.system.exitProcess
+import presentation.DocumentPresentationSetup
 
-fun main() {
+fun main(args: Array<String>) {
     try {
         DatabaseInitializer.loadConfigurations()
         DatabaseInitializer.initialize()
     } catch (e:Exception) {
         e.printStackTrace()
         exitProcess(1)
+    }
+
+
+    if(args.contains("--presentation-test")) {
+        DocumentPresentationSetup().setupNotary()
     }
 
     val notaryHandler = NotaryHandler()

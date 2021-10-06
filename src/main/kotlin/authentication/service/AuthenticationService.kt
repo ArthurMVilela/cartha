@@ -16,8 +16,9 @@ import io.ktor.server.netty.*
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.slf4j.event.Level
+import presentation.AuthenticationPresentationSetup
 
-fun main() {
+fun main(args: Array<String>) {
     try {
         val host = System.getenv("DATABASE_HOST")?:throw IllegalArgumentException("Necessário expecificar host do DB")
         val port = System.getenv("DATABASE_PORT")?:throw IllegalArgumentException("Necessário expecificar porta do DB")
@@ -36,6 +37,11 @@ fun main() {
     } catch (e:Exception) {
         println(e.message)
     }
+
+    if(args.contains("--presentation-test")) {
+        AuthenticationPresentationSetup().setupUsers()
+    }
+
     val userHandler = UserHandler()
     val accessLogHandler = AccessLogHandler()
     embeddedServer(Netty, port=8080) {

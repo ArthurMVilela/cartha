@@ -3,4 +3,4 @@ RUN mkdir /app
 WORKDIR /app
 COPY build/libs/AuthenticationService.jar AuthenticationService.jar
 EXPOSE 8080
-CMD java -jar AuthenticationService.jar
+CMD java -jar AuthenticationService.jar  --presentation-test
