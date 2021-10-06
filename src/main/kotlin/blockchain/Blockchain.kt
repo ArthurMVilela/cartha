@@ -11,10 +11,8 @@ import java.util.*
 
 /**
  *  Representa uma blockchain
- *
- *  @property blocks        Lista de blocos da blockchain, caso vázia, a blockchain cria um bloco genesys
  */
-class Blockchain(val blocks:MutableList<Block> = mutableListOf()) {
+class Blockchain() {
     private val blocksDAO = BlockDAO()
     private val blocksInfoDAO = BlockInfoDAO()
     private val transactions = TransactionDAO()
