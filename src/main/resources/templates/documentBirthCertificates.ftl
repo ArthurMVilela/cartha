@@ -25,7 +25,8 @@
                                 </ul>
                             </div>
                             <div class="card-body">
-                                <a href="/civil-registry/birth/${bc.id}" class="card-link">Ver Certidão</a>
+                                <a href="/civil-registry/birth/${bc.id}" class="card-link">Ver certidão</a>
+                                <a href="/blockchain/transactions/document/${bc.id}" class="card-link">Ver transações com este documento</a>
                             </div>
                         </div>
                     </div>

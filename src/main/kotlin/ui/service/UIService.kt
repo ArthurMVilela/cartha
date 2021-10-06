@@ -222,7 +222,7 @@ fun main() {
                 }
 
                 route("/blockchain") {
-                    route("/transaction") {
+                    route("/transactions") {
                         get("/document/{id}"){
                             blockchainHandlers.getDocumentTransactions(call)
                         }
