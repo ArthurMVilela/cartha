@@ -18,9 +18,11 @@ import java.util.*
 class NodeManager (
     val nodes:MutableList<NodeInfo> = mutableListOf<NodeInfo>(),
 ) {
-    val nodeInfoDAO = NodeInfoDAO()
-    val transactionDAO = TransactionDAO()
+    private val nodeInfoDAO = NodeInfoDAO()
+    private val transactionDAO = TransactionDAO()
     private val client = NodeClient()
+
+    private val transactionTarget = System.getenv("TRANSACTION_AMOUNT_TARGET")?.toInt()?:1
 
     init {
         transaction {
@@ -35,7 +37,7 @@ class NodeManager (
         transactionDAO.insert(transaction)
 
         val pendingCount = transactionDAO.getPendingCount()
-        if (pendingCount >= 5) {
+        if (pendingCount >= transactionTarget) {
             val pick = pickNodeToGenerate()
             val transactions = transactionDAO.selectMany(Op.build { TransactionTable.pending eq true })
 
