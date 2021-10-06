@@ -36,4 +36,8 @@ class BlockchainController {
     suspend fun createTransaction(rb: CreateTransactionRequest):Transaction {
         return client.createTransaction(rb)
     }
+
+    suspend fun getDocumentTransactions(documentId: UUID): List<Transaction> {
+        return client.getDocumentTransactions(documentId)
+    }
 }

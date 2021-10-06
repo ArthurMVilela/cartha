@@ -123,4 +123,15 @@ class BlockchainClient(
         return response.receive()
     }
 
+    suspend fun getDocumentTransactions(documentId: UUID): List<Transaction> {
+        val response: HttpResponse = try {
+            client.get("$nodeManagerURL/transactions/document/$documentId") {
+            }
+        } catch (ex: Exception) {
+            throw ex
+        }
+
+        return response.receive()
+    }
+
 }
