@@ -122,32 +122,6 @@ fun main() {
                     get("/logs/{id}") {
                         accessLogsHandlers.getLog(call)
                     }
-                    route("/blockchain") {
-                        get("") {
-                            blockchainHandlers.getBlockchainPage(call)
-                        }
-                        get("/nodes") {
-                            blockchainHandlers.getNodesPage(call)
-                        }
-                        get("/nodes/{nodeId}") {
-                            blockchainHandlers.getNodePage(call)
-                        }
-                        get("/nodes/create/{notaryId}") {
-                            blockchainHandlers.getCreateNodePage(call)
-                        }
-                        post("/nodes/create/{notaryId}") {
-                            blockchainHandlers.createNodePage(call)
-                        }
-                        get("/blocks") {
-                            blockchainHandlers.getBlocksPage(call)
-                        }
-                        get("/blocks/{nodeId}") {
-                            blockchainHandlers.getBlocksPage(call)
-                        }
-                        get("/blocks/{nodeId}/{blockId}") {
-                            blockchainHandlers.getBlockPage(call)
-                        }
-                    }
                 }
 
                 route("/notary") {
@@ -247,6 +221,39 @@ fun main() {
                     }
                 }
 
+                route("/blockchain") {
+                    route("/transactions") {
+                        get("/document/{id}"){
+                            blockchainHandlers.getDocumentTransactions(call)
+                        }
+                    }
+                    authorizedRoute(Role.SysAdmin) {
+                        get("") {
+                            blockchainHandlers.getBlockchainPage(call)
+                        }
+                        get("/nodes") {
+                            blockchainHandlers.getNodesPage(call)
+                        }
+                        get("/nodes/{nodeId}") {
+                            blockchainHandlers.getNodePage(call)
+                        }
+                        get("/nodes/create/{notaryId}") {
+                            blockchainHandlers.getCreateNodePage(call)
+                        }
+                        post("/nodes/create/{notaryId}") {
+                            blockchainHandlers.createNodePage(call)
+                        }
+                        get("/blocks") {
+                            blockchainHandlers.getBlocksPage(call)
+                        }
+                        get("/blocks/{nodeId}") {
+                            blockchainHandlers.getBlocksPage(call)
+                        }
+                        get("/blocks/{nodeId}/{blockId}") {
+                            blockchainHandlers.getBlockPage(call)
+                        }
+                    }
+                }
             }
 
         }

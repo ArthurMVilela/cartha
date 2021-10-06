@@ -18,9 +18,11 @@ import java.util.*
 class NodeManager (
     val nodes:MutableList<NodeInfo> = mutableListOf<NodeInfo>(),
 ) {
-    val nodeInfoDAO = NodeInfoDAO()
-    val transactionDAO = TransactionDAO()
+    private val nodeInfoDAO = NodeInfoDAO()
+    private val transactionDAO = TransactionDAO()
     private val client = NodeClient()
+
+    private val transactionTarget = System.getenv("TRANSACTION_AMOUNT_TARGET")?.toInt()?:1
 
     init {
         transaction {
@@ -35,25 +37,34 @@ class NodeManager (
         transactionDAO.insert(transaction)
 
         val pendingCount = transactionDAO.getPendingCount()
-        if (pendingCount >= 5) {
+        if (pendingCount >= transactionTarget) {
             val pick = pickNodeToGenerate()
             val transactions = transactionDAO.selectMany(Op.build { TransactionTable.pending eq true })
 
-            val block = try {
-                client.createBlock(pick, transactions)
-            } catch (ex: Exception) {
-                throw ex
-            }
+            try {
+                val block = client.createBlock(pick, transactions)
 
-            transactions.forEach {
-                it.pending = false
-                transactionDAO.update(it)
+                block.transactions.forEach {
+                    transactionDAO.update(it)
+                }
+
+                transmitBlock(block)
+            } catch (ex: Exception) {
+                ex.printStackTrace()
             }
         }
     }
 
     fun getPendingTransactions(page: Int = 1):ResultSet<Transaction> {
         return transactionDAO.selectMany(Op.build { TransactionTable.pending eq true }, page)
+    }
+
+    fun getTransaction(id: UUID): Transaction? {
+        return transactionDAO.select(id)
+    }
+
+    fun getTransactionByDocument(id: UUID):List<Transaction> {
+        return transactionDAO.selectMany(Op.build { TransactionTable.documentId eq id })
     }
 
     fun addNode(node: NodeInfo):NodeInfo {
@@ -89,5 +100,17 @@ class NodeManager (
         node.lastHealthCheck = LocalDateTime.now()
 
         nodeInfoDAO.update(node)
+    }
+
+    suspend fun transmitBlock(block: Block) {
+        val nodes = nodeInfoDAO.selectMany(Op.build { NodeInfoTable.id neq block.nodeId })
+
+        nodes.forEach {
+            try {
+                client.sendBlock(it, block)
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+            }
+        }
     }
 }

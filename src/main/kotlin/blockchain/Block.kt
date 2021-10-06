@@ -16,7 +16,7 @@ import kotlin.random.Random
 @Serializable
 class Block(
     @Serializable(with = UUIDSerializer::class)
-    var id:UUID,
+    val id:UUID,
     @Serializable(with = LocalDateTimeSerializer::class)
     val timestamp: LocalDateTime,
     val transactions: List<Transaction>,
@@ -40,6 +40,7 @@ class Block(
         null,
         nodeId
     ) {
+        transactions.forEach { it.blockId = id }
         this.transactionsHash = createTransactionsHash()
         this.hash = createHash()
     }

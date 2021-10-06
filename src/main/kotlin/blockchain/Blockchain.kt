@@ -3,6 +3,8 @@ package blockchain
 import blockchain.persistence.dao.BlockDAO
 import blockchain.persistence.dao.BlockInfoDAO
 import blockchain.persistence.dao.TransactionDAO
+import blockchain.persistence.tables.BlockTable
+import org.jetbrains.exposed.sql.Op
 import persistence.ResultSet
 import java.time.LocalDateTime
 import java.util.*
@@ -69,21 +71,43 @@ class Blockchain(val blocks:MutableList<Block> = mutableListOf()) {
      *
      * @return se a blockchain é válida
      */
-    fun validateChain():Boolean {
-//        blocks.forEachIndexed { index, block ->
-//
-//            if (block.hash != block.createHash()) return false
-//            if (index > 0) {
-//                val previous = blocks[index - 1]
-//                if (previous.hash != block.previousHash) return false
-//            } else {
-//                if (createGenesys().timestamp != block.timestamp) return false
-//                if (createGenesys().previousHash != block.previousHash) return false
-//                if (createGenesys().transactions != block.transactions) return false
-//            }
-//        }
+    fun validateChain():BlockchainValidation {
+        var block = getLast()
+        var isValid = true
+        var blockId:UUID? = null
 
-        return true
+        while (block != null) {
+            val previousHash = block.previousHash
+
+            val previous = blocksDAO.selectMany(Op.build { BlockTable.hash eq previousHash }).firstOrNull()
+
+            if (previousHash != "" && previous == null) {
+                isValid = false
+                blockId = block.id
+                break
+            }
+
+            if (block.hash != block.createHash()) {
+                isValid = false
+                blockId = block.id
+                break
+            }
+
+            if (previous != null) {
+                if (block.previousHash != previous.createHash()) {
+                    isValid = false
+                    blockId = block.id
+                    break
+                }
+            }
+
+            block = previous
+        }
+
+        return BlockchainValidation(
+            isValid,
+            blockId
+        )
     }
 
     /**

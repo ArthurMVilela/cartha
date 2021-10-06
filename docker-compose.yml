@@ -1,16 +1,14 @@
 version: "3.3"
 services:
   document-db:
-    container_name: "document-db"
+    container_name: "${DOCUMENT_DB_HOST}"
     image: mysql:latest
     restart: always
-    ports:
-      - "3000:3306"
     environment:
-      MYSQL_USER: "document"
-      MYSQL_PASSWORD: "document"
-      MYSQL_DATABASE: "cartha_document_db"
-      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_USER: "${DOCUMENT_DB_USER}"
+      MYSQL_PASSWORD: "${DOCUMENT_DB_PASSWORD}"
+      MYSQL_DATABASE: "${DOCUMENT_DB_DATABASE}"
+      MYSQL_ROOT_PASSWORD: "${DOCUMENT_DB_ROOT_PASSWORD}"
     networks:
       - net
     healthcheck:
@@ -29,29 +27,29 @@ services:
     links:
       - document-db
     ports:
-      - "4000:8080"
+      - "${DOCUMENT_EXPOSED_PORT}:8080"
     environment:
-      DATABASE_HOST: "document-db"
-      DATABASE_PORT: "3306"
-      DATABASE_NAME: "cartha_document_db"
-      DATABASE_USER: "document"
-      DATABASE_PASSWORD: "document"
+      DATABASE_HOST: "${DOCUMENT_DB_HOST}"
+      DATABASE_PORT: "${DOCUMENT_DB_PORT}"
+      DATABASE_NAME: "${DOCUMENT_DB_DATABASE}"
+      DATABASE_USER: "${DOCUMENT_DB_USER}"
+      DATABASE_PASSWORD: "${DOCUMENT_DB_PASSWORD}"
+      PRESENTATION_TEST_NOTARY_ID: "${PRESENTATION_TEST_NOTARY_ID}"
+      PRESENTATION_TEST_NOTARY_NAME: "${PRESENTATION_TEST_NOTARY_NAME}"
+      PRESENTATION_TEST_NOTARY_CNPJ: "${PRESENTATION_TEST_NOTARY_CNPJ}"
+      PRESENTATION_TEST_NOTARY_CNS: "${PRESENTATION_TEST_NOTARY_CNS}"
     networks:
       - net
 
-
-
   node-a-db:
-    container_name: "node-a-db"
+    container_name: "${NODE_A_DB_HOST}"
     image: mysql:latest
     restart: always
-    ports:
-      - "3003:3306"
     environment:
-      MYSQL_USER: "node-a"
-      MYSQL_PASSWORD: "node-a"
-      MYSQL_DATABASE: "node_a_db"
-      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_USER: "${NODE_A_DB_USER}"
+      MYSQL_PASSWORD: "${NODE_A_DB_PASSWORD}"
+      MYSQL_DATABASE: "${NODE_A_DB_DATABASE}"
+      MYSQL_ROOT_PASSWORD: "${NODE_A_DB_PASSWORD}"
     networks:
       - net
     healthcheck:
@@ -66,7 +64,7 @@ services:
       context: .
       dockerfile: node.Dockerfile
     ports:
-      - "5001:8080"
+      - "${NODE_A_EXPOSED_PORT}:8080"
     networks:
       - net
     depends_on:
@@ -74,27 +72,64 @@ services:
     links:
       - node-a-db
     environment:
-      NODE_ID: "f4e4c32a-f0d2-4290-9f48-04664c25729b"
-      NOTARY_ID: "27f09ea6-afb3-4332-a2ed-fce16d80141c"
+      NODE_ID: "${NODE_A_NODE_ID}"
+      NOTARY_ID: "${NODE_A_NOTARY_ID}"
       NODE_MANAGER_URL: "http://node_manager:8080"
-      DATABASE_HOST: "node-a-db"
-      DATABASE_PORT: "3306"
-      DATABASE_NAME: "node_a_db"
-      DATABASE_USER: "node-a"
-      DATABASE_PASSWORD: "node-a"
+      DATABASE_HOST: "${NODE_A_DB_HOST}"
+      DATABASE_PORT: "${NODE_A_DB_PORT}"
+      DATABASE_NAME: "${NODE_A_DB_DATABASE}"
+      DATABASE_USER: "${NODE_A_DB_USER}"
+      DATABASE_PASSWORD: "${NODE_A_DB_PASSWORD}"
 
-
-  node-manager-db:
-    container_name: "node-manager-db"
+  node-b-db:
+    container_name: "${NODE_B_DB_HOST}"
     image: mysql:latest
     restart: always
-    ports:
-      - "3002:3306"
     environment:
-      MYSQL_USER: "node-manager"
-      MYSQL_PASSWORD: "node-manager"
-      MYSQL_DATABASE: "node_manager_db"
-      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_USER: "${NODE_B_DB_USER}"
+      MYSQL_PASSWORD: "${NODE_B_DB_PASSWORD}"
+      MYSQL_DATABASE: "${NODE_B_DB_DATABASE}"
+      MYSQL_ROOT_PASSWORD: "${NODE_B_DB_PASSWORD}"
+    networks:
+      - net
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 20s
+      retries: 10
+
+  node-b:
+    container_name: "node_b"
+    restart: on-failure:20
+    build:
+      context: .
+      dockerfile: node.Dockerfile
+    ports:
+      - "${NODE_B_EXPOSED_PORT}:8080"
+    networks:
+      - net
+    depends_on:
+      - node-a-db
+    links:
+      - node-a-db
+    environment:
+      NODE_ID: "${NODE_B_NODE_ID}"
+      NOTARY_ID: "${NODE_B_NOTARY_ID}"
+      NODE_MANAGER_URL: "http://node_manager:8080"
+      DATABASE_HOST: "${NODE_B_DB_HOST}"
+      DATABASE_PORT: "${NODE_B_DB_PORT}"
+      DATABASE_NAME: "${NODE_B_DB_DATABASE}"
+      DATABASE_USER: "${NODE_B_DB_USER}"
+      DATABASE_PASSWORD: "${NODE_B_DB_PASSWORD}"
+
+  node-manager-db:
+    container_name: "${NODE_MANAGER_DB_HOST}"
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_USER: "${NODE_MANAGER_DB_USER}"
+      MYSQL_PASSWORD: "${NODE_MANAGER_DB_PASSWORD}"
+      MYSQL_DATABASE: "${NODE_MANAGER_DB_DATABASE}"
+      MYSQL_ROOT_PASSWORD: "${NODE_MANAGER_DB_ROOT_PASSWORD}"
     networks:
       - net
     healthcheck:
@@ -109,31 +144,35 @@ services:
       context: .
       dockerfile: nodeManager.Dockerfile
     environment:
-      DATABASE_HOST: "node-manager-db"
-      DATABASE_PORT: "3306"
-      DATABASE_NAME: "node_manager_db"
-      DATABASE_USER: "node-manager"
-      DATABASE_PASSWORD: "node-manager"
+      DATABASE_HOST: "${NODE_MANAGER_DB_HOST}"
+      DATABASE_PORT: "${NODE_MANAGER_DB_PORT}"
+      DATABASE_NAME: "${NODE_MANAGER_DB_DATABASE}"
+      DATABASE_USER: "${NODE_MANAGER_DB_USER}"
+      DATABASE_PASSWORD: "${NODE_MANAGER_DB_PASSWORD}"
+      PRESENTATION_TEST_NODE_A_ID: "${PRESENTATION_TEST_NODE_A_ID}"
+      PRESENTATION_TEST_NOTARY_ID: "${PRESENTATION_TEST_NOTARY_ID}"
+      PRESENTATION_TEST_NODE_A_ADDRESS: "${PRESENTATION_TEST_NODE_A_ADDRESS}"
+      PRESENTATION_TEST_NODE_B_ID: "${PRESENTATION_TEST_NODE_B_ID}"
+      PRESENTATION_TEST_NODE_B_ADDRESS: "${PRESENTATION_TEST_NODE_B_ADDRESS}"
+      TRANSACTION_AMOUNT_TARGET: "${NODE_MANAGER_TRANSACTION_AMOUNT_TARGET}"
     depends_on:
       - node-manager-db
     links:
       - node-manager-db
     ports:
-      - "5003:8080"
+      - "${NODE_MANAGER_EXPOSED_PORT}:8080"
     networks:
       - net
 
   authentication-db:
-    container_name: "authentication-db"
+    container_name: "${AUTHENTICATION_DB_HOST}"
     image: mysql:latest
     restart: always
-    ports:
-      - "3001:3306"
     environment:
-      MYSQL_USER: "authentication"
-      MYSQL_PASSWORD: "authentication"
-      MYSQL_DATABASE: "authentication_db"
-      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_USER: "${AUTHENTICATION_DB_USER}"
+      MYSQL_PASSWORD: "${AUTHENTICATION_DB_PASSWORD}"
+      MYSQL_DATABASE: "${AUTHENTICATION_DB_DATABASE}"
+      MYSQL_ROOT_PASSWORD: "${AUTHENTICATION_DB_ROOT_PASSWORD}"
     networks:
       - net
     healthcheck:
@@ -152,13 +191,17 @@ services:
     depends_on:
       - authentication-db
     ports:
-      - "7000:8080"
+      - "${AUTHENTICATION_EXPOSED_PORT}:8080"
     environment:
-      DATABASE_HOST: "authentication-db"
-      DATABASE_PORT: "3306"
-      DATABASE_NAME: "authentication_db"
-      DATABASE_USER: "authentication"
-      DATABASE_PASSWORD: "authentication"
+      DATABASE_HOST: "${AUTHENTICATION_DB_HOST}"
+      DATABASE_PORT: "${AUTHENTICATION_DB_PORT}"
+      DATABASE_NAME: "${AUTHENTICATION_DB_DATABASE}"
+      DATABASE_USER: "${AUTHENTICATION_DB_USER}"
+      DATABASE_PASSWORD: "${AUTHENTICATION_DB_PASSWORD}"
+      PRESENTATION_TEST_SYS_ADM_NAME: "${PRESENTATION_TEST_SYS_ADM_NAME}"
+      PRESENTATION_TEST_SYS_ADM_EMAIL: "${PRESENTATION_TEST_SYS_ADM_EMAIL}"
+      PRESENTATION_TEST_SYS_ADM_CPF: "${PRESENTATION_TEST_SYS_ADM_CPF}"
+      PRESENTATION_TEST_SYS_ADM_PASSWORD: "${PRESENTATION_TEST_SYS_ADM_PASSWORD}"
     networks:
       - net
 
@@ -168,7 +211,7 @@ services:
       context: .
       dockerfile: ui.Dockerfile
     ports:
-      - "8080:8080"
+      - "${UI_EXPOSED_PORT}:8080"
     environment:
       NODE_MANAGER_URL: "http://node_manager:8080"
       AUTHENTICATION_URL: "http://authentication:8080"

@@ -160,4 +160,22 @@ class BlockchainHandlers {
         val page = pageBuilder.build()
         call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
     }
+
+    suspend fun getDocumentTransactions(call: ApplicationCall) {
+        val id = try {
+            UUID.fromString(call.parameters["id"])
+        } catch (ex: Exception) {
+            throw io.ktor.features.BadRequestException("Id inválida.")
+        }
+
+        val transactions = blockchainController.getDocumentTransactions(id)
+
+        val pageBuilder = BlockchainDocumentTransactionsPageBuilder()
+        pageBuilder.setupMenu(call.getUserRole())
+        pageBuilder.setDocumentId(id)
+        pageBuilder.setTransactions(transactions)
+
+        val page = pageBuilder.build()
+        call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
+    }
 }

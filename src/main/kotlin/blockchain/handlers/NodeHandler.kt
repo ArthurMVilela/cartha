@@ -100,9 +100,7 @@ class NodeHandler(val nodeManagerAddress:String, val node: Node) {
         call.respond(block)
     }
 
-    suspend fun createTransaction(call: ApplicationCall) {
-        val transaction = call.receive<Transaction>()
-
-
+    suspend fun validateChain(call: ApplicationCall) {
+        call.respond(HttpStatusCode.OK, node.validateChain())
     }
 }

@@ -62,4 +62,13 @@ class NodeClient {
 
         return response.receive()
     }
+
+    suspend fun sendBlock(node: NodeInfo, block: Block): Block {
+        val response: HttpResponse = client.post("${node.address}/blocks") {
+            contentType(ContentType.Application.Json)
+            body = block
+        }
+
+        return response.receive()
+    }
 }

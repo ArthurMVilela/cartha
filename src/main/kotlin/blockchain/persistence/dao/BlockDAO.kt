@@ -26,7 +26,6 @@ class BlockDAO:DAO<Block, UUID> {
                 }
 
                 obj.transactions.forEach {
-                    it.blockId = obj.id
                     transactionDAO.insert(it)
                 }
 
@@ -65,6 +64,7 @@ class BlockDAO:DAO<Block, UUID> {
         transaction {
             try {
                 val rows = BlockTable.select(condition)
+                    .orderBy(BlockTable.timestamp, SortOrder.DESC)
 
                 rows.forEach {
                     results.add(toType(it))
