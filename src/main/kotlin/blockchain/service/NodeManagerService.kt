@@ -15,6 +15,7 @@ import io.ktor.server.netty.*
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.slf4j.event.Level
+import presentation.AuthenticationPresentationSetup
 import presentation.NodeManagerPresentationSetup
 import serviceExceptions.BadRequestException
 
@@ -41,7 +42,11 @@ fun main(args : Array<String>) {
     val service = NodeManagerHandler()
 
     if(args.contains("--presentation-test")) {
-        NodeManagerPresentationSetup().setupNodes()
+        try {
+            NodeManagerPresentationSetup().setupNodes()
+        } catch (ex: Exception) {
+            println("Erro ao tentar aplicar preparativos para apresentação")
+        }
     }
 
     embeddedServer(Netty, port = 8080) {

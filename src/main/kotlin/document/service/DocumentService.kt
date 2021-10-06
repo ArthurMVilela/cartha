@@ -29,7 +29,11 @@ fun main(args: Array<String>) {
 
 
     if(args.contains("--presentation-test")) {
-        DocumentPresentationSetup().setupNotary()
+        try {
+            DocumentPresentationSetup().setupNotary()
+        } catch (ex: Exception) {
+            println("Erro ao tentar aplicar preparativos para apresentação")
+        }
     }
 
     val notaryHandler = NotaryHandler()

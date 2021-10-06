@@ -39,7 +39,12 @@ fun main(args: Array<String>) {
     }
 
     if(args.contains("--presentation-test")) {
-        AuthenticationPresentationSetup().setupUsers()
+        try {
+            AuthenticationPresentationSetup().setupUsers()
+        } catch (ex: Exception) {
+            println("Erro ao tentar aplicar preparativos para apresentação")
+        }
+
     }
 
     val userHandler = UserHandler()
