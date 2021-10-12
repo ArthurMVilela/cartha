@@ -3,27 +3,16 @@ package blockchain.handlers
 import blockchain.Block
 import blockchain.Transaction
 import blockchain.controllers.Node
-import serviceExceptions.BadRequestException
 import io.ktor.application.*
-import io.ktor.client.*
-import io.ktor.client.engine.cio.*
-import io.ktor.client.features.json.*
-import io.ktor.client.features.json.serializer.*
 import io.ktor.features.*
 import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
+import serviceExceptions.BadRequestException
 import java.time.LocalDateTime
 import java.util.*
 
-class NodeHandler(val nodeManagerAddress:String, val node: Node) {
-
-    val client = HttpClient(CIO) {
-        install(JsonFeature) {
-            serializer = KotlinxSerializer()
-        }
-    }
-
+class NodeHandler(private val node: Node) {
     /**
      * Endpoint da aplicação para verificar saude do servidor, no momento
      * só retorna OK, caso haja problema ira retornar erro por cause do middleware

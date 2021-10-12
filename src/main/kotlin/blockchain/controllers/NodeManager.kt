@@ -1,23 +1,23 @@
 package blockchain.controllers
 
-import blockchain.*
+import blockchain.Block
+import blockchain.NodeInfo
+import blockchain.Transaction
 import blockchain.persistence.dao.NodeInfoDAO
 import blockchain.persistence.dao.TransactionDAO
 import blockchain.persistence.tables.NodeInfoTable
 import blockchain.persistence.tables.TransactionTable
-import persistence.ResultSet
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
+import persistence.ResultSet
 import java.time.LocalDateTime
 import java.util.*
 
 /**
  * Gerenciadoe de nós da rede blockchain
  */
-class NodeManager (
-    val nodes:MutableList<NodeInfo> = mutableListOf<NodeInfo>(),
-) {
+class NodeManager () {
     private val nodeInfoDAO = NodeInfoDAO()
     private val transactionDAO = TransactionDAO()
     private val client = NodeClient()
