@@ -15,7 +15,7 @@
         </div>
     </#if>
     <div class="row justify-content-center">
-        <form class="col" id="create-manage-form" action="/notary/${notaryId}/add-official" method="post">
+        <form class="col" id="create-manage-form" action="/notary/${notaryId}/add-manager" method="post">
             <div class="m-3">
                 <label for="name" class="form-label">Nome: </label>
                 <input id="name" type="text" class="form-control" name="name" required>
@@ -57,7 +57,7 @@
             </div>
 
             <div class="m-3">
-                <button type="submit" class="btn btn-primary">Criar Funcionário</button>
+                <button type="submit" class="btn btn-primary">Criar Gerente</button>
             </div>
         </form>
     </div>
