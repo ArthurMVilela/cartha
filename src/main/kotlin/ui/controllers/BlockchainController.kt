@@ -40,4 +40,8 @@ class BlockchainController {
     suspend fun getDocumentTransactions(documentId: UUID): List<Transaction> {
         return client.getDocumentTransactions(documentId)
     }
+
+    suspend fun getDocumentLastTransaction(documentId: UUID): Transaction {
+        return client.getLastDocumentTransaction(documentId)
+    }
 }
