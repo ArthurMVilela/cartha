@@ -14,14 +14,15 @@ import persistence.ResultSet
 import serviceExceptions.BadRequestException
 import ui.controllers.AuthenticationController
 import ui.controllers.BlockchainController
+import ui.controllers.DocumentController
 import ui.features.getUserRole
 import ui.pages.blockchain.*
 import java.time.LocalDateTime
 import java.util.*
 
 class BlockchainHandlers {
-    private val authController = AuthenticationController()
     private val blockchainController = BlockchainController()
+    private val documentController = DocumentController()
 
     suspend fun getBlockchainPage(call: ApplicationCall) {
         val pageBuilder = BlockchainPageBuilder()
@@ -187,10 +188,11 @@ class BlockchainHandlers {
         }
 
         val transaction = blockchainController.getDocumentLastTransaction(id)
+        val document = documentController.getDocument(id)
 
         val pageBuilder = BlockchainDocumentValidationPageBuilder()
         pageBuilder.setupMenu(call.getUserRole())
-        pageBuilder.setValid(true)
+        pageBuilder.setValid(transaction.documentHash == document.hash)
         pageBuilder.setTransaction(transaction)
 
         val page = pageBuilder.build()

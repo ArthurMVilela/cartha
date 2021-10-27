@@ -6,9 +6,12 @@ import document.DocumentStatus
 import document.address.Municipality
 import document.civilRegistry.*
 import document.person.Sex
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import util.serializer.LocalDateSerializer
 import util.serializer.LocalDateTimeSerializer
 import util.serializer.UUIDSerializer
+import java.security.MessageDigest
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
@@ -54,8 +57,8 @@ class BirthCertificate(
     val dnNumber: String,
 ):CivilRegistryDocument() {
     init {
-        hash = createHash()
-        registrationNumber = createRegistrationNumber(
+        if (hash == null) hash = createHash()
+        if (registrationNumber == null) registrationNumber = createRegistrationNumber(
             "123456",
             StorageCode.IncorporatedStorage,
             RegistryBookType.A,
@@ -64,6 +67,26 @@ class BirthCertificate(
         )
     }
     override fun createHash(): String {
-        return ""
+        val md = MessageDigest.getInstance("SHA-256")
+        var content = Base64.getUrlDecoder().decode(id.toString().toByteArray())
+        content = content.plus(Base64.getUrlDecoder().decode(officialId.toString().toByteArray()))
+        content = content.plus(Base64.getUrlDecoder().decode(notaryId.toString().toByteArray()))
+        content = content.plus(registrationNumber?.toByteArray()?: ByteArray(0))
+        content = content.plus(Json.encodeToString(registering).toByteArray())
+        content = content.plus(Base64.getUrlDecoder().decode(personId.toString().toByteArray()))
+        content = content.plus(cpf.toByteArray())
+        content = content.plus(name.toByteArray())
+        content = content.plus(sex.toString().toByteArray())
+        content = content.plus(Json.encodeToString(municipalityOfBirth).toByteArray())
+        content = content.plus(Json.encodeToString(municipalityOfRegistry).toByteArray())
+        content = content.plus(placeOfBirth.toByteArray())
+        content = content.plus(Json.encodeToString(affiliation).toByteArray())
+        content = content.plus(Json.encodeToString(grandparents).toByteArray())
+        content = content.plus(dateTimeOfBirth.toString().toByteArray())
+        content = content.plus(dateOfRegistry.toString().toByteArray())
+        content = content.plus(Json.encodeToString(twins).toByteArray())
+        content = content.plus(dnNumber.toByteArray())
+
+        return Base64.getUrlEncoder().encodeToString(md.digest(content))
     }
 }
