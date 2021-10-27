@@ -4,6 +4,7 @@ package document.service
 
 import document.handlers.civilRegistry.birth.BirthCertificateHandler
 import document.handlers.civilRegistry.marriage.MarriageCertificateHandler
+import document.handlers.DocumentHandler
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.http.*
@@ -40,6 +41,7 @@ fun main(args: Array<String>) {
     val personHandler = PersonHandler()
     val birthCertificateHandler = BirthCertificateHandler()
     val marriageCertificateHandler = MarriageCertificateHandler()
+    val documentHandler = DocumentHandler()
 
     embeddedServer(Netty, port = 8080) {
         install(ContentNegotiation) {
@@ -100,6 +102,9 @@ fun main(args: Array<String>) {
                 }
             }
             route("/document") {
+                get("/{id}") {
+                    documentHandler.getDocumentById(call)
+                }
                 route("/civil_registry") {
                     route("/birth") {
                         post(""){
