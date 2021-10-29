@@ -71,6 +71,22 @@ class NodeManagerHandler {
         call.respond(HttpStatusCode.OK, t)
     }
 
+    suspend fun getLastDocumentTransaction(call: ApplicationCall) {
+        val id = try {
+            UUID.fromString(call.parameters["id"])
+        } catch (ex: Exception) {
+            throw BadRequestException("ID inválida ou nula.")
+        }
+
+        val t = nodeManager.getLastDocumentTransaction(id)
+
+        if (t != null) {
+            call.respond(t)
+        }
+
+
+    }
+
     suspend fun getPendingTransactions(call: ApplicationCall) {
         val page = try {
             call.request.queryParameters["page"]?.toInt()?:1

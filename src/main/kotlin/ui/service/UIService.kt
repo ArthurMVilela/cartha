@@ -124,6 +124,10 @@ fun main() {
                     }
                 }
 
+                get("/check-document/{id}") {
+                    blockchainHandlers.checkDocumentValidity(call)
+                }
+
                 route("/notary") {
                     authorizedRoute(Role.SysAdmin) {
                         get("/create") {

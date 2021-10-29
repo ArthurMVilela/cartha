@@ -86,6 +86,9 @@ fun main(args : Array<String>) {
             get("/transactions/document/{id}") {
                 service.getTransactionByDocument(call)
             }
+            get("/transactions/document/{id}/last") {
+                service.getLastDocumentTransaction(call)
+            }
             post("/transactions") {
                 service.createTransaction(call)
             }

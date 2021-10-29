@@ -9,6 +9,7 @@ import blockchain.persistence.tables.NodeInfoTable
 import blockchain.persistence.tables.TransactionTable
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import persistence.ResultSet
 import java.time.LocalDateTime
@@ -65,6 +66,10 @@ class NodeManager () {
 
     fun getTransactionByDocument(id: UUID):List<Transaction> {
         return transactionDAO.selectMany(Op.build { TransactionTable.documentId eq id })
+    }
+
+    fun getLastDocumentTransaction(id: UUID):Transaction? {
+        return transactionDAO.getLastDocumentTransaction(id)
     }
 
     fun addNode(node: NodeInfo):NodeInfo {

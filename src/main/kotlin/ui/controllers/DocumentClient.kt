@@ -1,12 +1,14 @@
 package ui.controllers
 
 import authentication.User
+import document.Document
 import document.Notary
 import document.civilRegistry.birth.BirthCertificate
 import document.handlers.civilRegistry.birth.CreateBirthCertificateRequest
 import document.handlers.notary.CreateNotaryRequest
 import document.handlers.person.CreateOfficialRequest
 import document.handlers.person.CreatePhysicalPersonRequest
+import document.persistence.dao.DocumentDAO
 import document.person.Official
 import document.person.PhysicalPerson
 import io.ktor.client.*
@@ -223,5 +225,18 @@ class DocumentClient(
         }
 
         return response.receive()
+    }
+
+    suspend fun getDocument(id: UUID): Document {
+        val response: HttpResponse = try {
+            client.get("$documentUrl/document/$id") {
+            }
+        }catch (ex: Exception) {
+            throw ex
+        }
+
+        val document = response.receive<DocumentDAO.DocumentImpl>()
+
+        return document
     }
 }

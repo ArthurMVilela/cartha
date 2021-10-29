@@ -1,5 +1,6 @@
 package ui.controllers
 
+import document.Document
 import document.Notary
 import document.civilRegistry.birth.BirthCertificate
 import document.handlers.civilRegistry.birth.CreateBirthCertificateRequest
@@ -66,7 +67,12 @@ class DocumentController {
     suspend fun getPhysicalPerson(cpf: String): PhysicalPerson {
         return documentClient.getPhysicalPerson(cpf)
     }
+
     suspend fun getOfficial(cpf: String): Official {
         return documentClient.getOfficial(cpf)
+    }
+
+    suspend fun getDocument(id: UUID): Document {
+        return documentClient.getDocument(id)
     }
 }

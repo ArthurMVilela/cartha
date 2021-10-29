@@ -174,4 +174,23 @@ class TransactionDAO:DAO<Transaction, UUID> {
             }
         }
     }
+
+    fun getLastDocumentTransaction(id: UUID): Transaction? {
+        return transaction {
+            try {
+                val row = TransactionTable.select(Op.build { TransactionTable.documentId eq id })
+                    .orderBy(TransactionTable.timestamp, SortOrder.DESC)
+                    .firstOrNull()
+                if (row != null) {
+                    toType(row)
+                } else {
+                    null
+                }
+
+            } catch (ex: Exception) {
+                rollback()
+                throw ex
+            }
+        }
+    }
 }
