@@ -112,12 +112,14 @@
                     <div class="col-7 field">
                         <span class="field__label">${notary.name?upper_case}</span>
                         <span class="field__label">${official.name?upper_case}</span>
-                        <span class="field__label">MUNICÍPIO/DF</span>
-                        <span class="field__label">ENDEREÇO</span>
                     </div>
                     <div class="col-5 field">
                         <span class="field__label">O conteúdo da certidão é verdadeiro. Dou fé</span>
                         <span class="field__label">Data e local: ${birthCertificate.dateTimeOfBirth.dayOfMonth?string["00"]}/${birthCertificate.dateTimeOfBirth.monthValue?string["00"]}/${birthCertificate.dateTimeOfBirth.year?long?c} ${birthCertificate.municipalityOfRegistry.name}, ${birthCertificate.municipalityOfRegistry.uf}</span>
+                        <div class="field__signature">
+                            <div class="field__signature__line"></div>
+                            <span class="field__label field__label--center">Assinatura do Oficial</span>
+                        </div>
                     </div>
                 </div>
                 <div class="row">
@@ -125,6 +127,7 @@
                         <span class="field__label">Documento emitido e authenticado pelo sistema Cartha</span>
                         <span class="field__label">ID do documento: ${birthCertificate.id}</span>
                         <span class="field__label">Hash do documento: ${birthCertificate.hash}</span>
+
                     </div>
                 </div>
             </div>

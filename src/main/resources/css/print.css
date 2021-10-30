@@ -17,10 +17,6 @@ body {
     text-align: center;
 }
 
-img {
-
-}
-
 h1 {
     font-size: 16pt;
     font-style: normal;
@@ -68,6 +64,15 @@ h2 {
 }
 .field__content--min-4-line {
     min-height: calc(1.2rem * 4);
+}
+
+.field__signature {
+
+}
+.field__signature__line {
+    min-width: 100%;
+    min-height: 2rem;
+    border-bottom: solid black 2px;
 }
 
 
