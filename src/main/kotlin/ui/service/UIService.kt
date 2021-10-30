@@ -85,6 +85,8 @@ fun main() {
         routing {
             static("static") {
                 resources("js")
+                resources("css")
+                resources("img")
             }
             get("/") {
                 mainPageHandler.mainPage(call)
@@ -104,6 +106,10 @@ fun main() {
             }
             post("/create-account") {
                 userAccountHandler.createClient(call)
+            }
+
+            get("/birth-certificate-print/{id}") {
+                birthCertificateHandler.getBirthCertificatePrintPage(call)
             }
 
             authenticate {
