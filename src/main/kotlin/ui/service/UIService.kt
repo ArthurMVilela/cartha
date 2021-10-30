@@ -108,9 +108,7 @@ fun main() {
                 userAccountHandler.createClient(call)
             }
 
-            get("/birth-certificate-print/{id}") {
-                birthCertificateHandler.getBirthCertificatePrintPage(call)
-            }
+
 
             authenticate {
                 authorizedRoute(Role.Client) {
@@ -227,6 +225,9 @@ fun main() {
                         }
                         get("/{id}") {
                             birthCertificateHandler.getBirthCertificatePage(call)
+                        }
+                        get("/{id}/print") {
+                            birthCertificateHandler.getBirthCertificatePrintPage(call)
                         }
                     }
                 }

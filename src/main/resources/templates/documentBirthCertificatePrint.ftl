@@ -16,7 +16,7 @@
                 <h1>CERTIDÃO DE NASCIMENTO</h1>
                 <h2>NOME:</h2>
                 <h2>${birthCertificate.name}</h2>
-                <h2>MATRICULA:</h2>
+                <h2>MATRÍCULA:</h2>
                 <h2 id="registration-number">${birthCertificate.registrationNumber}</h2>
             </div>
             <div class="body">
@@ -124,7 +124,7 @@
                 </div>
                 <div class="row">
                     <div class="col-12 field">
-                        <span class="field__label">Documento emitido e authenticado pelo sistema Cartha</span>
+                        <span class="field__label">Documento emitido e autentificado pelo sistema Cartha</span>
                         <span class="field__label">ID do documento: ${birthCertificate.id}</span>
                         <span class="field__label">Hash do documento: ${birthCertificate.hash}</span>
 
@@ -137,6 +137,9 @@
             $(document).ready(function () {
                 $("#registration-number").mask("000000 00 00 0000 0 00000 000 0000000 00")
                 $("#dn-number").mask("00-00000000-0")
+                window.onafterprint = function() { window.close() };
+                window.print()
+
             })
         </script>
     </body>
