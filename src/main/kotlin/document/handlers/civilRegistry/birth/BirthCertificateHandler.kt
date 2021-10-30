@@ -4,9 +4,12 @@ import document.Document
 import document.DocumentStatus
 import document.address.Municipality
 import document.civilRegistry.Affiliation
+import document.civilRegistry.RegistryBookType
+import document.civilRegistry.StorageCode
 import document.civilRegistry.birth.BirthCertificate
 import document.civilRegistry.birth.Grandparent
 import document.controllers.BirthCertificateController
+import document.controllers.CivilRegistryDocumentController
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.http.*
@@ -15,7 +18,8 @@ import io.ktor.response.*
 import java.util.*
 
 class BirthCertificateHandler {
-    val birthCertificateController = BirthCertificateController()
+    private val birthCertificateController = BirthCertificateController()
+    private val civilRegistryController = CivilRegistryDocumentController()
 
     suspend fun createBirthCertificate(call: ApplicationCall) {
         val requestBody = try {
@@ -111,6 +115,15 @@ class BirthCertificateHandler {
     private fun buildBirthCertificate(requestBody: CreateBirthCertificateRequest):BirthCertificate {
         val id = Document.createId()
 
+        val registrationNumber = civilRegistryController.createRegistrationNumber(
+            requestBody.notaryId,
+            StorageCode.IncorporatedStorage,
+            RegistryBookType.A,
+            requestBody.dateOfRegistry,
+            1,
+            1
+        )
+
         val affiliation = mutableListOf<Affiliation>()
         requestBody.affiliation.forEach {
             affiliation.add(
@@ -154,7 +167,7 @@ class BirthCertificateHandler {
             requestBody.officialId,
             requestBody.notaryId,
             null,
-            null,
+            registrationNumber,
             mutableListOf(),
             requestBody.personId,
             requestBody.cpf,

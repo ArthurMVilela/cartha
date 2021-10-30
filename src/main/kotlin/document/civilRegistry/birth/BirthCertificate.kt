@@ -57,7 +57,6 @@ class BirthCertificate(
     val dnNumber: String,
 ):CivilRegistryDocument() {
     init {
-        if (hash == null) hash = createHash()
         if (registrationNumber == null) registrationNumber = createRegistrationNumber(
             "123456",
             StorageCode.IncorporatedStorage,
@@ -65,6 +64,7 @@ class BirthCertificate(
             dateOfRegistry,
             "00001"
         )
+        if (hash == null) hash = createHash()
     }
     override fun createHash(): String {
         val md = MessageDigest.getInstance("SHA-256")
