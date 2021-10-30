@@ -7,6 +7,7 @@ import blockchain.handlers.CreateTransactionRequest
 import document.address.UF
 import document.civilRegistry.Affiliation
 import document.civilRegistry.birth.GrandparentType
+import document.controllers.NotaryController
 import document.handlers.address.CreateMunicipalityRequest
 import document.handlers.civilRegistry.CreateAffiliationRequest
 import document.handlers.civilRegistry.birth.CreateBirthCertificateRequest
@@ -72,8 +73,22 @@ class BirthCertificateHandler {
             throw NotFoundException("Não encontrada.")
         }
 
+        val notary = try {
+            documentController.getNotary(bc.notaryId)
+        } catch (ex: Exception) {
+            throw ex
+        }
+
+        val official = try {
+            documentController.getOfficials(bc.notaryId).first { x -> x.id == bc.officialId}
+        } catch (ex: Exception) {
+            throw ex
+        }
+
         val pageBuilder = BirthCertificatePrintPage()
         pageBuilder.setBirthCertificate(bc)
+        pageBuilder.setNotary(notary)
+        pageBuilder.setOfficial(official)
 
         val page = pageBuilder.build()
         call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))

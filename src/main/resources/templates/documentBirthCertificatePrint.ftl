@@ -110,8 +110,8 @@
                 </div>
                 <div class="row">
                     <div class="col-7 field">
-                        <span class="field__label">NOME DO OFÍCIO</span>
-                        <span class="field__label">OFICIAL REGISTRADOR</span>
+                        <span class="field__label">${notary.name?upper_case}</span>
+                        <span class="field__label">${official.name?upper_case}</span>
                         <span class="field__label">MUNICÍPIO/DF</span>
                         <span class="field__label">ENDEREÇO</span>
                     </div>
