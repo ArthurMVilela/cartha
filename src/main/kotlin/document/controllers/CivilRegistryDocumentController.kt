@@ -33,8 +33,48 @@ class CivilRegistryDocumentController {
         builder.append("%05d".format(book))
         builder.append("%03d".format(page))
         builder.append("%07d".format(count + 1))
-        builder.append("XX")
+        builder.append(createCheckNumber(builder.toString()))
 
         return builder.toString()
+    }
+
+    private fun createCheckNumber(registrationNumber: String):String {
+        var dv1sum = 0
+        for (i in registrationNumber.indices) {
+            val m = when {
+                i+1 <= 10 -> i+1
+                i+1%10 == 0 -> 10
+                else -> {
+                    i + 1 -(10 * ((i + 1) / 10))
+                }
+            }
+
+            dv1sum += registrationNumber[i].toInt() * m
+        }
+
+        var dv2sum = 0
+        for (i in registrationNumber.indices) {
+            val m = when {
+                i+2 <= 10 -> i+2
+                i+2%10 == 0 -> 10
+                else -> {
+                    i + 2 -(10 * ((i + 2) / 10))
+                }
+            }
+
+            dv2sum += registrationNumber[i].toInt() * m
+        }
+
+        val dv1 = when(dv1sum%11) {
+            10 -> 1
+            else -> dv1sum%11
+        }
+
+        val dv2 = when(dv2sum%11) {
+            10 -> 1
+            else -> dv2sum%11
+        }
+
+        return "$dv2$dv1"
     }
 }
