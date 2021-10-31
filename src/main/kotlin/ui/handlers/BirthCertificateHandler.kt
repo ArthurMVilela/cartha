@@ -7,6 +7,7 @@ import blockchain.handlers.CreateTransactionRequest
 import document.address.UF
 import document.civilRegistry.Affiliation
 import document.civilRegistry.birth.GrandparentType
+import document.controllers.NotaryController
 import document.handlers.address.CreateMunicipalityRequest
 import document.handlers.civilRegistry.CreateAffiliationRequest
 import document.handlers.civilRegistry.birth.CreateBirthCertificateRequest
@@ -25,6 +26,7 @@ import ui.features.getUserId
 import ui.features.getUserPermissions
 import ui.features.getUserRole
 import ui.pages.document.civilRegistry.BirthCertificatePage
+import ui.pages.document.civilRegistry.BirthCertificatePrintPage
 import ui.pages.document.civilRegistry.BirthCertificatesPageBuilder
 import ui.pages.document.civilRegistry.CreateBirthCertificatePageBuilder
 import java.time.LocalDate
@@ -53,6 +55,40 @@ class BirthCertificateHandler {
         val pageBuilder = BirthCertificatePage()
         pageBuilder.setupMenu(call.getUserRole())
         pageBuilder.setBirthCertificate(bc)
+
+        val page = pageBuilder.build()
+        call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
+    }
+
+    suspend fun getBirthCertificatePrintPage(call: ApplicationCall) {
+        val id = try {
+            UUID.fromString(call.parameters["id"])
+        } catch (ex: Exception) {
+            throw io.ktor.features.BadRequestException("Id inválida.")
+        }
+
+        val bc = try {
+            documentController.getBirthCertificate(id)
+        } catch (ex: Exception) {
+            throw NotFoundException("Não encontrada.")
+        }
+
+        val notary = try {
+            documentController.getNotary(bc.notaryId)
+        } catch (ex: Exception) {
+            throw ex
+        }
+
+        val official = try {
+            documentController.getOfficials(bc.notaryId).first { x -> x.id == bc.officialId}
+        } catch (ex: Exception) {
+            throw ex
+        }
+
+        val pageBuilder = BirthCertificatePrintPage()
+        pageBuilder.setBirthCertificate(bc)
+        pageBuilder.setNotary(notary)
+        pageBuilder.setOfficial(official)
 
         val page = pageBuilder.build()
         call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))

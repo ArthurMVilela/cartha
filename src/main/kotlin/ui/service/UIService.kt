@@ -85,6 +85,8 @@ fun main() {
         routing {
             static("static") {
                 resources("js")
+                resources("css")
+                resources("img")
             }
             get("/") {
                 mainPageHandler.mainPage(call)
@@ -105,6 +107,8 @@ fun main() {
             post("/create-account") {
                 userAccountHandler.createClient(call)
             }
+
+
 
             authenticate {
                 authorizedRoute(Role.Client) {
@@ -221,6 +225,9 @@ fun main() {
                         }
                         get("/{id}") {
                             birthCertificateHandler.getBirthCertificatePage(call)
+                        }
+                        get("/{id}/print") {
+                            birthCertificateHandler.getBirthCertificatePrintPage(call)
                         }
                     }
                 }

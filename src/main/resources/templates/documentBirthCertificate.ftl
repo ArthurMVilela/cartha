@@ -127,19 +127,10 @@
         </div>
     </div>
 
-    <div class="row m-3 justify-content-between">
-        <div class="col-5">
-            <span>NOME DO OFÍCIO</span><br>
-            <span>OFICIAL REGISTRADOR</span><br>
-            <span>MUNICÍPIO/DF</span><br>
-            <span>ENDEREÇO</span><br>
-        </div>
-        <div class="col-5">
-            <span>O conteúdo da certidão é verdadeiro. Dou fé</span><br>
-            <span>Data e local: ${birthCertificate.dateTimeOfBirth.dayOfMonth}/${birthCertificate.dateTimeOfBirth.monthValue}/${birthCertificate.dateTimeOfBirth.year} ${birthCertificate.municipalityOfRegistry.name}, ${birthCertificate.municipalityOfRegistry.uf}</span><br>
-            <label for="birthday-day" class="form-label">Assinatura do Oficial: </label><br>
-            <input id="birthday-day" class="form-control" type="text" disabled
-                   value="">
+    <div class="row m-3">
+        <div class="col justify-content-end">
+            <a class="btn btn-primary" href="/civil-registry/birth/${birthCertificate.id}/print" target="_blank"role="button">Imprimir</a>
+            <a class="btn btn-primary" href="/check-document/${birthCertificate.id}" role="button">Verificar autenticidade</a>
         </div>
     </div>
 </div>
