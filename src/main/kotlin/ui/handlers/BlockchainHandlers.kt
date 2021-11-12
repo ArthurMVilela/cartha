@@ -1,5 +1,7 @@
 package ui.handlers
 
+import authentication.Subject
+import authentication.logging.ActionType
 import blockchain.Block
 import blockchain.BlockInfo
 import blockchain.NodeInfo
@@ -16,6 +18,7 @@ import ui.controllers.AuthenticationController
 import ui.controllers.BlockchainController
 import ui.controllers.DocumentController
 import ui.features.getUserRole
+import ui.features.logAction
 import ui.pages.blockchain.*
 import java.time.LocalDateTime
 import java.util.*
@@ -55,6 +58,8 @@ class BlockchainHandlers {
         pageBuilder.setupMenu(call.getUserRole())
         pageBuilder.setResultSet(nodes)
 
+        call.logAction(ActionType.SeeNodes, Subject.Blockchain, null)
+
         val page = pageBuilder.build()
         call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
     }
@@ -82,6 +87,8 @@ class BlockchainHandlers {
             blocks
         )
 
+        call.logAction(ActionType.SeeBlockchain, Subject.Blockchain, id)
+
         val page = pageBuilder.build()
         call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
     }
@@ -106,6 +113,8 @@ class BlockchainHandlers {
         pageBuilder.setupMenu(call.getUserRole())
         pageBuilder.setNodeId(nodeId)
         pageBuilder.setBlock(block)
+
+        call.logAction(ActionType.SeeBlock, Subject.Blockchain, blockId)
 
         val page = pageBuilder.build()
         call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
@@ -142,6 +151,8 @@ class BlockchainHandlers {
 
         val node = blockchainController.createNode(rb)
 
+        call.logAction(ActionType.CreateNode, Subject.Blockchain, node.nodeId)
+
         call.respondRedirect("/blockchain/nodes/${node.nodeId}")
     }
 
@@ -157,6 +168,8 @@ class BlockchainHandlers {
         val pageBuilder = BlockchainNodePageBuilder()
         pageBuilder.setupMenu(call.getUserRole())
         pageBuilder.setNode(node)
+
+        call.logAction(ActionType.SeeNode, Subject.Blockchain, id)
 
         val page = pageBuilder.build()
         call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
@@ -176,6 +189,8 @@ class BlockchainHandlers {
         pageBuilder.setDocumentId(id)
         pageBuilder.setTransactions(transactions)
 
+        call.logAction(ActionType.SeeDocumentTransactions, Subject.Blockchain, id)
+
         val page = pageBuilder.build()
         call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
     }
@@ -194,6 +209,8 @@ class BlockchainHandlers {
         pageBuilder.setupMenu(call.getUserRole())
         pageBuilder.setValid(transaction.documentHash == document.hash)
         pageBuilder.setTransaction(transaction)
+
+        call.logAction(ActionType.CheckDocumentValidity, Subject.Blockchain, id)
 
         val page = pageBuilder.build()
         call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))

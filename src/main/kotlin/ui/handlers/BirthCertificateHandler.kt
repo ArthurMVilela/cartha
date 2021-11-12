@@ -2,6 +2,7 @@ package ui.handlers
 
 import authentication.Role
 import authentication.Subject
+import authentication.logging.ActionType
 import blockchain.TransactionType
 import blockchain.handlers.CreateTransactionRequest
 import document.address.UF
@@ -25,6 +26,7 @@ import ui.controllers.DocumentController
 import ui.features.getUserId
 import ui.features.getUserPermissions
 import ui.features.getUserRole
+import ui.features.logAction
 import ui.pages.document.civilRegistry.BirthCertificatePage
 import ui.pages.document.civilRegistry.BirthCertificatePrintPage
 import ui.pages.document.civilRegistry.BirthCertificatesPageBuilder
@@ -55,6 +57,8 @@ class BirthCertificateHandler {
         val pageBuilder = BirthCertificatePage()
         pageBuilder.setupMenu(call.getUserRole())
         pageBuilder.setBirthCertificate(bc)
+
+        call.logAction(ActionType.SeeBirthCertificate, Subject.CivilRegistry, bc.id)
 
         val page = pageBuilder.build()
         call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
@@ -89,6 +93,8 @@ class BirthCertificateHandler {
         pageBuilder.setBirthCertificate(bc)
         pageBuilder.setNotary(notary)
         pageBuilder.setOfficial(official)
+
+        call.logAction(ActionType.PrintBirthCertificates, Subject.CivilRegistry, bc.id)
 
         val page = pageBuilder.build()
         call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
@@ -141,6 +147,8 @@ class BirthCertificateHandler {
         pageBuilder.setupMenu(call.getUserRole())
         pageBuilder.setResultSet(bcs)
 
+        call.logAction(ActionType.SeeBirthCertificates, Subject.CivilRegistry, null)
+
         val page = pageBuilder.build()
         call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
     }
@@ -169,6 +177,8 @@ class BirthCertificateHandler {
         pageBuilder.setupMenu(call.getUserRole())
         pageBuilder.setResultSet(bcs)
 
+        call.logAction(ActionType.SeeBirthCertificates, Subject.CivilRegistry, null)
+
         val page = pageBuilder.build()
         call.respond(HttpStatusCode.OK, FreeMarkerContent(page.template, page.data))
     }
@@ -185,6 +195,8 @@ class BirthCertificateHandler {
                 cb.id, cb.hash!!, TransactionType.Creation
             )
         )
+
+        call.logAction(ActionType.CreateBirthCertificates, Subject.CivilRegistry, cb.id)
 
         call.respondRedirect("/civil-registry/birth/${cb.id}")
     }
